@@ -13,20 +13,22 @@ use App\Http\Controllers\AuthController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('index');
+})->name('home');
 
 /*
 |--------------------------------------------------------------------------
-| AUTH (registro / login)
+| AUTH (registro / login / logout)
 |--------------------------------------------------------------------------
 */
 
-Route::get('/register', [AuthController::class, 'showRegister']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -34,34 +36,39 @@ Route::post('/login', [AuthController::class, 'login']);
 |--------------------------------------------------------------------------
 */
 
-// pantalla que ve el usuario si NO está verificado
 Route::get('/email/verify', function () {
     return view('verify-email');
 })->middleware('auth')->name('verification.notice');
 
-// link del email (clic de verificación)
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-
-    return redirect('/dashboard');
+    return redirect()->route('dashboard');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
-// reenviar email de verificación
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
-
     return back()->with('message', 'Email de verificación enviado');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 /*
 |--------------------------------------------------------------------------
-| DASHBOARD PROTEGIDO
+| DASHBOARD (usuario normal)
 |--------------------------------------------------------------------------
 */
 
 Route::get('/dashboard', function () {
-    return "Estás logueado y verificado";
-})->middleware(['auth', 'verified']);
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN (solo admins)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/admin', function () {
+    return "Panel de administrador";
+})->middleware(['auth', 'verified', 'admin'])->name('admin');
 
 /*
 |--------------------------------------------------------------------------
@@ -77,3 +84,8 @@ Route::get('/test-mail', function () {
 
     return 'Correo enviado';
 });
+
+Route::view('/about', 'about')->name('about');
+Route::view('/contact', 'contact')->name('contact');
+Route::view('/privacy', 'privacy')->name('privacy');
+Route::view('/terms', 'terms')->name('terms');
