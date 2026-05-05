@@ -32,8 +32,8 @@
                     Crear mi portfolio gratis
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#como-funciona" class="btn btn--ghost btn--lg">
-                    Ver cómo funciona
+                <a href="#" class="btn btn--ghost btn--lg">
+                    Ver plantillas
                 </a>
             </div>
 
