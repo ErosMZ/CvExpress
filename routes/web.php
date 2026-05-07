@@ -80,7 +80,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 /*
 |--------------------------------------------------------------------------
-| DASHBOARD
+| USER DASHBOARD
 |--------------------------------------------------------------------------
 */
 
@@ -127,7 +127,10 @@ Route::middleware([
     |--------------------------------------------------------------------------
     */
 
-    Route::resource('templates', TemplateController::class);
+    Route::resource(
+        'templates',
+        TemplateController::class
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -135,9 +138,24 @@ Route::middleware([
     |--------------------------------------------------------------------------
     */
 
-    Route::resource('categories', CategoryController::class);
+    Route::resource(
+        'categories',
+        CategoryController::class
+    );
 
 });
+
+    /*
+    |--------------------------------------------------------------------------
+    | USERS (PRÓXIMAMENTE)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/users', function () {
+
+        return "Panel de usuarios próximamente";
+
+    })->name('users.index');
 
 /*
 |--------------------------------------------------------------------------
