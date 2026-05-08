@@ -49,7 +49,7 @@ class AuthController extends Controller
                     return back()->with('error', 'Debes verificar tu email primero');
                 }
 
-                return redirect('/dashboard');
+                return redirect('/');
             }
 
         return back()->with('error', 'Credenciales incorrectas');
