@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use ZipArchive;
 
 class TemplateController extends Controller
 {
@@ -67,6 +68,17 @@ class TemplateController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Extraer ZIP para vista previa
+        |--------------------------------------------------------------------------
+        */
+
+        $this->extractPreview(
+            Storage::disk('public')->path($zipPath),
+            public_path("previews/$slug")
+        );
+
+        /*
+        |--------------------------------------------------------------------------
         | Crear plantilla
         |--------------------------------------------------------------------------
         */
@@ -117,22 +129,34 @@ class TemplateController extends Controller
             'price' => 'nullable|numeric|min:0',
         ]);
 
+        $oldSlug   = $template->slug;
         $oldFolder = $template->folder;
 
-        $newSlug = Str::slug($request->name);
-
+        $newSlug   = Str::slug($request->name);
         $newFolder = "templates/$newSlug";
 
         /*
         |--------------------------------------------------------------------------
-        | Renombrar carpeta
+        | Renombrar carpeta storage
         |--------------------------------------------------------------------------
         */
 
         if ($oldFolder !== $newFolder) {
+            Storage::disk('public')->move($oldFolder, $newFolder);
+        }
 
-            Storage::disk('public')
-                ->move($oldFolder, $newFolder);
+        /*
+        |--------------------------------------------------------------------------
+        | Renombrar carpeta preview pública si cambió el slug
+        |--------------------------------------------------------------------------
+        */
+
+        if ($oldSlug !== $newSlug) {
+            $oldPublic = public_path("previews/$oldSlug");
+            $newPublic = public_path("previews/$newSlug");
+            if (is_dir($oldPublic)) {
+                rename($oldPublic, $newPublic);
+            }
         }
 
         /*
@@ -169,6 +193,13 @@ class TemplateController extends Controller
 
             $zipPath = $request->file('template_zip')
                 ->store($newFolder, 'public');
+
+            $this->deleteDirectory(public_path("previews/$newSlug"));
+
+            $this->extractPreview(
+                Storage::disk('public')->path($zipPath),
+                public_path("previews/$newSlug")
+            );
         }
 
         /*
@@ -211,11 +242,42 @@ class TemplateController extends Controller
     public function destroy(Template $template)
     {
         Storage::disk('public')->deleteDirectory($template->folder);
+        $this->deleteDirectory(public_path("previews/{$template->slug}"));
 
         $template->delete();
 
         return redirect()
             ->route('templates.index')
             ->with('success', 'Plantilla eliminada.');
+    }
+
+    private function extractPreview(string $zipAbsPath, string $destAbsPath): void
+    {
+        $zip = new ZipArchive();
+
+        if ($zip->open($zipAbsPath) !== true) {
+            return;
+        }
+
+        if (! is_dir($destAbsPath)) {
+            mkdir($destAbsPath, 0755, true);
+        }
+
+        $zip->extractTo($destAbsPath);
+        $zip->close();
+    }
+
+    private function deleteDirectory(string $dir): void
+    {
+        if (! is_dir($dir)) {
+            return;
+        }
+
+        foreach (array_diff(scandir($dir), ['.', '..']) as $item) {
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            is_dir($path) ? $this->deleteDirectory($path) : unlink($path);
+        }
+
+        rmdir($dir);
     }
 }

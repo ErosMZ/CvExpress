@@ -9,6 +9,8 @@ use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\TemplatesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +24,26 @@ Route::get('/', function () {
 
 })->name('home');
 
+/*
+|--------------------------------------------------------------------------
+| PLANTILLAS (usuario)
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/plantillas', [TemplatesController::class, 'index'])->name('templates.list');
+Route::get('/plantillas/{template:slug}', [TemplatesController::class, 'show'])->name('templates.preview');
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::put('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::get('/dashboard/cv/download', [DashboardController::class, 'downloadCv'])->name('dashboard.cv.download');
+});
+
+// web.php
+Route::middleware('auth')->group(function () {
+    Route::put('/dashboard/cvweb/{cvWebId}/section/{section}', 
+        [CvWebController::class, 'updateSection']
+    )->name('dashboard.cvweb.update');
+});
 /*
 |--------------------------------------------------------------------------
 | AUTH
@@ -142,6 +164,19 @@ Route::middleware([
         'categories',
         CategoryController::class
     );
+
+    /*
+    |--------------------------------------------------------------------------
+    | USERS MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('admin.users.store');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::patch('/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::patch('/users/{user}/verify', [UserController::class, 'verify'])->name('admin.users.verify');
+    Route::post('/users/{user}/resend-verification', [UserController::class, 'resendVerification'])->name('admin.users.resend-verification');
 
 });
 

@@ -22,14 +22,24 @@ class Template extends Model
 
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | RELACIÓN CON CATEGORY
-    |--------------------------------------------------------------------------
-    */
-
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getPreviewHtmlUrlAttribute(): ?string
+    {
+        $publicDir = public_path('previews/' . $this->slug);
+
+        if (file_exists($publicDir . '/index.html')) {
+            return asset('previews/' . $this->slug . '/index.html');
+        }
+
+        foreach (glob($publicDir . '/*/index.html') ?: [] as $p) {
+            $sub = basename(dirname($p));
+            return asset('previews/' . $this->slug . '/' . $sub . '/index.html');
+        }
+
+        return null;
     }
 }
