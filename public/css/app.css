@@ -1425,3 +1425,139 @@ p { line-height: 1.7; }
   .section__header { margin-bottom: var(--space-10); }
   .hero__actions { flex-direction: column; align-items: flex-start; }
 }
+
+/* ── 23. MARQUEE PLANTILLAS DESTACADAS ── */
+.marquee-section {
+  padding: var(--space-20) 0 var(--space-16);
+  background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+}
+
+.marquee-section__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* Contenedor con desvanecer en los bordes */
+.marquee-outer {
+  position: relative;
+  overflow: hidden;
+  /* Fade en los bordes izquierdo y derecho */
+  mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+
+/* Track continuo */
+.marquee-track {
+  display: flex;
+  gap: 1.25rem;
+  width: max-content;
+  animation: marquee-scroll 30s linear infinite;
+  padding: .5rem 0 1rem;
+}
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Tarjeta individual */
+.mq-card {
+  flex-shrink: 0;
+  width: 260px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.05);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid #e2e8f0;
+  transition: transform .2s ease, box-shadow .2s ease;
+  cursor: pointer;
+}
+
+.mq-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.12);
+}
+
+/* Thumbnail de la tarjeta */
+.mq-card__thumb {
+  position: relative;
+  height: 170px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.mq-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mq-card__iframe-wrap {
+  width: 100%;
+  height: 170px;
+  overflow: hidden;
+  position: relative;
+}
+
+.mq-card__iframe-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  border: none;
+  transform-origin: top left;
+}
+
+.mq-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Badge premium/gratis sobre la imagen */
+.mq-card__badge {
+  position: absolute;
+  top: .6rem;
+  left: .6rem;
+  font-size: .68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: .22rem .65rem;
+}
+.mq-card__badge--free    { background: #dcfce7; color: #15803d; }
+.mq-card__badge--premium { background: #fef3c7; color: #b45309; }
+
+/* Cuerpo de la tarjeta */
+.mq-card__body {
+  padding: .85rem 1rem .9rem;
+}
+
+.mq-card__cat {
+  font-size: .67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #2563eb;
+  margin-bottom: .3rem;
+  display: block;
+}
+
+.mq-card__name {
+  font-size: .92rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: .3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mq-card__price {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #b45309;
+}
+.mq-card__price--free { color: #16a34a; }

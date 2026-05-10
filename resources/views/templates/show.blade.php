@@ -394,8 +394,6 @@
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     Premium
                 </span>
-            @else
-                <span class="sp-badge sp-badge--free">Gratis</span>
             @endif
             @if($template->is_featured)
                 <span class="sp-badge sp-badge--featured">Destacada</span>
@@ -424,7 +422,6 @@
                 </div>
                 <div class="sp-price-sub">Pago único · Acceso de por vida</div>
             @else
-                <div class="sp-price-value sp-price-value--free">Gratis</div>
                 <div class="sp-price-sub">Sin coste · Disponible con tu cuenta</div>
             @endif
         </div>

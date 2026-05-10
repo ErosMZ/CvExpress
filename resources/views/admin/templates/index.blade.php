@@ -137,8 +137,8 @@
             @php
                 $total = $templates->count();
                 $activas = \App\Models\Template::where('is_active', true)->count();
-                $premium = \App\Models\Template::where('is_premium', 1)->count();
-                $gratis  = \App\Models\Template::where('is_premium', false)->count();
+                $premium = \App\Models\Template::where('price', '>', 0)->count();
+                $gratis  = \App\Models\Template::where(function ($q) { $q->where('price', 0)->orWhereNull('price'); })->count();
             @endphp
             <div class="admin-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:1.5rem;">
                 <div class="stat-card stat-card--blue" style="padding:1.1rem 1.25rem;">
@@ -213,7 +213,7 @@
                             <tr class="template-row"
                                 data-name="{{ strtolower($template->name) }}"
                                 data-status="{{ $template->is_active ? 'active' : 'inactive' }}"
-                                data-premium="{{ $template->is_premium ? 'premium' : 'free' }}">
+                                data-premium="{{ $template->price > 0 ? 'premium' : 'free' }}">
 
                                 <td>
                                     <div style="display:flex;align-items:center;gap:12px;">

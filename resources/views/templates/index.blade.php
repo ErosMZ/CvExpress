@@ -99,8 +99,6 @@
                     <div class="tpl-card__badges">
                         @if($template->is_premium)
                             <span class="tpl-badge tpl-badge--premium">Premium</span>
-                        @else
-                            <span class="tpl-badge tpl-badge--free">Gratis</span>
                         @endif
                         @if($template->is_featured)
                             <span class="tpl-badge tpl-badge--featured">Destacada</span>
@@ -141,11 +139,9 @@
                     @endif
 
                     <div class="tpl-card__footer">
-                        <div class="tpl-card__price {{ $template->price > 0 ? 'tpl-card__price--paid' : 'tpl-card__price--free' }}">
+                        <div class="tpl-card__price {{ $template->price > 0 ? 'tpl-card__price--paid' : '' }}">
                             @if($template->price > 0)
                                 €{{ number_format($template->price, 2) }}
-                            @else
-                                Gratis
                             @endif
                         </div>
 

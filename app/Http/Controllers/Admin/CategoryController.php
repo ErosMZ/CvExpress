@@ -11,7 +11,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::withCount('templates')->latest()->get();
 
         return view('admin.categories.index', compact('categories'));
     }
@@ -23,13 +23,18 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:categories,name'],
+        ]);
+
         Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'name'      => $request->name,
+            'slug'      => Str::slug($request->name),
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')
+            ->with('success', "Categoría «{$request->name}» creada correctamente.");
     }
 
     public function edit(Category $category)
@@ -39,19 +44,26 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . $category->id],
+        ]);
+
         $category->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'name'      => $request->name,
+            'slug'      => Str::slug($request->name),
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')
+            ->with('success', "Categoría «{$request->name}» actualizada correctamente.");
     }
 
     public function destroy(Category $category)
     {
+        $name = $category->name;
         $category->delete();
 
-        return redirect()->route('categories.index');
+        return redirect()->route('categories.index')
+            ->with('success', "Categoría «$name» eliminada.");
     }
 }

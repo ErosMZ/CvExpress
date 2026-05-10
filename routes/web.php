@@ -20,7 +20,13 @@ use App\Http\Controllers\TemplatesController;
 
 Route::get('/', function () {
 
-    return view('index');
+    $featuredTemplates = \App\Models\Template::with('category')
+        ->where('is_active', true)
+        ->where('is_featured', true)
+        ->latest()
+        ->get();
+
+    return view('index', compact('featuredTemplates'));
 
 })->name('home');
 

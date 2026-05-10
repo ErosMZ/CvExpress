@@ -22,12 +22,14 @@
         }
         .modal-backdrop.open { display: flex; }
         .modal {
-            background: var(--admin-surface);
+            background: #ffffff;
             border: 1px solid var(--admin-border);
             border-radius: var(--radius-lg);
             width: 100%;
             max-width: 480px;
-            box-shadow: 0 24px 48px rgba(0,0,0,.18);
+            box-shadow: 0 24px 48px rgba(0,0,0,.25);
+            position: relative;
+            z-index: 201;
         }
         .modal__header {
             padding: 1.25rem 1.5rem;
@@ -35,6 +37,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: #ffffff;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
         .modal__title { font-size: .95rem; font-weight: 700; color: var(--admin-text); }
         .modal__close {
@@ -43,8 +47,8 @@
             border-radius: var(--radius); line-height: 1;
         }
         .modal__close:hover { background: var(--admin-border); color: var(--admin-text); }
-        .modal__body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-        .modal__footer { padding: 1rem 1.5rem; border-top: 1px solid var(--admin-border); display: flex; gap: .75rem; justify-content: flex-end; }
+        .modal__body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; background: #ffffff; }
+        .modal__footer { padding: 1rem 1.5rem; border-top: 1px solid var(--admin-border); display: flex; gap: .75rem; justify-content: flex-end; background: #f9fafb; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
 
         /* Campos del modal */
         .form-field { display: flex; flex-direction: column; gap: .35rem; }

@@ -127,6 +127,70 @@
     </div>
 </section>
 
+<!-- ===================== MARQUEE PLANTILLAS DESTACADAS ===================== -->
+@if($featuredTemplates->isNotEmpty())
+<section class="marquee-section" aria-labelledby="marquee-title">
+    <div class="container">
+        <div class="marquee-section__header">
+            <div class="label">Plantillas destacadas</div>
+            <h2 class="section__title" id="marquee-title">Diseños que marcan<br><em>la diferencia</em></h2>
+            <a href="{{ route('templates.list') }}" class="btn btn--ghost btn--sm" style="margin-top:.75rem;">
+                Ver todas las plantillas →
+            </a>
+        </div>
+    </div>
+
+    <div class="marquee-outer" aria-hidden="true">
+        <div class="marquee-track">
+            {{-- Dos copias para loop infinito seamless --}}
+            @foreach([1,2] as $copy)
+                @foreach($featuredTemplates as $tpl)
+                <a href="{{ route('templates.preview', $tpl->slug) }}"
+                   target="_blank" rel="noopener"
+                   class="mq-card">
+                    <div class="mq-card__thumb">
+                        @if($tpl->preview_html_url)
+                            <div class="mq-card__iframe-wrap">
+                                <iframe
+                                    src="{{ $tpl->preview_html_url }}"
+                                    scrolling="no"
+                                    sandbox="allow-same-origin allow-scripts"
+                                    loading="lazy"
+                                    title="{{ $tpl->name }}">
+                                </iframe>
+                            </div>
+                        @elseif($tpl->preview_image)
+                            <img src="{{ asset('storage/' . $tpl->preview_image) }}"
+                                 alt="{{ $tpl->name }}"
+                                 loading="lazy">
+                        @else
+                            <div class="mq-card__placeholder">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                        @endif
+
+                        @if($tpl->is_premium)
+                        <div class="mq-card__badge mq-card__badge--premium">Premium</div>
+                        @endif
+                    </div>
+
+                    <div class="mq-card__body">
+                        @if($tpl->category)
+                            <span class="mq-card__cat">{{ $tpl->category->name }}</span>
+                        @endif
+                        <div class="mq-card__name">{{ $tpl->name }}</div>
+                        @if($tpl->price > 0)
+                            <div class="mq-card__price">€{{ number_format($tpl->price, 2) }}</div>
+                        @endif
+                    </div>
+                </a>
+                @endforeach
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- ===================== CÓMO FUNCIONA ===================== -->
 <section class="section" id="como-funciona" aria-labelledby="steps-title">
     <div class="container">
@@ -349,5 +413,40 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+@if($featuredTemplates->isNotEmpty())
+<script>
+(function () {
+    function scaleMarqueeIframes() {
+        // Solo escala la primera copia (la segunda es clon visual, mismo tamaño)
+        document.querySelectorAll('.mq-card__iframe-wrap').forEach(function (wrap) {
+            var iframe = wrap.querySelector('iframe');
+            if (!iframe) return;
+            var scaleX = wrap.offsetWidth  / 1280;
+            var scaleY = wrap.offsetHeight / 800;
+            var scale  = Math.min(scaleX, scaleY);
+            iframe.style.transformOrigin = 'top left';
+            iframe.style.transform       = 'scale(' + scale + ')';
+            iframe.style.width           = '1280px';
+            iframe.style.height          = '800px';
+            iframe.style.pointerEvents   = 'none';
+            iframe.style.border          = 'none';
+        });
+    }
+
+    scaleMarqueeIframes();
+    window.addEventListener('resize', scaleMarqueeIframes);
+
+    // Pausa al hover
+    var track = document.querySelector('.marquee-track');
+    if (track) {
+        track.addEventListener('mouseenter', function () { track.style.animationPlayState = 'paused'; });
+        track.addEventListener('mouseleave', function () { track.style.animationPlayState = 'running'; });
+    }
+})();
+</script>
+@endif
+@endpush
 
 @endsection
