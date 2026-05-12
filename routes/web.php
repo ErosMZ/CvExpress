@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\TemplatesController;
+use App\Http\Controllers\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,19 @@ Route::get('/', function () {
 
 Route::get('/plantillas', [TemplatesController::class, 'index'])->name('templates.list');
 Route::get('/plantillas/{template:slug}', [TemplatesController::class, 'show'])->name('templates.preview');
+
+/*
+|--------------------------------------------------------------------------
+| CHECKOUT
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout/{plan:slug}',  [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout/{plan:slug}', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/invoice/{purchase}',    [CheckoutController::class, 'invoice'])->name('checkout.invoice');
+    Route::get('/invoice/{purchase}/pdf',[CheckoutController::class, 'downloadPdf'])->name('checkout.pdf');
+});
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard',                              [DashboardController::class, 'index'])->name('dashboard');
     Route::put('/dashboard/profile',                     [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
@@ -51,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/dashboard/plan/{plan}/activate',       [DashboardController::class, 'activatePlan'])->name('dashboard.plan.activate');
     Route::patch('/dashboard/purchase/{purchase}/hosting', [DashboardController::class, 'updateHosting'])->name('dashboard.purchase.hosting');
     Route::delete('/dashboard/purchase/{purchase}/cancel', [DashboardController::class, 'cancelPlan'])->name('dashboard.purchase.cancel');
+    Route::post('/dashboard/purchase/{purchase}/template/{template}', [DashboardController::class, 'selectTemplate'])->name('dashboard.template.select');
 });
 
 // Route::middleware('auth')->group(function () {

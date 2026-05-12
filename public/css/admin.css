@@ -1015,20 +1015,185 @@ img { display: block; max-width: 100%; }
 .admin-empty__text { font-size: 0.875rem; }
 
 /* ── TOAST / ALERTS ── */
+@keyframes alertSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes alertProgress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+@keyframes alertFadeOut {
+  from { opacity: 1; transform: translateY(0); max-height: 200px; margin-bottom: 1.25rem; }
+  to   { opacity: 0; transform: translateY(-6px); max-height: 0;   margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+}
+
 .admin-alert {
+  position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 0.875rem 1.125rem;
-  border-radius: 10px;
+  gap: 12px;
+  padding: 1rem 3rem 1rem 1.25rem;
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  overflow: hidden;
+  animation: alertSlideIn .28s ease;
+  transition: opacity .3s ease, transform .3s ease, max-height .3s ease, margin .3s ease, padding .3s ease;
 }
-.admin-alert--success { background: var(--green-100); color: var(--green-700); border: 1px solid #A7F3D0; }
-.admin-alert--error   { background: var(--red-100);   color: var(--red-600);   border: 1px solid #FECACA; }
-.admin-alert--info    { background: var(--blue-50);   color: var(--blue-700);  border: 1px solid var(--blue-200); }
-.admin-alert--warning { background: var(--amber-100); color: var(--amber-600); border: 1px solid #FDE68A; }
+
+/* left accent bar */
+.admin-alert::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 12px 0 0 12px;
+}
+
+/* progress timer bar */
+.admin-alert::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 3px;
+  border-radius: 0 0 0 12px;
+  animation: alertProgress 5s linear forwards;
+}
+
+/* icon circle */
+.admin-alert__icon {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.admin-alert__icon svg { width: 16px; height: 16px; stroke-width: 2.2; }
+
+.admin-alert__body { flex: 1; line-height: 1.45; }
+.admin-alert__title { font-weight: 700; margin-bottom: 2px; }
+
+/* close button */
+.admin-alert__close {
+  position: absolute;
+  top: 50%; right: 0.875rem;
+  transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  padding: 4px; border-radius: 6px;
+  opacity: .55; transition: opacity .15s, background .15s;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.admin-alert__close:hover { opacity: 1; background: rgba(0,0,0,.07); }
+.admin-alert__close svg  { width: 14px; height: 14px; stroke-width: 2.5; }
+
+/* ── SUCCESS ── */
+.admin-alert--success {
+  background: var(--green-100);
+  color: var(--green-700);
+  border: 1px solid #A7F3D0;
+}
+.admin-alert--success::before { background: #10B981; }
+.admin-alert--success::after  { background: #10B981; }
+.admin-alert--success .admin-alert__icon { background: #D1FAE5; color: #059669; }
+
+/* ── ERROR ── */
+.admin-alert--error {
+  background: var(--red-100);
+  color: var(--red-600);
+  border: 1px solid #FECACA;
+}
+.admin-alert--error::before { background: #EF4444; }
+.admin-alert--error::after  { background: #EF4444; }
+.admin-alert--error .admin-alert__icon { background: #FEE2E2; color: #DC2626; }
+
+/* ── INFO ── */
+.admin-alert--info {
+  background: var(--blue-50);
+  color: var(--blue-700);
+  border: 1px solid var(--blue-200);
+}
+.admin-alert--info::before { background: var(--blue-500); }
+.admin-alert--info::after  { background: var(--blue-500); }
+.admin-alert--info .admin-alert__icon { background: var(--blue-100); color: var(--blue-600); }
+
+/* ── WARNING ── */
+.admin-alert--warning {
+  background: var(--amber-100);
+  color: var(--amber-600);
+  border: 1px solid #FDE68A;
+}
+.admin-alert--warning::before { background: #F59E0B; }
+.admin-alert--warning::after  { background: #F59E0B; }
+.admin-alert--warning .admin-alert__icon { background: #FEF3C7; color: #D97706; }
+
+/* ── CONFIRM MODAL ── */
+@keyframes confirmIn {
+  from { opacity: 0; transform: scale(.93) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)  translateY(0); }
+}
+.admin-confirm-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(15,23,42,.45);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  opacity: 0; transition: opacity .2s ease;
+  pointer-events: none;
+}
+.admin-confirm-overlay.is-open {
+  opacity: 1; pointer-events: auto;
+}
+.admin-confirm-modal {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.18), 0 4px 16px rgba(0,0,0,.1);
+  padding: 2rem 1.75rem 1.5rem;
+  max-width: 420px; width: 100%;
+  text-align: center;
+  animation: confirmIn .22s cubic-bezier(.34,1.56,.64,1) both;
+}
+.admin-confirm-modal__icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #FEE2E2;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+.admin-confirm-modal__icon svg { width: 26px; height: 26px; stroke: #DC2626; stroke-width: 1.8; }
+.admin-confirm-modal__title {
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--admin-text);
+  margin-bottom: .5rem;
+}
+.admin-confirm-modal__msg {
+  font-size: .875rem; color: var(--admin-text-muted);
+  line-height: 1.55; margin-bottom: 1.5rem;
+}
+.admin-confirm-modal__actions {
+  display: flex; gap: .75rem; justify-content: center;
+}
+.admin-confirm-modal__btn {
+  flex: 1; max-width: 160px;
+  padding: .65rem 1rem;
+  border-radius: 10px;
+  font-size: .875rem; font-weight: 600;
+  cursor: pointer; border: none; transition: transform .12s, box-shadow .12s, background .15s;
+}
+.admin-confirm-modal__btn:active { transform: scale(.97); }
+.admin-confirm-modal__btn--cancel {
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+}
+.admin-confirm-modal__btn--cancel:hover { background: var(--blue-50); border-color: var(--blue-200); }
+.admin-confirm-modal__btn--danger {
+  background: #EF4444; color: #fff;
+  box-shadow: 0 2px 8px rgba(239,68,68,.35);
+}
+.admin-confirm-modal__btn--danger:hover { background: #DC2626; box-shadow: 0 4px 12px rgba(220,38,38,.4); }
 
 /* ── TAG/CHIP ── */
 .admin-tag {

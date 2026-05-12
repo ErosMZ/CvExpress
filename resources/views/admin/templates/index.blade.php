@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -188,13 +188,11 @@
 
             @if(session('success'))
                 <div class="admin-alert admin-alert--success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
                     {{ session('success') }}
                 </div>
             @endif
             @if(session('error'))
                 <div class="admin-alert admin-alert--error">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     {{ session('error') }}
                 </div>
             @endif
@@ -264,6 +262,14 @@
                             @endforeach
                         </select>
 
+                        {{-- Filtro por plan --}}
+                        <select id="filterTier" class="form-select" style="width:auto;padding:.5rem .875rem;font-size:.85rem;">
+                            <option value="">Todos los planes</option>
+                            @foreach(\App\Models\Template::PLAN_TIERS as $key => $tier)
+                                <option value="{{ $key }}">{{ $tier['label'] }}</option>
+                            @endforeach
+                        </select>
+
                         {{-- Filtro por estado --}}
                         <select id="filterStatus" class="form-select" style="width:auto;padding:.5rem .875rem;font-size:.85rem;">
                             <option value="">Todos los estados</option>
@@ -315,7 +321,8 @@
                                 data-name="{{ strtolower($template->name) }}"
                                 data-category="{{ $template->category_id ?? '' }}"
                                 data-status="{{ $template->is_active ? 'active' : 'inactive' }}"
-                                data-premium="{{ $template->price > 0 ? 'premium' : 'free' }}">
+                                data-premium="{{ $template->price > 0 ? 'premium' : 'free' }}"
+                                data-tier="{{ $template->plan_tier }}">
 
                                 <td class="col-check">
                                     <input type="checkbox" class="row-checkbox item-checkbox" value="{{ $template->id }}">
@@ -355,9 +362,14 @@
                                 <td>
                                     @if($template->price > 0)
                                         <div style="font-weight:700;color:var(--amber-600);font-size:.9rem;">€{{ number_format($template->price, 2) }}</div>
-                                        <span class="badge-status badge-status--premium" style="margin-top:3px;">Premium</span>
                                     @else
                                         <div style="font-weight:600;color:var(--green-600);font-size:.9rem;">Gratis</div>
+                                    @endif
+                                    @php $tier = \App\Models\Template::PLAN_TIERS[$template->plan_tier] ?? null; @endphp
+                                    @if($tier)
+                                        <span style="display:inline-block;margin-top:4px;font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:99px;background:{{ $tier['bg'] }};color:{{ $tier['color'] }};">
+                                            {{ $tier['label'] }}
+                                        </span>
                                     @endif
                                 </td>
 
@@ -382,7 +394,7 @@
                                         </a>
                                         <form action="{{ route('templates.destroy', $template) }}"
                                               method="POST"
-                                              onsubmit="return confirm('¿Eliminar «{{ $template->name }}»? Esta acción no se puede deshacer.')">
+                                              data-confirm="¿Eliminar «{{ $template->name }}»? Esta acción no se puede deshacer.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="table-action-btn danger" title="Eliminar">
@@ -449,19 +461,22 @@
     // ── Filters ──
     const searchInput    = document.getElementById('searchInput');
     const filterCategory = document.getElementById('filterCategory');
+    const filterTier     = document.getElementById('filterTier');
     const filterStatus   = document.getElementById('filterStatus');
     const rows           = document.querySelectorAll('.template-row');
     const noResults      = document.getElementById('noResults');
 
     function filterTable() {
-        const q    = searchInput    ? searchInput.value.toLowerCase()    : '';
-        const cat  = filterCategory ? filterCategory.value               : '';
-        const st   = filterStatus   ? filterStatus.value                 : '';
+        const q    = searchInput    ? searchInput.value.toLowerCase() : '';
+        const cat  = filterCategory ? filterCategory.value            : '';
+        const tier = filterTier     ? filterTier.value                : '';
+        const st   = filterStatus   ? filterStatus.value              : '';
         let visible = 0;
 
         rows.forEach(row => {
-            const matchSearch   = (row.dataset.name    || '').includes(q);
-            const matchCategory = !cat || row.dataset.category === cat;
+            const matchSearch   = (row.dataset.name || '').includes(q);
+            const matchCategory = !cat  || row.dataset.category === cat;
+            const matchTier     = !tier || row.dataset.tier     === tier;
             const matchStatus   =
                 !st ||
                 (st === 'active'   && row.dataset.status  === 'active')  ||
@@ -469,7 +484,7 @@
                 (st === 'premium'  && row.dataset.premium === 'premium')  ||
                 (st === 'free'     && row.dataset.premium === 'free');
 
-            const show = matchSearch && matchCategory && matchStatus;
+            const show = matchSearch && matchCategory && matchTier && matchStatus;
             row.style.display = show ? '' : 'none';
             if (show) visible++;
         });
@@ -479,6 +494,7 @@
 
     if (searchInput)    searchInput.addEventListener('input', filterTable);
     if (filterCategory) filterCategory.addEventListener('change', filterTable);
+    if (filterTier)     filterTier.addEventListener('change', filterTable);
     if (filterStatus)   filterStatus.addEventListener('change', filterTable);
 
     // ── Bulk select ──
@@ -534,23 +550,26 @@ function confirmBulkDelete() {
     const checked = document.querySelectorAll('.item-checkbox:checked');
     if (!checked.length) return;
 
-    if (!confirm(`¿Eliminar ${checked.length} plantilla(s) seleccionada(s)? Esta acción no se puede deshacer.`)) return;
+    adminConfirm(`¿Eliminar ${checked.length} plantilla(s) seleccionada(s)? Esta acción no se puede deshacer.`).then(function (ok) {
+        if (!ok) return;
 
-    const form    = document.getElementById('bulkForm');
-    const container = document.getElementById('bulkIds');
-    container.innerHTML = '';
+        const form      = document.getElementById('bulkForm');
+        const container = document.getElementById('bulkIds');
+        container.innerHTML = '';
 
-    checked.forEach(cb => {
-        const input = document.createElement('input');
-        input.type  = 'hidden';
-        input.name  = 'ids[]';
-        input.value = cb.value;
-        container.appendChild(input);
+        checked.forEach(cb => {
+            const input = document.createElement('input');
+            input.type  = 'hidden';
+            input.name  = 'ids[]';
+            input.value = cb.value;
+            container.appendChild(input);
+        });
+
+        form.submit();
     });
-
-    form.submit();
 }
 </script>
 
+<script src="{{ asset('js/admin-alerts.js') }}"></script>
 </body>
 </html>

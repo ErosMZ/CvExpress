@@ -413,55 +413,97 @@
 
         <div class="sp-sep"></div>
 
-        {{-- Price --}}
+        {{-- Price / Plan info --}}
+        @php $tierPlan = $plansByTier[$template->plan_tier] ?? null; @endphp
         <div class="sp-price-block">
-            <div class="sp-price-label">Precio</div>
-            @if($template->price > 0)
-                <div class="sp-price-value sp-price-value--paid">
-                    €{{ number_format($template->price, 2) }}
+            @if($tierPlan)
+                <div class="sp-price-label">Incluida en</div>
+                <div style="font-size:1.5rem;font-weight:900;color:#0f172a;line-height:1.1;">
+                    {{ number_format($tierPlan->price, 2, ',', '.') }}€
                 </div>
-                <div class="sp-price-sub">Pago único · Acceso de por vida</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:.35rem;flex-wrap:wrap;">
+                    <span style="background:#dcfce7;color:#16a34a;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px;display:inline-flex;align-items:center;gap:4px;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        Pago único
+                    </span>
+                    <span style="font-size:.8rem;color:#64748b;">Sin renovaciones · Para siempre</span>
+                </div>
+                <div style="margin-top:.5rem;font-size:.82rem;color:#64748b;">
+                    Plan <strong>{{ $tierPlan->name }}</strong> · Acceso a todas las plantillas del tier
+                </div>
             @else
-                <div class="sp-price-sub">Sin coste · Disponible con tu cuenta</div>
+                <div class="sp-price-label">Precio</div>
+                <div class="sp-price-sub">Gratuita con cualquier plan</div>
             @endif
         </div>
 
         {{-- CTA --}}
         <div class="sp-cta">
-            @auth
-                @if($template->price > 0)
-                    <a href="#" class="sp-btn sp-btn--buy">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                        Comprar esta plantilla
-                    </a>
-                    <p class="sp-cta-note">Pago seguro. Acceso inmediato tras la compra.</p>
-                @else
-                    <a href="{{ route('dashboard') }}" class="sp-btn sp-btn--buy">
+            @php
+                $canUse   = $activePurchase && in_array($template->plan_tier, $activePurchase->accessibleTiers());
+                $isActive = $activePurchase && $activePurchase->selected_template_id === $template->id;
+            @endphp
+
+            @if($isActive)
+                {{-- Ya está usando esta plantilla --}}
+                <div style="display:flex;align-items:center;gap:10px;background:#dcfce7;border:1.5px solid #86efac;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <div>
+                        <div style="font-weight:700;color:#14532d;font-size:.9rem;">Plantilla activa en tu panel</div>
+                        <div style="font-size:.78rem;color:#166534;">Esta es tu plantilla actual</div>
+                    </div>
+                </div>
+                <a href="{{ route('dashboard') }}#templates" class="sp-btn sp-btn--outline">
+                    Ir a mi panel
+                </a>
+            @elseif($canUse)
+                {{-- Puede usar esta plantilla --}}
+                <form method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $template->id]) }}">
+                    @csrf
+                    <button type="submit" class="sp-btn sp-btn--buy" style="width:100%;cursor:pointer;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                         Usar esta plantilla
+                    </button>
+                </form>
+                <p class="sp-cta-note">Se guardará como tu plantilla activa. Puedes cambiarla cuando quieras.</p>
+            @elseif($activePurchase)
+                {{-- Plan activo pero tier insuficiente --}}
+                <a href="{{ route('home') }}#precios" class="sp-btn sp-btn--buy" style="background:#f59e0b;border-color:#f59e0b;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+                    Mejorar mi plan
+                </a>
+                <p class="sp-cta-note">Tu plan <strong>{{ $activePurchase->plan->name }}</strong> no incluye esta plantilla. Mejora a un plan superior.</p>
+            @elseif($activePurchase)
+                {{-- Plan activo pero tier insuficiente --}}
+                @if($tierPlan)
+                    <a href="{{ route('checkout.show', $tierPlan->slug) }}" class="sp-btn sp-btn--buy" style="background:#f59e0b;border-color:#f59e0b;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+                        Mejorar a Plan {{ $tierPlan->name }} · {{ number_format($tierPlan->price, 2, ',', '.') }}€
                     </a>
-                    <p class="sp-cta-note">Activa esta plantilla desde tu panel.</p>
+                    <p class="sp-cta-note">Pago único. Tu plan actual <strong>{{ $activePurchase->plan->name }}</strong> no incluye esta plantilla.</p>
+                @endif
+            @elseif(auth()->check())
+                {{-- Logueado sin plan --}}
+                @if($tierPlan)
+                    <a href="{{ route('checkout.show', $tierPlan->slug) }}" class="sp-btn sp-btn--buy">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Comprar Plan {{ $tierPlan->name }} · {{ number_format($tierPlan->price, 2, ',', '.') }}€
+                    </a>
+                    <p class="sp-cta-note">Pago único · Sin renovaciones · Activa esta plantilla al instante.</p>
                 @endif
             @else
-                <a href="{{ route('register') }}" class="sp-btn sp-btn--buy">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                    @if($template->price > 0)
-                        Comprar · €{{ number_format($template->price, 2) }}
-                    @else
-                        Obtener gratis
-                    @endif
-                </a>
-                <a href="{{ route('login') }}" class="sp-btn sp-btn--outline">
-                    Ya tengo cuenta
-                </a>
-                <p class="sp-cta-note">
-                    @if($template->price > 0)
-                        Crea tu cuenta y completa la compra de forma segura.
-                    @else
-                        Regístrate gratis para activar esta plantilla.
-                    @endif
-                </p>
-            @endauth
+                {{-- No logueado --}}
+                @if($tierPlan)
+                    <a href="{{ route('register') }}?next={{ urlencode(route('checkout.show', $tierPlan->slug)) }}" class="sp-btn sp-btn--buy">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Comprar Plan {{ $tierPlan->name }} · {{ number_format($tierPlan->price, 2, ',', '.') }}€
+                    </a>
+                    <a href="{{ route('login') }}" class="sp-btn sp-btn--outline">
+                        Ya tengo cuenta
+                    </a>
+                    <p class="sp-cta-note">Pago único · Sin renovaciones · Registro gratuito.</p>
+                @endif
+            @endif
         </div>
 
         <div class="sp-sep"></div>

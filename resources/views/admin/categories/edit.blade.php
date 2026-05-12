@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -154,7 +154,6 @@
 
             @if($errors->any())
                 <div class="admin-alert admin-alert--error" style="margin-bottom:1.25rem;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     <div>
                         <strong>Corrige los siguientes errores:</strong>
                         <ul style="margin:.35rem 0 0 1rem;padding:0;font-size:.82rem;">
@@ -257,7 +256,7 @@
                                 </div>
                                 <hr style="border:none;border-top:1px solid var(--admin-border);margin:.25rem 0;">
                                 <form action="{{ route('categories.destroy', $category) }}" method="POST"
-                                      onsubmit="return confirm('¿Eliminar la categoría «{{ $category->name }}»? Las plantillas asociadas quedarán sin categoría.')">
+                                      data-confirm="¿Eliminar la categoría «{{ $category->name }}»? Las plantillas asociadas quedarán sin categoría.">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn-admin btn-admin--ghost" style="width:100%;justify-content:center;color:#ef4444;border-color:#fee2e2;">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
@@ -287,5 +286,6 @@
 })();
 </script>
 
+<script src="{{ asset('js/admin-alerts.js') }}"></script>
 </body>
 </html>

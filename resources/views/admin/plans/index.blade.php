@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -340,7 +340,6 @@
 
             @if(session('success'))
                 <div class="admin-alert admin-alert--success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
                     {{ session('success') }}
                 </div>
             @endif
@@ -396,7 +395,7 @@
 
                     {{-- Delete X --}}
                     <form method="POST" action="{{ route('admin.plans.destroy', $plan) }}"
-                          onsubmit="return confirm('¿Eliminar el plan «{{ $plan->name }}»? Esta acción no se puede deshacer.')">
+                          data-confirm="¿Eliminar el plan «{{ $plan->name }}»? Esta acción no se puede deshacer.">
                         @csrf @method('DELETE')
                         <button type="submit" class="plan-card__delete-btn" title="Eliminar plan">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -587,5 +586,6 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
+<script src="{{ asset('js/admin-alerts.js') }}"></script>
 </body>
 </html>

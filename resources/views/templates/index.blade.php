@@ -145,19 +145,30 @@
                     {{-- Hover overlay --}}
                     <div class="tpl-card__overlay">
                         <a href="{{ route('templates.preview', $template->slug) }}"
-                           target="_blank"
-                           rel="noopener"
                            class="tpl-overlay-btn tpl-overlay-btn--preview">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                             Vista previa
                         </a>
-                        <a href="{{ route('templates.preview', $template->slug) }}#comprar"
-                           target="_blank"
-                           rel="noopener"
-                           class="tpl-overlay-btn tpl-overlay-btn--buy">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                            Comprar
-                        </a>
+                        @if($activePurchase && in_array($template->plan_tier, $activePurchase->accessibleTiers()) && $activePurchase->selected_template_id !== $template->id)
+                            <form method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $template->id]) }}">
+                                @csrf
+                                <button type="submit" class="tpl-overlay-btn tpl-overlay-btn--buy">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Usar plantilla
+                                </button>
+                            </form>
+                        @elseif($activePurchase && $activePurchase->selected_template_id === $template->id)
+                            <span class="tpl-overlay-btn tpl-overlay-btn--buy" style="opacity:.7;cursor:default;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                En uso
+                            </span>
+                        @else
+                            <a href="{{ route('templates.preview', $template->slug) }}#comprar"
+                               class="tpl-overlay-btn tpl-overlay-btn--buy">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                Ver plan
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -175,29 +186,63 @@
                         <p class="tpl-card__desc">{{ $template->description }}</p>
                     @endif
 
+                    @php
+                        $canUse      = $activePurchase && in_array($template->plan_tier, $activePurchase->accessibleTiers());
+                        $isActive    = $activePurchase && $activePurchase->selected_template_id === $template->id;
+                        $tierPlan    = $plansByTier[$template->plan_tier] ?? null;
+                    @endphp
+
                     <div class="tpl-card__footer">
-                        <div class="tpl-card__price {{ $template->price > 0 ? 'tpl-card__price--paid' : '' }}">
-                            @if($template->price > 0)
-                                €{{ number_format($template->price, 2) }}
+                        {{-- Plan info en lugar de precio individual --}}
+                        <div>
+                            @if($tierPlan)
+                                <div style="font-size:.78rem;font-weight:700;color:var(--color-text-primary,#0f172a);">
+                                    Plan {{ $tierPlan->name }}
+                                </div>
+                                <div style="font-size:.72rem;color:#64748b;display:flex;align-items:center;gap:4px;margin-top:1px;">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    {{ number_format($tierPlan->price, 2, ',', '.') }}€ · pago único
+                                </div>
+                            @else
+                                <div style="font-size:.78rem;color:#16a34a;font-weight:700;">Gratuita</div>
                             @endif
                         </div>
 
                         <div class="tpl-card__actions">
                             <a href="{{ route('templates.preview', $template->slug) }}"
-                               target="_blank"
-                               rel="noopener"
-                               class="tpl-btn tpl-btn--outline"
-                               title="Ver plantilla completa en nueva pestaña">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                               class="tpl-btn tpl-btn--outline" title="Ver plantilla completa">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 Ver
                             </a>
-                            <a href="{{ route('templates.preview', $template->slug) }}#comprar"
-                               target="_blank"
-                               rel="noopener"
-                               class="tpl-btn tpl-btn--primary">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                Comprar
-                            </a>
+
+                            @if($isActive)
+                                <span class="tpl-btn tpl-btn--used">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    En uso
+                                </span>
+                            @elseif($canUse)
+                                <form method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $template->id]) }}" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" class="tpl-btn tpl-btn--primary">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Usar plantilla
+                                    </button>
+                                </form>
+                            @elseif($activePurchase)
+                                @if($tierPlan)
+                                    <a href="{{ route('checkout.show', $tierPlan->slug) }}" class="tpl-btn tpl-btn--upgrade">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
+                                        Mejorar plan
+                                    </a>
+                                @endif
+                            @else
+                                @if($tierPlan)
+                                    <a href="{{ auth()->check() ? route('checkout.show', $tierPlan->slug) : route('register') }}" class="tpl-btn tpl-btn--primary">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                        Comprar plan
+                                    </a>
+                                @endif
+                            @endif
                         </div>
                     </div>
                 </div>

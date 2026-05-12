@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Plan;
 use App\Models\Template;
 use App\Models\Category;
+use App\Models\UserPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -46,8 +48,9 @@ class TemplateController extends Controller
     public function create()
     {
         $categories = Category::where('is_active', true)->get();
+        $plansByTier = $this->plansByTier();
 
-        return view('admin.templates.create', compact('categories'));
+        return view('admin.templates.create', compact('categories', 'plansByTier'));
     }
 
     public function store(Request $request)
@@ -129,9 +132,10 @@ class TemplateController extends Controller
 
     public function edit(Template $template)
     {
-        $categories = Category::where('is_active', true)->get();
+        $categories  = Category::where('is_active', true)->get();
+        $plansByTier = $this->plansByTier();
 
-        return view('admin.templates.edit', compact('template', 'categories'));
+        return view('admin.templates.edit', compact('template', 'categories', 'plansByTier'));
     }
 
     public function update(Request $request, Template $template)
@@ -281,5 +285,20 @@ class TemplateController extends Controller
         }
 
         rmdir($dir);
+    }
+
+    private function plansByTier(): array
+    {
+        $plans  = \App\Models\Plan::where('is_active', true)->get()->keyBy('slug');
+        $result = [];
+        foreach (Template::PLAN_TIERS as $tierKey => $_) {
+            foreach (\App\Models\UserPurchase::TIER_ACCESS as $planSlug => $tiers) {
+                if (end($tiers) === $tierKey && isset($plans[$planSlug])) {
+                    $result[$tierKey] = $plans[$planSlug];
+                    break;
+                }
+            }
+        }
+        return $result;
     }
 }

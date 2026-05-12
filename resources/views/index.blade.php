@@ -28,12 +28,12 @@
             </p>
 
             <div class="hero__actions">
-                <a href="{{ route('register') }}" class="btn btn--primary btn--lg">
+                <a href="{{ auth()->check() ? route('templates.list') : route('register') }}" class="btn btn--primary btn--lg">
                     Crear mi CV Web
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
-                <a href="{{ route('templates.list') }}" class="btn btn--ghost btn--lg">
-                    Ver plantillas
+                <a href="#crear-cv" class="btn btn--ghost btn--lg">
+                    Crear CV PDF
                 </a>
             </div>
 
@@ -544,9 +544,15 @@
                     </li>
                     @endforeach
                 </ul>
-                <a href="{{ route('register') }}" class="pricing-card__cta pricing-card__cta--{{ $tc['cta'] }}">
-                    Empezar por {{ number_format($plan->price, 2, ',', '.') }}€
-                </a>
+                @auth
+                    <a href="{{ route('checkout.show', $plan->slug) }}" class="pricing-card__cta pricing-card__cta--{{ $tc['cta'] }}">
+                        Empezar por {{ number_format($plan->price, 2, ',', '.') }}€
+                    </a>
+                @else
+                    <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout.show', $plan->slug)) }}" class="pricing-card__cta pricing-card__cta--{{ $tc['cta'] }}">
+                        Empezar por {{ number_format($plan->price, 2, ',', '.') }}€
+                    </a>
+                @endauth
             </div>
             @endforeach
 

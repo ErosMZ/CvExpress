@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -223,14 +223,12 @@
 
             @if(session('success'))
                 <div class="admin-alert admin-alert--success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
                     {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
                 <div class="admin-alert admin-alert--error">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     {{ session('error') }}
                 </div>
             @endif
@@ -369,7 +367,8 @@
                                         {{-- Toggle admin --}}
                                         @if($user->id !== auth()->id())
                                             <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST"
-                                                  onsubmit="return confirm('{{ $user->is_admin ? '¿Quitar permisos de administrador a' : '¿Hacer administrador a' }} {{ $user->name }}?')">
+                                                  data-confirm="{{ $user->is_admin ? '¿Quitar permisos de administrador a' : '¿Hacer administrador a' }} {{ $user->name }}?"
+                                                  data-confirm-ok="{{ $user->is_admin ? 'Quitar admin' : 'Hacer admin' }}">
                                                 @csrf @method('PATCH')
                                                 <button type="submit" class="table-action-btn {{ $user->is_admin ? 'danger' : '' }}"
                                                         title="{{ $user->is_admin ? 'Quitar admin' : 'Hacer admin' }}">
@@ -379,7 +378,7 @@
 
                                             {{-- Eliminar --}}
                                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
-                                                  onsubmit="return confirm('¿Eliminar el usuario «{{ $user->name }}»? Esta acción no se puede deshacer.')">
+                                                  data-confirm="¿Eliminar el usuario «{{ $user->name }}»? Esta acción no se puede deshacer.">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="table-action-btn danger" title="Eliminar">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -441,7 +440,6 @@
 
                 @if($errors->any())
                     <div class="admin-alert admin-alert--error" style="margin:0;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <div>
                             @foreach($errors->all() as $err)
                                 <div style="font-size:.8rem;">{{ $err }}</div>
@@ -536,5 +534,6 @@ function closeModalOutside(e) {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 
+<script src="{{ asset('js/admin-alerts.js') }}"></script>
 </body>
 </html>

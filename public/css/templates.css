@@ -374,6 +374,21 @@
     color: #fff;
 }
 .tpl-btn--primary:hover { background: #1447b8; border-color: #1447b8; }
+.tpl-btn--primary button { all: unset; display: contents; }
+
+.tpl-btn--used {
+    border: 1.5px solid #16a34a;
+    background: #dcfce7;
+    color: #16a34a;
+    cursor: default;
+    pointer-events: none;
+}
+.tpl-btn--upgrade {
+    border: 1.5px solid #f59e0b;
+    background: #fef3c7;
+    color: #d97706;
+}
+.tpl-btn--upgrade:hover { background: #fde68a; border-color: #d97706; transform: none; }
 
 /* ─── EMPTY STATE ─── */
 .tpl-empty {

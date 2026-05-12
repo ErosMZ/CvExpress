@@ -1,4 +1,4 @@
-{{-- resources/views/admin/dashboard.blade.php --}}
+﻿{{-- resources/views/admin/dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -72,7 +72,7 @@
                 Dashboard
             </a>
 
-            <a href="{{ route('users.index') }}" class="admin-sidebar__link">
+            <a href="{{ route('admin.users.index') }}" class="admin-sidebar__link">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
@@ -183,9 +183,6 @@
 
             @if(session('success'))
                 <div class="admin-alert admin-alert--success">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
                     {{ session('success') }}
                 </div>
             @endif
@@ -197,6 +194,8 @@
                 $totalCategories = \App\Models\Category::count();
                 $premiumTemplates = \App\Models\Template::where('is_premium', true)->count();
                 $newUsersThisMonth = \App\Models\User::whereMonth('created_at', now()->month)->count();
+                $templatesByTier = \App\Models\Template::selectRaw('plan_tier, count(*) as total')
+                    ->groupBy('plan_tier')->pluck('total', 'plan_tier');
             @endphp
 
             <div class="admin-stats">
@@ -232,6 +231,17 @@
                     </div>
                     <div class="stat-card__value">{{ number_format($totalTemplates) }}</div>
                     <div class="stat-card__label">Plantillas</div>
+                    <div style="display:flex;gap:6px;margin-top:.6rem;flex-wrap:wrap;">
+                        @php
+                            $tiers = \App\Models\Template::PLAN_TIERS;
+                        @endphp
+                        @foreach($tiers as $key => $tier)
+                            <span style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:99px;background:{{ $tier['bg'] }};color:{{ $tier['color'] }};">
+                                {{ $tier['label'] }}
+                                <span style="font-weight:700;">{{ $templatesByTier[$key] ?? 0 }}</span>
+                            </span>
+                        @endforeach
+                    </div>
                 </div>
 
                 <div class="stat-card stat-card--purple">
@@ -358,7 +368,7 @@
                                     </div>
                                     <span class="quick-action__label">Gestionar plantillas</span>
                                 </a>
-                                <a href="{{ route('users.index') }}" class="quick-action">
+                                <a href="{{ route('admin.users.index') }}" class="quick-action">
                                     <div class="quick-action__icon quick-action__icon--amber">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
@@ -421,7 +431,7 @@
                             </svg>
                             Usuarios recientes
                         </span>
-                        <a href="{{ route('users.index') }}" class="admin-panel__link">
+                        <a href="{{ route('admin.users.index') }}" class="admin-panel__link">
                             Ver todos
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -652,5 +662,6 @@
 })();
 </script>
 
+<script src="{{ asset('js/admin-alerts.js') }}"></script>
 </body>
 </html>

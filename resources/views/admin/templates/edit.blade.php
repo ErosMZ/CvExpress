@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -264,14 +264,12 @@
 
             @if(session('success'))
                 <div class="admin-alert admin-alert--success" style="margin-bottom:1.25rem;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
                     {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
                 <div class="admin-alert admin-alert--error" style="margin-bottom:1.25rem;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     <div>
                         <strong>Corrige los siguientes errores:</strong>
                         <ul style="margin:.35rem 0 0 1rem;padding:0;font-size:.82rem;">
@@ -415,17 +413,15 @@
                                 <div class="form-field">
                                     <label>Plan requerido <span class="req">*</span></label>
                                     <div class="plan-tier-selector">
-                                        @foreach([
-                                            'basic'     => ['label' => 'Básico',    'price' => '4,99€', 'color' => '#16a34a'],
-                                            'pro'       => ['label' => 'Pro',        'price' => '14,99€','color' => '#1A56DB'],
-                                            'super_pro' => ['label' => 'Super Pro', 'price' => '29€',   'color' => '#7c3aed'],
-                                        ] as $value => $tier)
+                                        @foreach(\App\Models\Template::PLAN_TIERS as $value => $tier)
                                         <label class="tier-option">
                                             <input type="radio" name="plan_tier" value="{{ $value }}"
                                                 {{ old('plan_tier', $template->plan_tier ?? 'basic') === $value ? 'checked' : '' }}>
                                             <span class="tier-option__card" style="--tier-color: {{ $tier['color'] }}">
                                                 <span class="tier-option__name">{{ $tier['label'] }}</span>
-                                                <span class="tier-option__price">{{ $tier['price'] }}</span>
+                                                <span class="tier-option__price">
+                                                    {{ isset($plansByTier[$value]) ? number_format($plansByTier[$value]->price, 2, ',', '.').'€' : '—' }}
+                                                </span>
                                             </span>
                                         </label>
                                         @endforeach
@@ -510,7 +506,7 @@
                             </div>
                             <div class="form-card__body">
                                 <p style="font-size:.8rem;color:var(--admin-text-muted);line-height:1.5;">Eliminar la plantilla borrará también todos sus archivos y la vista previa. Esta acción no se puede deshacer.</p>
-                                <form action="{{ route('templates.destroy', $template) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres eliminar «{{ $template->name }}»? Esta acción no se puede deshacer.')">
+                                <form action="{{ route('templates.destroy', $template) }}" method="POST" data-confirm="¿Seguro que quieres eliminar «{{ $template->name }}»? Esta acción no se puede deshacer.">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-admin btn-admin--danger" style="width:100%;justify-content:center;">
@@ -560,5 +556,6 @@
 })();
 </script>
 
+<script src="{{ asset('js/admin-alerts.js') }}"></script>
 </body>
 </html>

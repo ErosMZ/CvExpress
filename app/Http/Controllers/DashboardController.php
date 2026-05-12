@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Models\Template;
 use App\Models\UserPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +18,34 @@ class DashboardController extends Controller
     {
         $plans          = Plan::where('is_active', true)->orderBy('sort_order')->get();
         $activePurchase = Auth::user()->activePurchase;
-        $allPurchases   = Auth::user()->purchases()->with('plan')->latest()->get();
+        $allPurchases   = Auth::user()->purchases()->with(['plan', 'selectedTemplate'])->latest()->get();
 
-        return view('dashboard', compact('plans', 'activePurchase', 'allPurchases'));
+        $availableTemplates = collect();
+        if ($activePurchase) {
+            $tiers = $activePurchase->accessibleTiers();
+            $availableTemplates = Template::whereIn('plan_tier', $tiers)
+                ->where('is_active', true)
+                ->with('category')
+                ->latest()
+                ->get();
+        }
+
+        return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates'));
+    }
+
+    public function selectTemplate(UserPurchase $purchase, Template $template)
+    {
+        abort_if($purchase->user_id !== Auth::id(), 403);
+        abort_if($purchase->status !== 'active', 403);
+
+        $tiers = $purchase->accessibleTiers();
+        abort_if(! in_array($template->plan_tier, $tiers), 403);
+
+        $purchase->update(['selected_template_id' => $template->id]);
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Plantilla «' . $template->name . '» seleccionada correctamente.')
+            ->with('open_section', 'templates');
     }
 
     public function activatePlan(Plan $plan)

@@ -56,19 +56,19 @@
                     Inicio
                 </button>
 
-                <button class="sidebar__link" data-section="profile" onclick="switchSection('profile', 'Editar perfil')">
+                <button class="sidebar__link" data-section="profile" onclick="switchSection('profile', 'Mi Perfil')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Editar perfil
+                    Mi Perfil
                 </button>
 
-                <button class="sidebar__link" data-section="cvs" onclick="switchSection('cvs', 'Mis CVs')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    Mis CVs
+                <button class="sidebar__link" data-section="templates" onclick="switchSection('templates', 'Mi CV Web')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    Mi CV Web
                 </button>
 
-                <button class="sidebar__link" data-section="orders" onclick="switchSection('orders', 'Mis pedidos')">
+                <button class="sidebar__link" data-section="orders" onclick="switchSection('orders', 'Mi Plan')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    CVs Web
+                    Mi Plan
                 </button>
 
                 @if(auth()->user()->is_admin)
@@ -144,13 +144,13 @@
                         Acciones rápidas
                     </div>
                     <div style="display: flex; flex-wrap: wrap; gap: var(--space-3);">
-                        <button class="btn btn--primary" onclick="switchSection('profile', 'Editar perfil')">
+                        <button class="btn btn--primary" onclick="switchSection('profile', 'Mi Perfil')">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            Editar perfil y subir CV
+                            Ver mi perfil
                         </button>
-                        <button class="btn btn--ghost" onclick="switchSection('cvs', 'Mis CVs')">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-                            Ver mis CVs
+                        <button class="btn btn--ghost" onclick="switchSection('templates', 'Mi CV Web')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                            Mi CV Web
                         </button>
                     </div>
                 </div>
@@ -158,221 +158,579 @@
             </div>
 
             {{-- ════════════════════════════════
-                 SECCIÓN: EDITAR PERFIL + CV
+                 SECCIÓN: MI PERFIL
             ════════════════════════════════ --}}
             <div class="panel__section" id="section-profile">
 
-                <div class="panel__header">
-                    <h1 class="panel__title">Editar perfil</h1>
-                    <p class="panel__subtitle">Actualiza tu información personal y sube tu CV en PDF.</p>
+                <div class="panel__header" style="position:relative;padding-right:3.5rem;">
+                    <div>
+                        <h1 class="panel__title">Mi Perfil</h1>
+                        <p class="panel__subtitle">Tu información personal y currículum.</p>
+                    </div>
+                    <button type="button" id="btn-edit-profile" onclick="toggleProfileEdit()"
+                            title="Editar perfil"
+                            style="position:absolute;top:0;right:0;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--color-border);background:var(--color-surface);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);transition:background .2s,border-color .2s,color .2s;flex-shrink:0;">
+                        <svg id="icon-pencil" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <svg id="icon-close" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
                 </div>
 
-                {{-- FORM PERFIL --}}
-                <form method="POST" action="{{ route('dashboard.profile.update') }}" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-
+                {{-- ── MODO VISTA ── --}}
+                <div id="profile-view">
+                    @php $u = auth()->user(); @endphp
                     <div class="panel-card">
                         <div class="panel-card__title">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             Información personal
                         </div>
-
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="name">Nombre completo</label>
-                                <input type="text" id="name" name="name" class="form-input @error('name') is-invalid @enderror"
-                                    value="{{ old('name', auth()->user()->name) }}" required>
-                                @error('name')<span class="form-error">{{ $message }}</span>@enderror
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem 2rem;">
+                            @foreach([
+                                'Nombre completo'    => $u->name,
+                                'Correo electrónico' => $u->email,
+                                'Título profesional' => $u->job_title,
+                                'Teléfono'           => $u->phone,
+                                'Ubicación'          => $u->location,
+                                'LinkedIn'           => $u->linkedin_url,
+                                'Sitio web'          => $u->website_url,
+                            ] as $label => $value)
+                            <div>
+                                <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-muted);margin-bottom:.3rem;">{{ $label }}</div>
+                                @if($value)
+                                    @if(str_starts_with($value, 'http'))
+                                        <a href="{{ $value }}" target="_blank" rel="noopener" style="font-size:.9rem;color:var(--color-primary);text-decoration:none;word-break:break-all;">{{ $value }}</a>
+                                    @else
+                                        <div style="font-size:.9rem;color:var(--color-text-primary);">{{ $value }}</div>
+                                    @endif
+                                @else
+                                    <div style="font-size:.88rem;color:var(--color-text-muted);font-style:italic;">Sin rellenar</div>
+                                @endif
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="email">Correo electrónico</label>
-                                <input type="email" id="email" name="email" class="form-input @error('email') is-invalid @enderror"
-                                    value="{{ old('email', auth()->user()->email) }}" required>
-                                @error('email')<span class="form-error">{{ $message }}</span>@enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="job_title">Título profesional</label>
-                                <input type="text" id="job_title" name="job_title" class="form-input"
-                                    placeholder="ej. Desarrollador Full Stack"
-                                    value="{{ old('job_title', auth()->user()->job_title) }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="phone">Teléfono</label>
-                                <input type="tel" id="phone" name="phone" class="form-input"
-                                    placeholder="+34 600 000 000"
-                                    value="{{ old('phone', auth()->user()->phone) }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="location">Ubicación</label>
-                                <input type="text" id="location" name="location" class="form-input"
-                                    placeholder="ej. Madrid, España"
-                                    value="{{ old('location', auth()->user()->location) }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="linkedin_url">LinkedIn</label>
-                                <input type="url" id="linkedin_url" name="linkedin_url" class="form-input"
-                                    placeholder="https://linkedin.com/in/tu-perfil"
-                                    value="{{ old('linkedin_url', auth()->user()->linkedin_url) }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="website_url">Sitio web personal</label>
-                                <input type="url" id="website_url" name="website_url" class="form-input"
-                                    placeholder="https://tuportfolio.com"
-                                    value="{{ old('website_url', auth()->user()->website_url) }}">
-                            </div>
-
-                            <div class="form-group form-grid--full">
-                                <label class="form-label" for="bio">Sobre mí</label>
-                                <textarea id="bio" name="bio" class="form-textarea" rows="4"
-                                    placeholder="Una breve descripción profesional sobre ti...">{{ old('bio', auth()->user()->bio) }}</textarea>
-                                <span class="form-hint">Aparecerá en la sección "Sobre mí" de tu portfolio.</span>
-                            </div>
+                            @endforeach
                         </div>
+                        @if($u->bio)
+                        <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--color-border);">
+                            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-muted);margin-bottom:.5rem;">Sobre mí</div>
+                            <p style="font-size:.9rem;color:var(--color-text-primary);line-height:1.6;margin:0;">{{ $u->bio }}</p>
+                        </div>
+                        @endif
                     </div>
 
-                    {{-- CV UPLOAD --}}
+                    {{-- CV actual --}}
+                    @if($u->cv_path)
                     <div class="panel-card">
                         <div class="panel-card__title">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            Currículum Vitae (PDF)
+                            Currículum Vitae
                         </div>
-
-                        @if(auth()->user()->cv_path)
-                            <div class="cv-current">
-                                <div class="cv-current__icon">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        <div class="cv-current">
+                            <div class="cv-current__icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div class="cv-current__info">
+                                <div class="cv-current__name">{{ $u->cv_original_name ?? 'curriculum.pdf' }}</div>
+                                <div class="cv-current__date">
+                                    Subido el {{ $u->cv_uploaded_at ? \Carbon\Carbon::parse($u->cv_uploaded_at)->format('d/m/Y \a \l\a\s H:i') : '—' }}
+                                    &nbsp;·&nbsp;<span style="color:#059669;font-weight:600;">Activo</span>
                                 </div>
-                                <div class="cv-current__info">
-                                    <div class="cv-current__name">{{ auth()->user()->cv_original_name ?? 'curriculum.pdf' }}</div>
-                                    <div class="cv-current__date">
-                                        Subido el {{ auth()->user()->cv_uploaded_at ? \Carbon\Carbon::parse(auth()->user()->cv_uploaded_at)->format('d/m/Y \a \l\a\s H:i') : '—' }}
-                                    </div>
-                                </div>
-                                <a href="{{ route('dashboard.cv.download') }}" class="btn btn--ghost btn--sm">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                    Descargar
-                                </a>
                             </div>
-                        @endif
-
-                        <div class="cv-upload-zone" id="dropZone">
-                            <input type="file" name="cv_file" id="cvFile" accept=".pdf" aria-label="Subir CV en PDF">
-                            <div class="cv-upload-zone__icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            </div>
-                            <div class="cv-upload-zone__title" id="dropTitle">
-                                {{ auth()->user()->cv_path ? 'Arrastra un nuevo PDF para reemplazar' : 'Arrastra tu CV aquí o haz clic para seleccionar' }}
-                            </div>
-                            <div class="cv-upload-zone__hint">Solo archivos PDF · Máximo 10 MB</div>
+                            <a href="{{ route('dashboard.cv.download') }}" class="btn btn--ghost btn--sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Descargar
+                            </a>
                         </div>
-                        @error('cv_file')<span class="form-error" style="display:block; margin-top: var(--space-2);">{{ $message }}</span>@enderror
-                        <span class="form-hint" style="display:block; margin-top: var(--space-2);">
-                            {{-- Ruta de almacenamiento: storage/app/private/cvs/{user_id}/ --}}
-                            El CV se almacena de forma segura y privada. Solo tú puedes descargarlo.
-                        </span>
                     </div>
-
-                    {{-- PASSWORD CHANGE --}}
-                    <div class="panel-card">
-                        <div class="panel-card__title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            Cambiar contraseña
+                    @else
+                    <div class="panel-card" style="text-align:center;padding:2rem 1.5rem;">
+                        <div style="width:48px;height:48px;border-radius:50%;background:var(--color-bg-secondary);display:flex;align-items:center;justify-content:center;margin:0 auto .875rem;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         </div>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="current_password">Contraseña actual</label>
-                                <input type="password" id="current_password" name="current_password" class="form-input" autocomplete="current-password">
-                                @error('current_password')<span class="form-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div></div>
-                            <div class="form-group">
-                                <label class="form-label" for="password">Nueva contraseña</label>
-                                <input type="password" id="password" name="password" class="form-input" autocomplete="new-password">
-                                @error('password')<span class="form-error">{{ $message }}</span>@enderror
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="password_confirmation">Confirmar nueva contraseña</label>
-                                <input type="password" id="password_confirmation" name="password_confirmation" class="form-input" autocomplete="new-password">
-                            </div>
-                        </div>
-                        <span class="form-hint">Deja estos campos en blanco si no quieres cambiar la contraseña.</span>
+                        <div style="font-weight:600;color:var(--color-text-primary);margin-bottom:.35rem;">Aún no has subido tu CV</div>
+                        <p style="font-size:.85rem;color:var(--color-text-secondary);margin:0;">Pulsa el lápiz para editar tu perfil y subir tu currículum en PDF.</p>
                     </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn--ghost" onclick="switchSection('overview', 'Inicio')">Cancelar</button>
-                        <button type="submit" class="btn btn--primary">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
-                            Guardar cambios
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            {{-- ════════════════════════════════
-                 SECCIÓN: MIS CVS
-            ════════════════════════════════ --}}
-            <div class="panel__section" id="section-cvs">
-
-                <div class="panel__header">
-                    <h1 class="panel__title">Mis CVs</h1>
-                    <p class="panel__subtitle">Aquí aparecerán todos los CVs que hayas subido a la plataforma.</p>
+                    @endif
                 </div>
 
-                @if(auth()->user()->cv_path)
-                    <div class="panel-card">
-                        <div class="panel-card__title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-                            CV activo
+                {{-- ── MODO EDICIÓN (oculto por defecto) ── --}}
+                <div id="profile-edit" style="display:none;">
+                    <form method="POST" action="{{ route('dashboard.profile.update') }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="panel-card">
+                            <div class="panel-card__title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                Información personal
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="name">Nombre completo</label>
+                                    <input type="text" id="name" name="name" class="form-input @error('name') is-invalid @enderror"
+                                        value="{{ old('name', auth()->user()->name) }}" required>
+                                    @error('name')<span class="form-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="email">Correo electrónico</label>
+                                    <input type="email" id="email" name="email" class="form-input @error('email') is-invalid @enderror"
+                                        value="{{ old('email', auth()->user()->email) }}" required>
+                                    @error('email')<span class="form-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="job_title">Título profesional</label>
+                                    <input type="text" id="job_title" name="job_title" class="form-input"
+                                        placeholder="ej. Desarrollador Full Stack"
+                                        value="{{ old('job_title', auth()->user()->job_title) }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone">Teléfono</label>
+                                    <input type="tel" id="phone" name="phone" class="form-input"
+                                        placeholder="+34 600 000 000"
+                                        value="{{ old('phone', auth()->user()->phone) }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="location">Ubicación</label>
+                                    <input type="text" id="location" name="location" class="form-input"
+                                        placeholder="ej. Madrid, España"
+                                        value="{{ old('location', auth()->user()->location) }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="linkedin_url">LinkedIn</label>
+                                    <input type="url" id="linkedin_url" name="linkedin_url" class="form-input"
+                                        placeholder="https://linkedin.com/in/tu-perfil"
+                                        value="{{ old('linkedin_url', auth()->user()->linkedin_url) }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="website_url">Sitio web personal</label>
+                                    <input type="url" id="website_url" name="website_url" class="form-input"
+                                        placeholder="https://tuportfolio.com"
+                                        value="{{ old('website_url', auth()->user()->website_url) }}">
+                                </div>
+                                <div class="form-group form-grid--full">
+                                    <label class="form-label" for="bio">Sobre mí</label>
+                                    <textarea id="bio" name="bio" class="form-textarea" rows="4"
+                                        placeholder="Una breve descripción profesional sobre ti...">{{ old('bio', auth()->user()->bio) }}</textarea>
+                                    <span class="form-hint">Aparecerá en la sección "Sobre mí" de tu portfolio.</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="cv-overview">
-                            <div class="cv-item">
-                                <div class="cv-item__icon">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                                </div>
-                                <div class="cv-item__body">
-                                    <div class="cv-item__name">{{ auth()->user()->cv_original_name ?? 'curriculum.pdf' }}</div>
-                                    <div class="cv-item__meta">
-                                        Subido el {{ auth()->user()->cv_uploaded_at ? \Carbon\Carbon::parse(auth()->user()->cv_uploaded_at)->format('d/m/Y \a \l\a\s H:i') : '—' }}
-                                        &nbsp;·&nbsp;
-                                        <span style="color: #059669; font-weight: 600;">Activo</span>
+
+                        {{-- CV UPLOAD --}}
+                        <div class="panel-card">
+                            <div class="panel-card__title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                Currículum Vitae (PDF)
+                            </div>
+                            @if(auth()->user()->cv_path)
+                                <div class="cv-current">
+                                    <div class="cv-current__icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                                     </div>
-                                </div>
-                                <div class="cv-item__actions">
+                                    <div class="cv-current__info">
+                                        <div class="cv-current__name">{{ auth()->user()->cv_original_name ?? 'curriculum.pdf' }}</div>
+                                        <div class="cv-current__date">
+                                            Subido el {{ auth()->user()->cv_uploaded_at ? \Carbon\Carbon::parse(auth()->user()->cv_uploaded_at)->format('d/m/Y \a \l\a\s H:i') : '—' }}
+                                        </div>
+                                    </div>
                                     <a href="{{ route('dashboard.cv.download') }}" class="btn btn--ghost btn--sm">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                         Descargar
                                     </a>
-                                    <button class="btn btn--outline btn--sm" onclick="switchSection('profile', 'Editar perfil')">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                        Reemplazar
-                                    </button>
+                                </div>
+                            @endif
+                            <div class="cv-upload-zone" id="dropZone">
+                                <input type="file" name="cv_file" id="cvFile" accept=".pdf" aria-label="Subir CV en PDF">
+                                <div class="cv-upload-zone__icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                </div>
+                                <div class="cv-upload-zone__title" id="dropTitle">
+                                    {{ auth()->user()->cv_path ? 'Arrastra un nuevo PDF para reemplazar' : 'Arrastra tu CV aquí o haz clic para seleccionar' }}
+                                </div>
+                                <div class="cv-upload-zone__hint">Solo archivos PDF · Máximo 10 MB</div>
+                            </div>
+                            @error('cv_file')<span class="form-error" style="display:block;margin-top:var(--space-2);">{{ $message }}</span>@enderror
+                            <span class="form-hint" style="display:block;margin-top:var(--space-2);">El CV se almacena de forma segura y privada. Solo tú puedes descargarlo.</span>
+                        </div>
+
+                        {{-- CAMBIAR CONTRASEÑA --}}
+                        <div class="panel-card">
+                            <div class="panel-card__title">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                Cambiar contraseña
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="current_password">Contraseña actual</label>
+                                    <input type="password" id="current_password" name="current_password" class="form-input" autocomplete="current-password">
+                                    @error('current_password')<span class="form-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div></div>
+                                <div class="form-group">
+                                    <label class="form-label" for="password">Nueva contraseña</label>
+                                    <input type="password" id="password" name="password" class="form-input" autocomplete="new-password">
+                                    @error('password')<span class="form-error">{{ $message }}</span>@enderror
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="password_confirmation">Confirmar nueva contraseña</label>
+                                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-input" autocomplete="new-password">
                                 </div>
                             </div>
+                            <span class="form-hint">Deja estos campos en blanco si no quieres cambiar la contraseña.</span>
                         </div>
-                    </div>
-                @else
-                    <div class="panel-card">
-                        <div class="orders-empty">
-                            <div class="orders-empty__icon">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            </div>
-                            <div class="orders-empty__title">Aún no has subido ningún CV</div>
-                            <p class="orders-empty__desc" style="margin-bottom: var(--space-6);">Sube tu currículum en PDF para que nuestra IA lo analice y genere tu portfolio web.</p>
-                            <button class="btn btn--primary" onclick="switchSection('profile', 'Editar perfil')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                Subir mi CV
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn--ghost" onclick="toggleProfileEdit()">Cancelar</button>
+                            <button type="submit" class="btn btn--primary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+                                Guardar cambios
                             </button>
                         </div>
-                    </div>
-                @endif
+                    </form>
+                </div>
 
+            </div>
+
+            {{-- ════════════════════════════════
+                 SECCIÓN: MI CV WEB — EDITOR
+            ════════════════════════════════ --}}
+            <div class="panel__section" id="section-templates">
+
+                @if(! $activePurchase)
+                    <div class="panel__header">
+                        <h1 class="panel__title">Mi CV Web</h1>
+                        <p class="panel__subtitle">Elige y personaliza tu portfolio web.</p>
+                    </div>
+                    <div style="text-align:center;padding:3rem 1rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.2" style="margin-bottom:1rem;opacity:.4"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                        <p style="font-weight:600;color:var(--color-text-primary);margin-bottom:.5rem;">Necesitas un plan activo</p>
+                        <p style="font-size:.875rem;color:var(--color-text-secondary);margin-bottom:1.5rem;">Adquiere un plan para poder elegir tu plantilla de portfolio.</p>
+                        <button onclick="switchSection('orders','Mi Plan')" class="btn btn--primary btn--sm">Ver planes</button>
+                    </div>
+
+                @else
+                    @php
+                        $selected = $activePurchase->selectedTemplate;
+                        $tiers    = \App\Models\Template::PLAN_TIERS;
+                        $u        = auth()->user();
+                    @endphp
+
+                    {{-- ─── VISTA: SELECTOR DE PLANTILLA ─── --}}
+                    <div id="cv-selector-view" style="{{ $selected ? 'display:none' : '' }}">
+                        <div class="panel__header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                            <div>
+                                <h1 class="panel__title">Mi CV Web</h1>
+                                <p class="panel__subtitle">Elige la plantilla para tu portfolio.</p>
+                            </div>
+                            @if($selected)
+                            <button onclick="showCvView('editor')" class="btn btn--ghost btn--sm">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                                Volver al editor
+                            </button>
+                            @endif
+                        </div>
+
+                        @if($availableTemplates->isEmpty())
+                            <div style="text-align:center;padding:2.5rem 1rem;">
+                                <p style="color:var(--color-text-secondary);font-size:.9rem;">No hay plantillas disponibles para tu plan todavía.</p>
+                            </div>
+                        @else
+                            <p style="font-size:.82rem;color:var(--color-text-secondary);margin-bottom:1.25rem;">
+                                Tu plan <strong>{{ $activePurchase->plan->name }}</strong> incluye {{ $availableTemplates->count() }} plantilla(s). Al elegir una, podrás editarla en tiempo real.
+                            </p>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem;">
+                                @foreach($availableTemplates as $tpl)
+                                @php $isActive = $selected && $selected->id === $tpl->id; @endphp
+                                <div style="border:2px solid {{ $isActive ? '#16a34a' : 'var(--color-border)' }};border-radius:14px;overflow:hidden;background:var(--color-surface);{{ $isActive ? 'box-shadow:0 0 0 3px #bbf7d0;' : '' }}">
+                                    <div style="position:relative;aspect-ratio:4/3;background:#f1f5f9;overflow:hidden;">
+                                        @if($tpl->preview_image)
+                                            <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}" style="width:100%;height:100%;object-fit:cover;">
+                                        @else
+                                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                            </div>
+                                        @endif
+                                        @if($isActive)
+                                            <div style="position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;border-radius:99px;padding:3px 10px;font-size:.68rem;font-weight:700;">✓ Activa</div>
+                                        @endif
+                                        @php $tierData = $tiers[$tpl->plan_tier] ?? null; @endphp
+                                        @if($tierData)
+                                            <div style="position:absolute;top:8px;left:8px;background:{{ $tierData['bg'] }};color:{{ $tierData['color'] }};border-radius:99px;padding:2px 8px;font-size:.65rem;font-weight:700;">{{ $tierData['label'] }}</div>
+                                        @endif
+                                    </div>
+                                    <div style="padding:.875rem;">
+                                        <div style="font-weight:700;font-size:.9rem;color:var(--color-text-primary);margin-bottom:.2rem;">{{ $tpl->name }}</div>
+                                        @if($tpl->category)<div style="font-size:.75rem;color:var(--color-text-secondary);margin-bottom:.75rem;">{{ $tpl->category->name }}</div>@else<div style="margin-bottom:.75rem;"></div>@endif
+                                        @if($isActive)
+                                            <div style="width:100%;padding:.5rem;text-align:center;border-radius:8px;background:#dcfce7;color:#16a34a;font-size:.8rem;font-weight:700;">✓ En uso</div>
+                                        @else
+                                            <form method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $tpl->id]) }}">
+                                                @csrf
+                                                <button type="submit" style="width:100%;padding:.5rem;border-radius:8px;background:var(--color-primary);color:#fff;border:none;font-size:.8rem;font-weight:700;cursor:pointer;">
+                                                    Usar esta plantilla
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- ─── VISTA: EDITOR DE CV ─── --}}
+                    <div id="cv-editor-view" style="{{ $selected ? '' : 'display:none' }}">
+
+                        {{-- Header editor --}}
+                        <div class="panel__header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                            <div>
+                                <h1 class="panel__title">Mi CV Web</h1>
+                                <p class="panel__subtitle">Edita tu contenido y ve los cambios en tiempo real.</p>
+                            </div>
+                        </div>
+
+                        {{-- Banner: importar CV --}}
+                        <div id="cv-import-banner" style="display:flex;align-items:center;gap:1rem;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                            <div style="width:38px;height:38px;border-radius:10px;background:#dbeafe;color:#1A56DB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                @if($u->cv_path)
+                                    <div style="font-size:.875rem;font-weight:700;color:#1e3a5f;margin-bottom:.15rem;">Tienes un CV subido</div>
+                                    <div style="font-size:.78rem;color:#3b82f6;">¿Rellenar los campos con los datos de tu perfil, o subir otro CV?</div>
+                                @else
+                                    <div style="font-size:.875rem;font-weight:700;color:#1e3a5f;margin-bottom:.15rem;">Sube tu currículum para agilizar el proceso</div>
+                                    <div style="font-size:.78rem;color:#3b82f6;">Acepta PDF y Word. También puedes rellenar los campos manualmente.</div>
+                                @endif
+                            </div>
+                            <div style="display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0;">
+                                @if($u->cv_path)
+                                    <button type="button" onclick="fillFromProfile()" class="btn btn--primary btn--sm">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Usar mi perfil
+                                    </button>
+                                @endif
+                                <label class="btn btn--ghost btn--sm" style="cursor:pointer;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    {{ $u->cv_path ? 'Subir otro CV' : 'Subir CV' }}
+                                    <input type="file" accept=".pdf,.doc,.docx" style="display:none;" onchange="onCvFileSelected(this)">
+                                </label>
+                                <button type="button" onclick="dismissImportBanner()" class="btn btn--ghost btn--sm" style="color:var(--color-text-muted);">
+                                    Rellenar manual
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- ─── EDITOR DOS COLUMNAS ─── --}}
+                        <div style="display:grid;grid-template-columns:360px 1fr;gap:1.25rem;align-items:start;">
+
+                            {{-- COLUMNA IZQUIERDA ─── --}}
+                            <div style="display:flex;flex-direction:column;gap:.875rem;">
+
+                                {{-- Tabs de sección --}}
+                                <div style="display:flex;flex-wrap:wrap;gap:.3rem;background:var(--color-bg-secondary);border:1px solid var(--color-border);padding:.4rem;border-radius:10px;">
+                                    @foreach([
+                                        'presentacion' => 'Presentación',
+                                        'contacto'     => 'Contacto',
+                                        'experiencia'  => 'Experiencia',
+                                        'formacion'    => 'Formación',
+                                        'habilidades'  => 'Habilidades',
+                                        'idiomas'      => 'Idiomas',
+                                    ] as $key => $label)
+                                    <button type="button" onclick="showCvSection('{{ $key }}')"
+                                            id="cvtab-{{ $key }}"
+                                            style="font-size:.75rem;padding:.3rem .65rem;border-radius:7px;border:none;cursor:pointer;font-weight:600;white-space:nowrap;transition:all .15s;{{ $loop->first ? 'background:var(--color-primary);color:#fff;' : 'background:transparent;color:var(--color-text-secondary);' }}">
+                                        {{ $label }}
+                                    </button>
+                                    @endforeach
+                                </div>
+
+                                {{-- PANEL: Presentación --}}
+                                <div id="cvpanel-presentacion" class="panel-card" style="margin:0;">
+                                    <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Presentación</div>
+                                    <div class="form-group" style="margin-bottom:.875rem;">
+                                        <label class="form-label" for="cv_name">Nombre completo</label>
+                                        <input type="text" id="cv_name" class="form-input" value="{{ $u->name }}"
+                                               oninput="updatePreview('name',this.value)">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:.875rem;">
+                                        <label class="form-label" for="cv_job_title">Título profesional</label>
+                                        <input type="text" id="cv_job_title" class="form-input"
+                                               placeholder="ej. Desarrollador Full Stack" value="{{ $u->job_title ?? '' }}"
+                                               oninput="updatePreview('job_title',this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="cv_bio">Resumen / Sobre mí</label>
+                                        <textarea id="cv_bio" class="form-textarea" rows="5"
+                                                  placeholder="Descripción profesional..."
+                                                  oninput="updatePreview('bio',this.value)">{{ $u->bio ?? '' }}</textarea>
+                                    </div>
+                                </div>
+
+                                {{-- PANEL: Contacto --}}
+                                <div id="cvpanel-contacto" class="panel-card" style="margin:0;display:none;">
+                                    <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Contacto</div>
+                                    @foreach([
+                                        ['cv_email',    'email',    'Correo electrónico', 'email', $u->email ?? '',         'tu@email.com'],
+                                        ['cv_phone',    'phone',    'Teléfono',           'tel',   $u->phone ?? '',         '+34 600 000 000'],
+                                        ['cv_location', 'location', 'Ubicación',          'text',  $u->location ?? '',      'ej. Madrid, España'],
+                                        ['cv_linkedin', 'linkedin', 'LinkedIn',           'url',   $u->linkedin_url ?? '',  'https://linkedin.com/in/...'],
+                                        ['cv_website',  'website',  'Sitio web',          'url',   $u->website_url ?? '',   'https://tuportfolio.com'],
+                                    ] as [$id, $field, $label, $type, $val, $ph])
+                                    <div class="form-group" style="margin-bottom:.75rem;">
+                                        <label class="form-label" for="{{ $id }}">{{ $label }}</label>
+                                        <input type="{{ $type }}" id="{{ $id }}" class="form-input"
+                                               placeholder="{{ $ph }}" value="{{ $val }}"
+                                               oninput="updatePreview('{{ $field }}',this.value)">
+                                    </div>
+                                    @endforeach
+                                </div>
+
+                                {{-- PANEL: Experiencia --}}
+                                <div id="cvpanel-experiencia" class="panel-card" style="margin:0;display:none;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                        <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;">Experiencia laboral</div>
+                                        <button type="button" onclick="addEntry('experiencia')" style="font-size:.75rem;font-weight:700;color:var(--color-primary);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Añadir
+                                        </button>
+                                    </div>
+                                    <div id="entries-experiencia">
+                                        <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
+                                            <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                            <div class="form-grid" style="gap:.625rem;">
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Empresa</label><input type="text" class="form-input" placeholder="Empresa S.L."></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Cargo</label><input type="text" class="form-input" placeholder="Desarrollador Web"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Período</label><input type="text" class="form-input" placeholder="2022 – presente"></div>
+                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción</label><textarea class="form-textarea" rows="3" placeholder="Responsabilidades y logros..."></textarea></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- PANEL: Formación --}}
+                                <div id="cvpanel-formacion" class="panel-card" style="margin:0;display:none;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                        <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;">Formación académica</div>
+                                        <button type="button" onclick="addEntry('formacion')" style="font-size:.75rem;font-weight:700;color:var(--color-primary);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Añadir
+                                        </button>
+                                    </div>
+                                    <div id="entries-formacion">
+                                        <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
+                                            <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                            <div class="form-grid" style="gap:.625rem;">
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Institución</label><input type="text" class="form-input" placeholder="Universidad / Centro"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Título / Grado</label><input type="text" class="form-input" placeholder="Grado en Informática"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Período</label><input type="text" class="form-input" placeholder="2018 – 2022"></div>
+                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción (opcional)</label><textarea class="form-textarea" rows="2" placeholder="Especialización, proyectos..."></textarea></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- PANEL: Habilidades --}}
+                                <div id="cvpanel-habilidades" class="panel-card" style="margin:0;display:none;">
+                                    <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Habilidades</div>
+                                    <div class="form-group" style="margin-bottom:.875rem;">
+                                        <label class="form-label" for="cv_skills">Habilidades técnicas</label>
+                                        <input type="text" id="cv_skills" class="form-input" placeholder="JavaScript, React, Laravel, PHP..." oninput="updatePreview('skills',this.value)">
+                                        <span class="form-hint">Separa con comas</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="cv_soft_skills">Habilidades blandas</label>
+                                        <input type="text" id="cv_soft_skills" class="form-input" placeholder="Trabajo en equipo, liderazgo..." oninput="updatePreview('soft_skills',this.value)">
+                                    </div>
+                                </div>
+
+                                {{-- PANEL: Idiomas --}}
+                                <div id="cvpanel-idiomas" class="panel-card" style="margin:0;display:none;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                        <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;">Idiomas</div>
+                                        <button type="button" onclick="addEntry('idiomas')" style="font-size:.75rem;font-weight:700;color:var(--color-primary);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Añadir
+                                        </button>
+                                    </div>
+                                    <div id="entries-idiomas">
+                                        <div class="cv-entry" style="display:flex;gap:.625rem;align-items:center;margin-bottom:.5rem;">
+                                            <input type="text" class="form-input" placeholder="Idioma" style="flex:1;">
+                                            <select class="form-input" style="flex:1;">
+                                                <option value="">Nivel</option>
+                                                @foreach(['Nativo','C2 – Maestría','C1 – Avanzado','B2 – Intermedio alto','B1 – Intermedio','A2 – Básico','A1 – Elemental'] as $nivel)
+                                                <option>{{ $nivel }}</option>
+                                                @endforeach
+                                            </select>
+                                            <button type="button" onclick="removeEntry(this.parentElement)" style="background:none;border:none;cursor:pointer;color:var(--color-text-muted);flex-shrink:0;">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Guardar --}}
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.25rem 0;">
+                                    <button type="button" onclick="showCvView('selector')" class="btn btn--ghost btn--sm">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                        Cambiar plantilla
+                                    </button>
+                                    <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="btn btn--primary btn--sm">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+                                        Guardar cambios
+                                    </button>
+                                </div>
+
+                            </div>{{-- / columna izquierda --}}
+
+                            {{-- COLUMNA DERECHA: PREVIEW ─── --}}
+                            <div style="position:sticky;top:1.5rem;">
+                                <div style="border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.1);border:1.5px solid var(--color-border);">
+                                    {{-- Fake browser chrome --}}
+                                    <div style="background:#f1f5f9;padding:.45rem .875rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--color-border);">
+                                        <div style="display:flex;gap:.3rem;">
+                                            <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;"></div>
+                                            <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;"></div>
+                                            <div style="width:10px;height:10px;border-radius:50%;background:#22c55e;"></div>
+                                        </div>
+                                        <div style="flex:1;background:#fff;border-radius:5px;padding:.22rem .65rem;font-size:.7rem;color:var(--color-text-muted);font-family:monospace;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">
+                                            {{ $selected ? $selected->slug . '.cvexpress.es' : 'preview' }}
+                                        </div>
+                                        @if($selected && $selected->preview_html_url)
+                                        <a href="{{ $selected->preview_html_url }}" target="_blank" title="Abrir en nueva pestaña" style="color:var(--color-text-muted);display:flex;flex-shrink:0;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                        </a>
+                                        @endif
+                                    </div>
+                                    {{-- iframe --}}
+                                    <div id="cv-preview-wrap" style="position:relative;height:580px;overflow:hidden;background:#f8fafc;">
+                                        @if($selected && $selected->preview_html_url)
+                                            <iframe id="cv-preview-iframe"
+                                                    src="{{ $selected->preview_html_url }}"
+                                                    style="width:1280px;height:900px;transform-origin:top left;border:none;pointer-events:none;"
+                                                    scrolling="no"
+                                                    sandbox="allow-same-origin allow-scripts"
+                                                    onload="scaleCvPreview()">
+                                            </iframe>
+                                        @else
+                                            <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:.75rem;color:var(--color-text-muted);">
+                                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                                <span style="font-size:.85rem;">Sin plantilla seleccionada</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                {{-- Barra inferior: plantilla activa --}}
+                                @if($selected)
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.75rem;padding:.55rem .875rem;background:var(--color-bg-secondary);border-radius:10px;font-size:.8rem;border:1px solid var(--color-border);">
+                                    <span style="color:var(--color-text-secondary);">Plantilla: <strong style="color:var(--color-text-primary);">{{ $selected->name }}</strong></span>
+                                    <button onclick="showCvView('selector')" style="background:none;border:none;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--color-primary);">Cambiar →</button>
+                                </div>
+                                @endif
+                            </div>{{-- / columna derecha --}}
+
+                        </div>{{-- / grid dos columnas --}}
+                    </div>{{-- / cv-editor-view --}}
+
+                @endif
             </div>
 
             {{-- ════════════════════════════════
@@ -381,7 +739,7 @@
             <div class="panel__section" id="section-orders">
 
                 <div class="panel__header">
-                    <h1 class="panel__title">Mis Planes</h1>
+                    <h1 class="panel__title">Mi Plan</h1>
                     <p class="panel__subtitle">Gestiona tu plan activo y la configuración de hosting.</p>
                 </div>
 
@@ -754,18 +1112,201 @@
         });
     }
 
+    // ── CV Editor ──
+    function showCvView(view) {
+        var sel = document.getElementById('cv-selector-view');
+        var ed  = document.getElementById('cv-editor-view');
+        if (!sel || !ed) return;
+        sel.style.display = view === 'selector' ? '' : 'none';
+        ed.style.display  = view === 'editor'   ? '' : 'none';
+        if (view === 'editor') scaleCvPreview();
+    }
+
+    function showCvSection(section) {
+        document.querySelectorAll('[id^="cvpanel-"]').forEach(function(p) { p.style.display = 'none'; });
+        document.querySelectorAll('[id^="cvtab-"]').forEach(function(t) {
+            t.style.background = 'transparent';
+            t.style.color = 'var(--color-text-secondary)';
+        });
+        var panel = document.getElementById('cvpanel-' + section);
+        var tab   = document.getElementById('cvtab-' + section);
+        if (panel) panel.style.display = '';
+        if (tab) { tab.style.background = 'var(--color-primary)'; tab.style.color = '#fff'; }
+    }
+
+    function scaleCvPreview() {
+        var wrap   = document.getElementById('cv-preview-wrap');
+        var iframe = document.getElementById('cv-preview-iframe');
+        if (!wrap || !iframe) return;
+        var scale = wrap.offsetWidth / 1280;
+        iframe.style.transform = 'scale(' + scale + ')';
+        iframe.style.width  = '1280px';
+        iframe.style.height = Math.round(wrap.offsetHeight / scale) + 'px';
+    }
+    window.addEventListener('resize', scaleCvPreview);
+
+    // Real-time preview field mapping
+    var _CV_SELECTORS = {
+        name:       ['h1','.name','.cv-name','#name','header h1','.hero-name','.profile-name','.full-name'],
+        job_title:  ['.job-title','.cv-title','.role','.tagline','.subtitle','h2','header h2','.position'],
+        bio:        ['.bio','.summary','.about','.intro','.description','p.lead','.profile-bio','.cv-summary'],
+        email:      ['a[href^="mailto"]','.email','.cv-email'],
+        phone:      ['a[href^="tel"]','.phone','.cv-phone'],
+        location:   ['.location','.address','.city','.cv-location'],
+        linkedin:   ['.linkedin','a[href*="linkedin"]'],
+        website:    ['.website','.portfolio'],
+        skills:     ['.skills','.cv-skills','.skills-list','.tech-skills'],
+        soft_skills:['.soft-skills','.personal-skills'],
+    };
+    var _cvTimer = null;
+
+    function updatePreview(field, value) {
+        clearTimeout(_cvTimer);
+        _cvTimer = setTimeout(function() {
+            var iframe = document.getElementById('cv-preview-iframe');
+            if (!iframe) return;
+            var doc;
+            try { doc = iframe.contentDocument; } catch(e) { return; }
+            if (!doc) return;
+            var sels = _CV_SELECTORS[field] || [];
+            for (var i = 0; i < sels.length; i++) {
+                var els = doc.querySelectorAll(sels[i]);
+                if (els.length > 0) {
+                    els.forEach(function(el) {
+                        if (el.tagName === 'A') {
+                            el.textContent = value;
+                            if (field === 'email')   el.href = 'mailto:' + value;
+                            if (field === 'phone')   el.href = 'tel:' + value;
+                            if (field === 'linkedin' || field === 'website') el.href = value;
+                        } else {
+                            el.textContent = value;
+                        }
+                    });
+                    break;
+                }
+            }
+        }, 180);
+    }
+
+    function fillFromProfile() {
+        dismissImportBanner();
+        var map = { name:'cv_name', job_title:'cv_job_title', bio:'cv_bio',
+                    email:'cv_email', phone:'cv_phone', location:'cv_location',
+                    linkedin:'cv_linkedin', website:'cv_website' };
+        Object.keys(map).forEach(function(field) {
+            var el = document.getElementById(map[field]);
+            if (el && el.value) updatePreview(field, el.value);
+        });
+    }
+
+    function dismissImportBanner() {
+        var b = document.getElementById('cv-import-banner');
+        if (b) { b.style.opacity = '0'; b.style.transition = 'opacity .3s'; setTimeout(function(){ b.style.display='none'; }, 300); }
+    }
+
+    function onCvFileSelected(input) {
+        if (input.files && input.files[0]) {
+            dismissImportBanner();
+            // TODO: send to server for parsing when tables are ready
+        }
+    }
+
+    function addEntry(type) {
+        var container = document.getElementById('entries-' + type);
+        if (!container) return;
+        var tmpl = container.querySelector('.cv-entry');
+        if (!tmpl) return;
+        var clone = tmpl.cloneNode(true);
+        clone.querySelectorAll('input,textarea').forEach(function(el){ el.value = ''; });
+        clone.querySelectorAll('select').forEach(function(el){ el.selectedIndex = 0; });
+        container.appendChild(clone);
+    }
+
+    function removeEntry(btn) {
+        var entry = btn.closest ? btn.closest('.cv-entry') : btn.parentElement;
+        if (!entry) return;
+        var cont = entry.parentElement;
+        if (cont.querySelectorAll('.cv-entry').length <= 1) {
+            entry.querySelectorAll('input,textarea').forEach(function(el){ el.value=''; });
+            return;
+        }
+        entry.style.opacity = '0'; entry.style.transition = 'opacity .2s';
+        setTimeout(function(){ entry.remove(); }, 200);
+    }
+
+    function saveCvData(e) {
+        var data = {};
+        ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location',
+         'cv_linkedin','cv_website','cv_skills','cv_soft_skills'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) data[id] = el.value;
+        });
+        try { localStorage.setItem('cvdata_{{ auth()->id() }}', JSON.stringify(data)); } catch(ex) {}
+        var btn = document.getElementById('btn-save-cv');
+        if (btn) {
+            var orig = btn.innerHTML;
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Guardado';
+            btn.style.background = '#16a34a';
+            setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 2200);
+        }
+    }
+
+    // Restore from localStorage
+    (function() {
+        try {
+            var saved = localStorage.getItem('cvdata_{{ auth()->id() }}');
+            if (!saved) return;
+            var data = JSON.parse(saved);
+            Object.keys(data).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && data[id]) el.value = data[id];
+            });
+        } catch(ex) {}
+    })();
+
+    // ── Profile view/edit toggle ──
+    function toggleProfileEdit() {
+        var view    = document.getElementById('profile-view');
+        var edit    = document.getElementById('profile-edit');
+        var btn     = document.getElementById('btn-edit-profile');
+        var pencil  = document.getElementById('icon-pencil');
+        var closeX  = document.getElementById('icon-close');
+        var editing = edit.style.display !== 'none';
+
+        view.style.display  = editing ? '' : 'none';
+        edit.style.display  = editing ? 'none' : '';
+        pencil.style.display = editing ? '' : 'none';
+        closeX.style.display = editing ? 'none' : '';
+
+        if (editing) {
+            btn.style.background   = 'var(--color-surface)';
+            btn.style.borderColor  = 'var(--color-border)';
+            btn.style.color        = 'var(--color-text-secondary)';
+        } else {
+            btn.style.background   = 'var(--color-primary)';
+            btn.style.borderColor  = 'var(--color-primary)';
+            btn.style.color        = '#fff';
+        }
+    }
+
+    // Auto-open edit mode if there are validation errors
+    @if($errors->any())
+        switchSection('profile', 'Mi Perfil');
+        toggleProfileEdit();
+    @endif
+
     // ── Open section from URL hash ──
     const hash = window.location.hash.replace('#', '');
-    const validSections = ['overview', 'profile', 'cvs', 'orders'];
+    const validSections = ['overview', 'profile', 'templates', 'orders'];
     if (hash && validSections.includes(hash)) {
-        const labels = { overview: 'Inicio', profile: 'Editar perfil', cvs: 'Mis CVs', orders: 'Mis pedidos' };
+        const labels = { overview: 'Inicio', profile: 'Mi Perfil', templates: 'Mi CV Web', orders: 'Mi Plan' };
         switchSection(hash, labels[hash]);
     }
 
     // ── Open section from session (after form submit redirects) ──
     @if(session('open_section'))
     @php
-        $sectionLabels = ['overview' => 'Inicio', 'profile' => 'Editar perfil', 'cvs' => 'Mis CVs', 'orders' => 'Mis pedidos'];
+        $sectionLabels = ['overview' => 'Inicio', 'profile' => 'Mi Perfil', 'templates' => 'Mi CV Web', 'orders' => 'Mi Plan'];
         $openSection   = session('open_section');
     @endphp
         switchSection('{{ $openSection }}', '{{ $sectionLabels[$openSection] ?? 'Inicio' }}');
