@@ -176,6 +176,37 @@
             padding-top: .25rem;
         }
 
+        /* Plan Tier Selector */
+        .plan-tier-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .5rem;
+        }
+        .tier-option { cursor: pointer; }
+        .tier-option input { display: none; }
+        .tier-option__card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .2rem;
+            padding: .7rem .5rem;
+            border: 2px solid var(--admin-border);
+            border-radius: var(--radius);
+            background: var(--admin-bg);
+            transition: border-color .15s, box-shadow .15s;
+            text-align: center;
+        }
+        .tier-option:hover .tier-option__card,
+        .tier-option input:checked + .tier-option__card {
+            border-color: var(--tier-color);
+            box-shadow: 0 0 0 1px var(--tier-color);
+        }
+        .tier-option input:checked + .tier-option__card .tier-option__name {
+            color: var(--tier-color);
+        }
+        .tier-option__name { font-size: .8rem; font-weight: 700; color: var(--admin-text); }
+        .tier-option__price { font-size: .69rem; color: var(--admin-text-muted); font-family: var(--font-mono); }
+
         @media (max-width: 900px) {
             .create-grid { grid-template-columns: 1fr; }
         }
@@ -244,6 +275,11 @@
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                 Categorías
                 <span class="admin-sidebar__link-badge">{{ \App\Models\Category::count() }}</span>
+            </a>
+            <a href="{{ route('admin.plans.index') }}" class="admin-sidebar__link">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Planes
+                <span class="admin-sidebar__link-badge">{{ \App\Models\Plan::count() }}</span>
             </a>
             <div class="admin-sidebar__section-label">Crear</div>
             <a href="{{ route('templates.create') }}" class="admin-sidebar__link active">
@@ -486,6 +522,28 @@
                                 <span class="form-card__title">Opciones</span>
                             </div>
                             <div class="form-card__body">
+
+                                <div class="form-field">
+                                    <label for="plan_tier">Plan requerido <span class="req">*</span></label>
+                                    <div class="plan-tier-selector">
+                                        @foreach([
+                                            'basic'     => ['label' => 'Básico',    'price' => '4,99€', 'color' => '#16a34a'],
+                                            'pro'       => ['label' => 'Pro',        'price' => '14,99€','color' => '#1A56DB'],
+                                            'super_pro' => ['label' => 'Super Pro', 'price' => '29€',   'color' => '#7c3aed'],
+                                        ] as $value => $tier)
+                                        <label class="tier-option">
+                                            <input type="radio" name="plan_tier" value="{{ $value }}"
+                                                {{ old('plan_tier', 'basic') === $value ? 'checked' : '' }}>
+                                            <span class="tier-option__card" style="--tier-color: {{ $tier['color'] }}">
+                                                <span class="tier-option__name">{{ $tier['label'] }}</span>
+                                                <span class="tier-option__price">{{ $tier['price'] }}</span>
+                                            </span>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                    <span class="hint">Determina en qué plan de pago aparece esta plantilla.</span>
+                                </div>
+
                                 <div class="toggle-list">
 
                                     <div class="toggle-row">
@@ -501,19 +559,8 @@
 
                                     <div class="toggle-row">
                                         <div class="toggle-info">
-                                            <div class="toggle-label">Premium</div>
-                                            <div class="toggle-desc">Requiere pago para usarla</div>
-                                        </div>
-                                        <label class="toggle">
-                                            <input type="checkbox" name="is_premium" {{ old('is_premium') ? 'checked' : '' }}>
-                                            <span class="toggle-track"></span>
-                                        </label>
-                                    </div>
-
-                                    <div class="toggle-row">
-                                        <div class="toggle-info">
                                             <div class="toggle-label">Destacada</div>
-                                            <div class="toggle-desc">Aparece primero en el catálogo</div>
+                                            <div class="toggle-desc">Aparece en el carrusel de inicio</div>
                                         </div>
                                         <label class="toggle">
                                             <input type="checkbox" name="is_featured" {{ old('is_featured') ? 'checked' : '' }}>

@@ -56,6 +56,40 @@
                 @endforeach
             @endif
 
+            <div class="tpl-filter-sep" aria-hidden="true"></div>
+
+            {{-- Sort --}}
+            @php $baseParams = request()->except('sort'); @endphp
+            <select class="tpl-sort-select {{ request('sort') ? 'active' : '' }}" id="tpl-sort">
+                <option value="{{ route('templates.list', $baseParams) }}"
+                        {{ !request('sort') ? 'selected' : '' }}>Más recientes</option>
+                <option value="{{ route('templates.list', array_merge($baseParams, ['sort' => 'price_asc'])) }}"
+                        {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Precio: menor a mayor</option>
+                <option value="{{ route('templates.list', array_merge($baseParams, ['sort' => 'price_desc'])) }}"
+                        {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Precio: mayor a menor</option>
+            </select>
+
+            <div class="tpl-filter-sep" aria-hidden="true"></div>
+
+            {{-- Grid toggle --}}
+            <div class="tpl-grid-toggle" aria-label="Columnas">
+                <button class="tpl-grid-toggle-btn" id="btn-col3" title="3 columnas">
+                    <svg width="14" height="14" viewBox="0 0 15 14" fill="currentColor" aria-hidden="true">
+                        <rect x="0" y="0" width="4" height="14" rx="1"/>
+                        <rect x="5.5" y="0" width="4" height="14" rx="1"/>
+                        <rect x="11" y="0" width="4" height="14" rx="1"/>
+                    </svg>
+                </button>
+                <button class="tpl-grid-toggle-btn" id="btn-col4" title="4 columnas">
+                    <svg width="14" height="14" viewBox="0 0 19 14" fill="currentColor" aria-hidden="true">
+                        <rect x="0" y="0" width="4" height="14" rx="1"/>
+                        <rect x="5" y="0" width="4" height="14" rx="1"/>
+                        <rect x="10" y="0" width="4" height="14" rx="1"/>
+                        <rect x="15" y="0" width="4" height="14" rx="1"/>
+                    </svg>
+                </button>
+            </div>
+
             <span class="tpl-filters__count">
                 {{ $templates->count() }} {{ $templates->count() === 1 ? 'plantilla' : 'plantillas' }}
             </span>
@@ -97,8 +131,11 @@
 
                     {{-- Badges --}}
                     <div class="tpl-card__badges">
-                        @if($template->is_premium)
-                            <span class="tpl-badge tpl-badge--premium">Premium</span>
+                        @php $tier = $template->plan_tier ?? 'basic'; @endphp
+                        @if($tier === 'super_pro')
+                            <span class="tpl-badge tpl-badge--super">Super Pro</span>
+                        @elseif($tier === 'pro')
+                            <span class="tpl-badge tpl-badge--pro">Pro</span>
                         @endif
                         @if($template->is_featured)
                             <span class="tpl-badge tpl-badge--featured">Destacada</span>
@@ -178,7 +215,7 @@
 
 @push('scripts')
 <script>
-// Escala los iframes para que encajen en el thumbnail
+// Iframe thumbnail scaling
 document.querySelectorAll('.tpl-card__iframe-wrap').forEach(function(wrap) {
     var iframe = wrap.querySelector('iframe');
     if (!iframe) return;
@@ -190,6 +227,35 @@ document.querySelectorAll('.tpl-card__iframe-wrap').forEach(function(wrap) {
     iframe.style.width  = '1280px';
     iframe.style.height = '800px';
 });
+
+// Sort dropdown navigation
+var sortSel = document.getElementById('tpl-sort');
+if (sortSel) {
+    sortSel.addEventListener('change', function () { window.location = this.value; });
+}
+
+// Grid column toggle
+(function () {
+    var grid = document.querySelector('.tpl-grid');
+    var btn3 = document.getElementById('btn-col3');
+    var btn4 = document.getElementById('btn-col4');
+    if (!grid || !btn3 || !btn4) return;
+
+    function setGrid(cols) {
+        grid.classList.remove('tpl-grid--3', 'tpl-grid--4');
+        grid.classList.add('tpl-grid--' + cols);
+        btn3.classList.toggle('active', cols === 3);
+        btn4.classList.toggle('active', cols === 4);
+        try { localStorage.setItem('tpl-grid-cols', cols); } catch (e) {}
+    }
+
+    var saved = 3;
+    try { saved = parseInt(localStorage.getItem('tpl-grid-cols')) || 3; } catch (e) {}
+    setGrid(saved);
+
+    btn3.addEventListener('click', function () { setGrid(3); });
+    btn4.addEventListener('click', function () { setGrid(4); });
+})();
 </script>
 @endpush
 

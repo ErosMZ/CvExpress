@@ -29,7 +29,7 @@
 
             <div class="hero__actions">
                 <a href="{{ route('register') }}" class="btn btn--primary btn--lg">
-                    Crear mi portfolio gratis
+                    Crear mi CV Web
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
                 <a href="{{ route('templates.list') }}" class="btn btn--ghost btn--lg">
@@ -190,6 +190,95 @@
     </div>
 </section>
 @endif
+
+<!-- ===================== ¿AÚN NO TIENES CV EN PDF? ===================== -->
+<section class="no-pdf-section" id="crear-cv" aria-labelledby="no-pdf-title">
+    <div class="container">
+        <div class="no-pdf__inner">
+
+            {{-- Visual: form mockup --}}
+            <div class="no-pdf__visual" aria-hidden="true">
+                <div class="no-pdf__card">
+                    <div class="no-pdf__card-bar">
+                        <span class="no-pdf__dot no-pdf__dot--r"></span>
+                        <span class="no-pdf__dot no-pdf__dot--y"></span>
+                        <span class="no-pdf__dot no-pdf__dot--g"></span>
+                        <span>Crear mi CV — CvExpress</span>
+                    </div>
+                    <div class="no-pdf__fields">
+                        <div class="no-pdf__field">
+                            <div class="no-pdf__field-lbl"></div>
+                            <div class="no-pdf__field-inp"></div>
+                        </div>
+                        <div class="no-pdf__field">
+                            <div class="no-pdf__field-lbl"></div>
+                            <div class="no-pdf__field-inp"></div>
+                        </div>
+                        <div class="no-pdf__field-row">
+                            <div class="no-pdf__field">
+                                <div class="no-pdf__field-lbl"></div>
+                                <div class="no-pdf__field-inp"></div>
+                            </div>
+                            <div class="no-pdf__field">
+                                <div class="no-pdf__field-lbl"></div>
+                                <div class="no-pdf__field-inp"></div>
+                            </div>
+                        </div>
+                        <div class="no-pdf__field no-pdf__field--section">
+                            <div class="no-pdf__field-lbl no-pdf__field-lbl--section"></div>
+                            <div class="no-pdf__field-inp no-pdf__field-inp--area"></div>
+                        </div>
+                        <div class="no-pdf__card-footer">
+                            <div class="no-pdf__card-btn"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="no-pdf__export-chip">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="12" x2="12" y2="18"/>
+                        <polyline points="9 15 12 18 15 15"/>
+                    </svg>
+                    Exportar a PDF
+                </div>
+            </div>
+
+            {{-- Content --}}
+            <div class="no-pdf__content">
+                <div class="badge badge--feature" role="status">
+                    <span class="badge__dot" aria-hidden="true"></span>
+                    Próximamente
+                </div>
+                <h2 class="no-pdf__title" id="no-pdf-title">
+                    ¿Aún no tienes<br><em>tu CV en PDF?</em>
+                </h2>
+                <p class="no-pdf__desc">
+                    No te preocupes. Pronto podrás crear tu currículum profesional directamente en CvExpress, con plantillas guiadas paso a paso y exportación instantánea a PDF.
+                </p>
+                <ul class="no-pdf__feats" role="list">
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Plantillas de CV profesionales incluidas
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Exportación a PDF en un clic
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Integrado con tu portfolio web
+                    </li>
+                </ul>
+                <a href="{{ route('register') }}" class="btn btn--primary btn--lg">
+                    Crear mi cuenta
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
 
 <!-- ===================== CÓMO FUNCIONA ===================== -->
 <section class="section" id="como-funciona" aria-labelledby="steps-title">
@@ -396,6 +485,97 @@
                 </div>
             </article>
         </div>
+    </div>
+</section>
+
+<!-- ===================== PRECIOS ===================== -->
+<section class="section section--alt" id="precios" aria-labelledby="pricing-title">
+    <div class="container">
+        <div class="section__header">
+            <div class="label">Planes de pago único</div>
+            <h2 class="section__title" id="pricing-title">Sin suscripciones.<br><em>Pagas una vez, es tuyo.</em></h2>
+            <p class="section__subtitle">Elige el plan que mejor se adapte a ti. Pago único, sin renovaciones, sin sorpresas.</p>
+        </div>
+
+        <div class="pricing-grid">
+
+            @foreach($plans as $plan)
+            @php
+                $slugIcons = [
+                    'basic'     => '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+                    'pro'       => '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+                    'super_pro' => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+                ];
+                $colorMap = [
+                    '#16a34a' => ['bg' => '#dcfce7', 'fg' => '#16a34a', 'cta' => 'basic'],
+                    '#1A56DB' => ['bg' => '#dbeafe', 'fg' => '#1A56DB', 'cta' => 'pro'],
+                    '#7c3aed' => ['bg' => '#ede9fe', 'fg' => '#7c3aed', 'cta' => 'super'],
+                    '#d97706' => ['bg' => '#fef3c7', 'fg' => '#d97706', 'cta' => 'basic'],
+                    '#db2777' => ['bg' => '#fce7f3', 'fg' => '#db2777', 'cta' => 'basic'],
+                    '#0891b2' => ['bg' => '#cffafe', 'fg' => '#0891b2', 'cta' => 'basic'],
+                    '#475569' => ['bg' => '#f1f5f9', 'fg' => '#475569', 'cta' => 'basic'],
+                ];
+                $tc   = $colorMap[$plan->color] ?? ['bg' => '#f1f5f9', 'fg' => '#475569', 'cta' => 'basic'];
+                $icon = $slugIcons[$plan->slug] ?? $slugIcons['basic'];
+                $isFeatured = $plan->badge_label !== null;
+            @endphp
+            <div class="pricing-card {{ $isFeatured ? 'pricing-card--featured' : '' }}">
+                @if($isFeatured)
+                    <div class="pricing-card__badge">{{ $plan->badge_label }}</div>
+                @endif
+                <div class="pricing-card__header">
+                    <div class="pricing-card__icon" style="background:{{ $tc['bg'] }};color:{{ $tc['fg'] }}">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">{!! $icon !!}</svg>
+                    </div>
+                    <div>
+                        <div class="pricing-card__name">{{ $plan->name }}</div>
+                        <div class="pricing-card__tagline">Pago único, sin renovaciones</div>
+                    </div>
+                </div>
+                <div class="pricing-card__price">
+                    <span class="pricing-card__amount">{{ number_format($plan->price, 2, ',', '.') }}€</span>
+                    <span class="pricing-card__once">pago único</span>
+                </div>
+                <ul class="pricing-card__features">
+                    @foreach($plan->features as $feat)
+                    <li>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{ $tc['fg'] }}" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        {{ $feat }}
+                    </li>
+                    @endforeach
+                </ul>
+                <a href="{{ route('register') }}" class="pricing-card__cta pricing-card__cta--{{ $tc['cta'] }}">
+                    Empezar por {{ number_format($plan->price, 2, ',', '.') }}€
+                </a>
+            </div>
+            @endforeach
+
+        </div>
+
+        {{-- Hosting opcional --}}
+        <div class="pricing-hosting">
+            <div class="pricing-hosting__inner">
+                <div class="pricing-hosting__icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div class="pricing-hosting__content">
+                    <div class="pricing-hosting__title">Hosting opcional — 2-3€/mes</div>
+                    <p class="pricing-hosting__desc">Para quienes prefieren comodidad total. Hosting, backups, SSL, CDN y dominio conectado. <strong>Sin obligación</strong> — también puedes usar tu subdominio gratis o tu propio hosting.</p>
+                    <div class="pricing-hosting__chips">
+                        <span>✓ Hosting gestionado</span>
+                        <span>✓ Backups automáticos</span>
+                        <span>✓ SSL incluido</span>
+                        <span>✓ CDN global</span>
+                        <span>✓ Dominio conectado</span>
+                    </div>
+                </div>
+                <div class="pricing-hosting__price">
+                    <span>2-3€</span>
+                    <small>/mes</small>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 

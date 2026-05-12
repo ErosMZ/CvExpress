@@ -73,6 +73,11 @@
                 Categorías
                 <span class="admin-sidebar__link-badge">{{ \App\Models\Category::count() }}</span>
             </a>
+            <a href="{{ route('admin.plans.index') }}" class="admin-sidebar__link">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Planes
+                <span class="admin-sidebar__link-badge">{{ \App\Models\Plan::count() }}</span>
+            </a>
             <div class="admin-sidebar__section-label">Crear</div>
             <a href="{{ route('templates.create') }}" class="admin-sidebar__link">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>

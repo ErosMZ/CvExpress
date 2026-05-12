@@ -24,7 +24,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'is_admin'
+        'is_admin',
+        'job_title',
+        'phone',
+        'location',
+        'bio',
+        'linkedin_url',
+        'website_url',
+        'cv_path',
+        'cv_original_name',
+        'cv_uploaded_at',
     ];
 
     /**
@@ -46,7 +55,21 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'cv_uploaded_at'    => 'datetime',
+            'password'          => 'hashed',
         ];
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(\App\Models\UserPurchase::class);
+    }
+
+    public function activePurchase()
+    {
+        return $this->hasOne(\App\Models\UserPurchase::class)
+                    ->where('status', 'active')
+                    ->with('plan')
+                    ->latest();
     }
 }

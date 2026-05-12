@@ -6,10 +6,12 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\TemplatesController;
 
 /*
@@ -26,7 +28,11 @@ Route::get('/', function () {
         ->latest()
         ->get();
 
-    return view('index', compact('featuredTemplates'));
+    $plans = \App\Models\Plan::where('is_active', true)
+        ->orderBy('sort_order')
+        ->get();
+
+    return view('index', compact('featuredTemplates', 'plans'));
 
 })->name('home');
 
@@ -39,17 +45,19 @@ Route::get('/', function () {
 Route::get('/plantillas', [TemplatesController::class, 'index'])->name('templates.list');
 Route::get('/plantillas/{template:slug}', [TemplatesController::class, 'show'])->name('templates.preview');
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::put('/dashboard/profile', [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
-    Route::get('/dashboard/cv/download', [DashboardController::class, 'downloadCv'])->name('dashboard.cv.download');
+    Route::get('/dashboard',                              [DashboardController::class, 'index'])->name('dashboard');
+    Route::put('/dashboard/profile',                     [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
+    Route::get('/dashboard/cv/download',                 [DashboardController::class, 'downloadCv'])->name('dashboard.cv.download');
+    Route::post('/dashboard/plan/{plan}/activate',       [DashboardController::class, 'activatePlan'])->name('dashboard.plan.activate');
+    Route::patch('/dashboard/purchase/{purchase}/hosting', [DashboardController::class, 'updateHosting'])->name('dashboard.purchase.hosting');
+    Route::delete('/dashboard/purchase/{purchase}/cancel', [DashboardController::class, 'cancelPlan'])->name('dashboard.purchase.cancel');
 });
 
-// web.php
-Route::middleware('auth')->group(function () {
-    Route::put('/dashboard/cvweb/{cvWebId}/section/{section}', 
-        [CvWebController::class, 'updateSection']
-    )->name('dashboard.cvweb.update');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::put('/dashboard/cvweb/{cvWebId}/section/{section}',
+//         [CvWebController::class, 'updateSection']
+//     )->name('dashboard.cvweb.update');
+// });
 /*
 |--------------------------------------------------------------------------
 | AUTH
@@ -108,18 +116,9 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 /*
 |--------------------------------------------------------------------------
-| USER DASHBOARD
+| USER DASHBOARD  (handled by DashboardController above)
 |--------------------------------------------------------------------------
 */
-
-Route::get('/dashboard', function () {
-
-    return view('dashboard');
-
-})->middleware([
-    'auth',
-    'verified'
-])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +159,8 @@ Route::middleware([
         TemplateController::class
     );
 
+    Route::delete('/templates-bulk', [TemplateController::class, 'bulkDestroy'])->name('templates.bulk-destroy');
+
     /*
     |--------------------------------------------------------------------------
     | CATEGORIES CRUD
@@ -183,6 +184,17 @@ Route::middleware([
     Route::patch('/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
     Route::patch('/users/{user}/verify', [UserController::class, 'verify'])->name('admin.users.verify');
     Route::post('/users/{user}/resend-verification', [UserController::class, 'resendVerification'])->name('admin.users.resend-verification');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PLANS CRUD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/planes',                  [PlanController::class, 'index'])->name('admin.plans.index');
+    Route::post('/planes',                 [PlanController::class, 'store'])->name('admin.plans.store');
+    Route::put('/planes/{plan}',           [PlanController::class, 'update'])->name('admin.plans.update');
+    Route::delete('/planes/{plan}',        [PlanController::class, 'destroy'])->name('admin.plans.destroy');
 
 });
 

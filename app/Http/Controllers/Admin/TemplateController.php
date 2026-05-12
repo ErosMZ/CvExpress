@@ -14,9 +14,33 @@ class TemplateController extends Controller
 {
     public function index()
     {
-        $templates = Template::with('category')->latest()->get();
+        $templates  = Template::with('category')->latest()->get();
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.templates.index', compact('templates'));
+        return view('admin.templates.index', compact('templates', 'categories'));
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            return redirect()->route('templates.index')
+                ->with('error', 'No seleccionaste ninguna plantilla.');
+        }
+
+        $templates = Template::whereIn('id', $ids)->get();
+
+        foreach ($templates as $template) {
+            Storage::disk('public')->deleteDirectory($template->folder);
+            $this->deleteDirectory(public_path("previews/{$template->slug}"));
+            $template->delete();
+        }
+
+        $count = $templates->count();
+
+        return redirect()->route('templates.index')
+            ->with('success', "$count plantilla(s) eliminada(s) correctamente.");
     }
 
     public function create()
@@ -84,29 +108,18 @@ class TemplateController extends Controller
         */
 
         Template::create([
-
-            'category_id' => $request->category_id,
-
-            'name' => $request->name,
-
-            'slug' => $slug,
-
-            'description' => $request->description,
-
-            'folder' => $folderPath,
-
+            'category_id'   => $request->category_id,
+            'name'          => $request->name,
+            'slug'          => $slug,
+            'description'   => $request->description,
+            'folder'        => $folderPath,
             'preview_image' => $previewPath,
-
-            'main_file' => $zipPath,
-
-            'price' => $request->price ?? 0,
-
-            'is_premium' => $request->has('is_premium'),
-
-            'is_featured' => $request->has('is_featured'),
-
-            'is_active' => $request->has('is_active'),
-
+            'main_file'     => $zipPath,
+            'price'         => $request->price ?? 0,
+            'plan_tier'     => $request->plan_tier ?? 'basic',
+            'is_premium'    => $request->plan_tier !== 'basic',
+            'is_featured'   => $request->has('is_featured'),
+            'is_active'     => $request->has('is_active'),
         ]);
 
         return redirect()
@@ -209,29 +222,18 @@ class TemplateController extends Controller
         */
 
         $template->update([
-
-            'category_id' => $request->category_id,
-
-            'name' => $request->name,
-
-            'slug' => $newSlug,
-
-            'description' => $request->description,
-
-            'folder' => $newFolder,
-
+            'category_id'   => $request->category_id,
+            'name'          => $request->name,
+            'slug'          => $newSlug,
+            'description'   => $request->description,
+            'folder'        => $newFolder,
             'preview_image' => $previewPath,
-
-            'main_file' => $zipPath,
-
-            'price' => $request->price ?? 0,
-
-            'is_premium' => $request->has('is_premium'),
-
-            'is_featured' => $request->has('is_featured'),
-
-            'is_active' => $request->has('is_active'),
-
+            'main_file'     => $zipPath,
+            'price'         => $request->price ?? 0,
+            'plan_tier'     => $request->plan_tier ?? 'basic',
+            'is_premium'    => $request->plan_tier !== 'basic',
+            'is_featured'   => $request->has('is_featured'),
+            'is_active'     => $request->has('is_active'),
         ]);
 
         return redirect()

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Template extends Model
 {
     protected $fillable = [
-
         'category_id',
         'name',
         'slug',
@@ -19,8 +18,19 @@ class Template extends Model
         'price',
         'is_featured',
         'is_active',
-
+        'plan_tier',
     ];
+
+    const PLAN_TIERS = [
+        'basic'     => ['label' => 'Básico',    'color' => '#16a34a', 'bg' => '#dcfce7'],
+        'pro'       => ['label' => 'Pro',        'color' => '#1A56DB', 'bg' => '#dbeafe'],
+        'super_pro' => ['label' => 'Super Pro', 'color' => '#7c3aed', 'bg' => '#ede9fe'],
+    ];
+
+    public function getPlanTierLabelAttribute(): string
+    {
+        return self::PLAN_TIERS[$this->plan_tier]['label'] ?? 'Básico';
+    }
 
     public function category()
     {

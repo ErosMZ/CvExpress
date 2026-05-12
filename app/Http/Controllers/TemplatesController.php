@@ -11,8 +11,7 @@ class TemplatesController extends Controller
     public function index(Request $request)
     {
         $query = Template::with('category')
-            ->where('is_active', true)
-            ->latest();
+            ->where('is_active', true);
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -24,6 +23,14 @@ class TemplatesController extends Controller
             } elseif ($request->tipo === 'gratis') {
                 $query->where('is_premium', false);
             }
+        }
+
+        if ($request->sort === 'price_asc') {
+            $query->orderBy('price', 'asc');
+        } elseif ($request->sort === 'price_desc') {
+            $query->orderBy('price', 'desc');
+        } else {
+            $query->latest();
         }
 
         $templates  = $query->get();

@@ -40,6 +40,7 @@
             <ul class="nav__menu" id="nav-menu" role="list">
                 <li><a href="{{ route('home') }}#como-funciona" class="nav__link">Cómo funciona</a></li>
                 <li><a href="{{ route('home') }}#caracteristicas" class="nav__link">Características</a></li>
+                <li><a href="{{ route('home') }}#crear-cv" class="nav__link">Crear CV</a></li>
                 <li><a href="{{ route('home') }}#precios" class="nav__link">Precios</a></li>
                 @guest
                     <li><a href="{{ route('login') }}" class="nav__link">Iniciar sesión</a></li>
