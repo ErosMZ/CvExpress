@@ -304,13 +304,13 @@ document.addEventListener('DOMContentLoaded', function() {
         lastScrollY = scrollY;
     });
     
-    // Add typing animation to name
+    // Add typing animation to name (skip if controlled by dashboard via data-cv)
     const nameElement = document.querySelector('.name');
-    if (nameElement) {
+    if (nameElement && !nameElement.hasAttribute('data-cv')) {
         const originalText = nameElement.textContent;
         nameElement.textContent = '';
         let charIndex = 0;
-        
+
         function typeWriter() {
             if (charIndex < originalText.length) {
                 nameElement.textContent += originalText.charAt(charIndex);
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(typeWriter, 80);
             }
         }
-        
+
         // Start typing animation after a short delay
         setTimeout(typeWriter, 500);
     }

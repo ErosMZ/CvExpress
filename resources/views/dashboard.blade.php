@@ -486,36 +486,16 @@
                             </div>
                         </div>
 
-                        {{-- Banner: importar CV --}}
-                        <div id="cv-import-banner" style="display:flex;align-items:center;gap:1rem;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-                            <div style="width:38px;height:38px;border-radius:10px;background:#dbeafe;color:#1A56DB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            </div>
-                            <div style="flex:1;min-width:0;">
-                                @if($u->cv_path)
-                                    <div style="font-size:.875rem;font-weight:700;color:#1e3a5f;margin-bottom:.15rem;">Tienes un CV subido</div>
-                                    <div style="font-size:.78rem;color:#3b82f6;">¿Rellenar los campos con los datos de tu perfil, o subir otro CV?</div>
-                                @else
-                                    <div style="font-size:.875rem;font-weight:700;color:#1e3a5f;margin-bottom:.15rem;">Sube tu currículum para agilizar el proceso</div>
-                                    <div style="font-size:.78rem;color:#3b82f6;">Acepta PDF y Word. También puedes rellenar los campos manualmente.</div>
-                                @endif
-                            </div>
-                            <div style="display:flex;gap:.5rem;flex-wrap:wrap;flex-shrink:0;">
-                                @if($u->cv_path)
-                                    <button type="button" onclick="fillFromProfile()" class="btn btn--primary btn--sm">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                        Usar mi perfil
-                                    </button>
-                                @endif
-                                <label class="btn btn--ghost btn--sm" style="cursor:pointer;">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                    {{ $u->cv_path ? 'Subir otro CV' : 'Subir CV' }}
-                                    <input type="file" accept=".pdf,.doc,.docx" style="display:none;" onchange="onCvFileSelected(this)">
-                                </label>
-                                <button type="button" onclick="dismissImportBanner()" class="btn btn--ghost btn--sm" style="color:var(--color-text-muted);">
-                                    Rellenar manual
-                                </button>
-                            </div>
+                        {{-- Acciones rápidas --}}
+                        <div style="display:flex;gap:.625rem;margin-bottom:1.5rem;">
+                            <button type="button" onclick="openAiModal()" class="btn btn--primary btn--sm" style="flex:1;justify-content:center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                Analizar CV con IA
+                            </button>
+                            <button type="button" onclick="showCvView('selector')" class="btn btn--ghost btn--sm" style="flex:1;justify-content:center;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                Cambiar plantilla
+                            </button>
                         </div>
 
                         {{-- ─── EDITOR DOS COLUMNAS ─── --}}
@@ -592,7 +572,7 @@
                                         </button>
                                     </div>
                                     <div id="entries-experiencia">
-                                        @php $expEntries = $cvData['experiencia'] ?? [[]]; @endphp
+                                        @php $expEntries = $cvData['experiencia'] ?: [[]]; @endphp
                                         @foreach($expEntries as $exp)
                                         <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
                                             <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
@@ -618,7 +598,7 @@
                                         </button>
                                     </div>
                                     <div id="entries-formacion">
-                                        @php $formEntries = $cvData['formacion'] ?? [[]]; @endphp
+                                        @php $formEntries = $cvData['formacion'] ?: [[]]; @endphp
                                         @foreach($formEntries as $form)
                                         <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
                                             <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
@@ -658,41 +638,53 @@
                                         </button>
                                     </div>
                                     <div id="entries-idiomas">
-                                        @php $idiomaEntries = $cvData['idiomas'] ?? [[]]; @endphp
+                                        @php
+                                            $idiomaEntries = $cvData['idiomas'] ?: [[]];
+                                            $nivelesOpts = [
+                                                '── Nivel general ──' => ['Nativo','C2 – Maestría','C1 – Avanzado','B2 – Intermedio alto','B1 – Intermedio','A2 – Básico','A1 – Elemental'],
+                                                '── Certificados Inglés ──' => ['Cambridge A2 Key (KET)','Cambridge B1 Preliminary (PET)','Cambridge B2 First (FCE)','Cambridge C1 Advanced (CAE)','Cambridge C2 Proficiency (CPE)','IELTS 4.0–5.0 (B1)','IELTS 5.5–6.0 (B2)','IELTS 6.5–7.0 (C1)','IELTS 8.0+ (C2)','TOEFL 42–71 (B1)','TOEFL 72–94 (B2)','TOEFL 95–110 (C1)','TOEFL 111+ (C2)','TOEIC 550–780','TOEIC 785–900','TOEIC 905+'],
+                                                '── Certificados Español ──' => ['DELE A1','DELE A2','DELE B1','DELE B2','DELE C1','DELE C2','SIELE'],
+                                                '── Certificados Francés ──' => ['DELF A1','DELF A2','DELF B1','DELF B2','DALF C1','DALF C2','TCF B1','TCF B2+'],
+                                                '── Certificados Alemán ──' => ['Goethe A1','Goethe A2','Goethe B1','Goethe B2','Goethe C1','Goethe C2'],
+                                                '── Certificados Chino ──' => ['HSK 1–2 (A1-A2)','HSK 3–4 (B1-B2)','HSK 5–6 (C1-C2)'],
+                                                '── Otros ──' => ['EOI A2','EOI B1','EOI B2','EOI C1','EOI C2'],
+                                            ];
+                                        @endphp
                                         @foreach($idiomaEntries as $idioma)
-                                        @php $niveles = ['Nativo','C2 – Maestría','C1 – Avanzado','B2 – Intermedio alto','B1 – Intermedio','A2 – Básico','A1 – Elemental']; @endphp
-                                        <div class="cv-entry" style="display:flex;gap:.625rem;align-items:center;margin-bottom:.5rem;">
-                                            <input type="text" data-field="idioma" class="form-input" placeholder="Idioma" style="flex:1;" value="{{ $idioma['idioma'] ?? '' }}">
-                                            <select data-field="nivel" class="form-input" style="flex:1;">
-                                                <option value="">Nivel</option>
-                                                @foreach($niveles as $nv)
-                                                <option {{ ($idioma['nivel'] ?? '') === $nv ? 'selected' : '' }}>{{ $nv }}</option>
-                                                @endforeach
-                                            </select>
-                                            <button type="button" onclick="removeEntry(this.parentElement)" style="background:none;border:none;cursor:pointer;color:var(--color-text-muted);flex-shrink:0;">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
+                                            <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                             </button>
+                                            <div class="form-grid" style="gap:.625rem;">
+                                                <div class="form-group" style="margin:0;">
+                                                    <label class="form-label" style="font-size:.72rem;">Idioma</label>
+                                                    <input type="text" data-field="idioma" class="form-input" placeholder="ej. Inglés, Francés..." value="{{ $idioma['idioma'] ?? '' }}">
+                                                </div>
+                                                <div class="form-group" style="margin:0;">
+                                                    <label class="form-label" style="font-size:.72rem;">Nivel / Certificado</label>
+                                                    <select data-field="nivel" class="form-input">
+                                                        <option value="">Seleccionar nivel o certificado...</option>
+                                                        @foreach($nivelesOpts as $grupo => $opciones)
+                                                        <optgroup label="{{ $grupo }}">
+                                                            @foreach($opciones as $op)
+                                                            <option {{ ($idioma['nivel'] ?? '') === $op ? 'selected' : '' }}>{{ $op }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                         @endforeach
                                     </div>
                                 </div>
 
-                                {{-- Guardar + Analizar con IA --}}
-                                <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.25rem 0;flex-wrap:wrap;">
-                                    <button type="button" onclick="showCvView('selector')" class="btn btn--ghost btn--sm">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                                        Cambiar plantilla
+                                {{-- Guardar --}}
+                                <div style="display:flex;justify-content:flex-end;padding:.25rem 0;">
+                                    <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="btn btn--primary btn--sm">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+                                        Guardar
                                     </button>
-                                    <div style="display:flex;gap:.5rem;">
-                                        <button type="button" onclick="openAiModal()" class="btn btn--ghost btn--sm" style="color:var(--color-primary);border-color:var(--color-primary);">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                                            Analizar CV con IA
-                                        </button>
-                                        <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="btn btn--primary btn--sm">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
-                                            Guardar
-                                        </button>
-                                    </div>
                                 </div>
 
                             </div>{{-- / columna izquierda --}}
@@ -1775,99 +1767,143 @@
     }
 
     function _applyAiData(cvData) {
-        // Rellena todos los inputs simples
+        // 1. Asegurar que el editor esté visible
+        switchSection('templates', 'Mi CV Web');
+        showCvView('editor');
+
+        // 2. Rellenar campos simples
         var simpleFields = {
-            'cv_name': cvData.cv_name, 'cv_job_title': cvData.cv_job_title,
-            'cv_bio': cvData.cv_bio, 'cv_email': cvData.cv_email,
-            'cv_phone': cvData.cv_phone, 'cv_location': cvData.cv_location,
-            'cv_linkedin': cvData.cv_linkedin, 'cv_website': cvData.cv_website,
-            'cv_skills': cvData.cv_skills, 'cv_soft_skills': cvData.cv_soft_skills
+            'cv_name':       cvData.cv_name       || '',
+            'cv_job_title':  cvData.cv_job_title  || '',
+            'cv_bio':        cvData.cv_bio         || '',
+            'cv_email':      cvData.cv_email       || '',
+            'cv_phone':      cvData.cv_phone       || '',
+            'cv_location':   cvData.cv_location    || '',
+            'cv_linkedin':   cvData.cv_linkedin    || '',
+            'cv_website':    cvData.cv_website     || '',
+            'cv_skills':     cvData.cv_skills      || '',
+            'cv_soft_skills':cvData.cv_soft_skills || ''
         };
         Object.keys(simpleFields).forEach(function(id) {
             var el = document.getElementById(id);
-            if (el && simpleFields[id]) {
-                el.value = simpleFields[id];
-                // Dispara el oninput para actualizar preview
-                el.dispatchEvent(new Event('input'));
-            }
+            if (el) el.value = simpleFields[id];
         });
 
-        // Rellena entradas dinámicas
+        // 3. Reconstruir entradas dinámicas (limpia primero)
         _rebuildEntries('experiencia', cvData.experiencia || [],
             function(e) { return [e.empresa||'', e.cargo||'', e.periodo||'', e.descripcion||'']; });
         _rebuildEntries('formacion', cvData.formacion || [],
             function(e) { return [e.institucion||'', e.titulo||'', e.periodo||'', e.descripcion||'']; });
         _rebuildIdiomaEntries(cvData.idiomas || []);
 
-        // Actualiza el preview
-        setTimeout(fillAllPreview, 100);
+        // 4. Actualizar plantilla en el iframe
+        // Esperamos a que el iframe esté listo y el layout visible
+        var attempts = 0;
+        function tryFillPreview() {
+            var iframe = document.getElementById('cv-preview-iframe');
+            if (!iframe) return;
+            var doc;
+            try { doc = iframe.contentDocument; } catch(e) {}
+            if (!doc || !doc.body || doc.body.children.length === 0) {
+                if (++attempts < 20) setTimeout(tryFillPreview, 200);
+                return;
+            }
+            fillAllPreview();
+        }
+        setTimeout(tryFillPreview, 150);
 
-        // Feedback visual
+        // 5. Feedback visual en botón guardar
         var btn = document.getElementById('btn-save-cv');
         if (btn) {
             var orig = btn.innerHTML;
-            btn.innerHTML = '✓ Datos cargados desde IA';
+            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Datos IA aplicados';
             btn.style.background = '#16a34a';
-            setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 3000);
+            setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 4000);
         }
     }
 
     function _rebuildEntries(type, entries, fieldsFn) {
-        if (!entries.length) return;
         var container = document.getElementById('entries-' + type);
         if (!container) return;
+
+        // Eliminar todas las entradas existentes excepto la primera (la usamos de plantilla)
+        var existing = container.querySelectorAll('.cv-entry');
+        for (var i = 1; i < existing.length; i++) existing[i].remove();
+
+        if (!entries.length) return;
+
         var tmpl = container.querySelector('.cv-entry');
         if (!tmpl) return;
 
-        // Rellena la primera entrada
-        var inputs = tmpl.querySelectorAll('[data-field]');
-        var fields = fieldsFn(entries[0]);
-        inputs.forEach(function(inp, idx) {
-            if (fields[idx] !== undefined) inp.value = fields[idx];
+        // Primera entrada: rellenar con datos
+        var fields0 = fieldsFn(entries[0]);
+        tmpl.querySelectorAll('[data-field]').forEach(function(inp, idx) {
+            if (fields0[idx] !== undefined) inp.value = fields0[idx];
         });
 
-        // Crea las siguientes
-        for (var i = 1; i < entries.length; i++) {
+        // Entradas adicionales: clonar y rellenar
+        for (var j = 1; j < entries.length; j++) {
             var clone = tmpl.cloneNode(true);
-            var cloneInputs = clone.querySelectorAll('[data-field]');
-            var f = fieldsFn(entries[i]);
-            cloneInputs.forEach(function(inp, idx) {
+            var f = fieldsFn(entries[j]);
+            clone.querySelectorAll('[data-field]').forEach(function(inp, idx) {
                 if (f[idx] !== undefined) inp.value = f[idx];
             });
             container.appendChild(clone);
         }
+    }
 
-        updateEntriesPreview(type);
+    function _setNivelSelect(sel, nivel) {
+        if (!nivel) return;
+        var n = nivel.trim();
+        var nl = n.toLowerCase();
+        // 1. Exact match
+        for (var o = 0; o < sel.options.length; o++) {
+            if (sel.options[o].text === n) { sel.selectedIndex = o; return; }
+        }
+        // 2. Case-insensitive exact
+        for (var o = 0; o < sel.options.length; o++) {
+            if (sel.options[o].text.toLowerCase() === nl) { sel.selectedIndex = o; return; }
+        }
+        // 3. Option text starts with AI value (e.g. "C2" matches "C2 – Maestría")
+        for (var o = 0; o < sel.options.length; o++) {
+            if (sel.options[o].text.toLowerCase().startsWith(nl)) { sel.selectedIndex = o; return; }
+        }
+        // 4. AI value starts with option text (e.g. "Nativo ..." → "Nativo")
+        for (var o = 0; o < sel.options.length; o++) {
+            var tl = sel.options[o].text.toLowerCase();
+            if (tl && nl.startsWith(tl)) { sel.selectedIndex = o; return; }
+        }
+        // 5. First significant word match (e.g. "B2" in "B2 – Intermedio alto")
+        for (var o = 0; o < sel.options.length; o++) {
+            var fw = sel.options[o].text.split(/[\s–-]/)[0].toLowerCase();
+            if (fw && (nl === fw || nl.startsWith(fw + ' '))) { sel.selectedIndex = o; return; }
+        }
     }
 
     function _rebuildIdiomaEntries(idiomas) {
         if (!idiomas.length) return;
         var container = document.getElementById('entries-idiomas');
         if (!container) return;
+
+        // Clear all entries except the first (template)
+        var existing = container.querySelectorAll('.cv-entry');
+        for (var k = 1; k < existing.length; k++) existing[k].remove();
+
         var tmpl = container.querySelector('.cv-entry');
         if (!tmpl) return;
 
         var idiomaInput = tmpl.querySelector('[data-field="idioma"]');
         var nivelSelect = tmpl.querySelector('[data-field="nivel"]');
         if (idiomaInput) idiomaInput.value = idiomas[0].idioma || '';
-        if (nivelSelect) {
-            for (var o = 0; o < nivelSelect.options.length; o++) {
-                if (nivelSelect.options[o].text === idiomas[0].nivel) {
-                    nivelSelect.selectedIndex = o; break;
-                }
-            }
-        }
+        if (nivelSelect) _setNivelSelect(nivelSelect, idiomas[0].nivel || '');
 
         for (var i = 1; i < idiomas.length; i++) {
             var clone = tmpl.cloneNode(true);
             var inp = clone.querySelector('[data-field="idioma"]');
             var sel = clone.querySelector('[data-field="nivel"]');
             if (inp) inp.value = idiomas[i].idioma || '';
-            if (sel) {
-                for (var j = 0; j < sel.options.length; j++) {
-                    if (sel.options[j].text === idiomas[i].nivel) { sel.selectedIndex = j; break; }
-                }
-            }
+            if (sel) _setNivelSelect(sel, idiomas[i].nivel || '');
+
             container.appendChild(clone);
         }
 

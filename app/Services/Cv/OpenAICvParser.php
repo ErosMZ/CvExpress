@@ -81,7 +81,7 @@ ESQUEMA JSON OBLIGATORIO:
   "languages": [
     {
       "language": "Idioma",
-      "level": "Nativo / C2 / B2 / etc"
+      "level": "Usa EXACTAMENTE uno de estos valores — Nivel general: Nativo, C2 – Maestría, C1 – Avanzado, B2 – Intermedio alto, B1 – Intermedio, A2 – Básico, A1 – Elemental — Inglés: Cambridge A2 Key (KET), Cambridge B1 Preliminary (PET), Cambridge B2 First (FCE), Cambridge C1 Advanced (CAE), Cambridge C2 Proficiency (CPE), IELTS 4.0–5.0 (B1), IELTS 5.5–6.0 (B2), IELTS 6.5–7.0 (C1), IELTS 8.0+ (C2), TOEFL 42–71 (B1), TOEFL 72–94 (B2), TOEFL 95–110 (C1), TOEFL 111+ (C2), TOEIC 550–780, TOEIC 785–900, TOEIC 905+ — Español: DELE A1, DELE A2, DELE B1, DELE B2, DELE C1, DELE C2, SIELE — Francés: DELF A1, DELF A2, DELF B1, DELF B2, DALF C1, DALF C2, TCF B1, TCF B2+ — Alemán: Goethe A1, Goethe A2, Goethe B1, Goethe B2, Goethe C1, Goethe C2 — Chino: HSK 1–2 (A1-A2), HSK 3–4 (B1-B2), HSK 5–6 (C1-C2) — Otros: EOI A2, EOI B1, EOI B2, EOI C1, EOI C2. Si hay certificado en el CV úsalo; si solo hay nivel usa el equivalente general."
     }
   ],
   "projects": [
