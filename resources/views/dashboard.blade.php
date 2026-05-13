@@ -519,7 +519,7 @@
                         </div>
 
                         {{-- ─── EDITOR DOS COLUMNAS ─── --}}
-                        <div style="display:grid;grid-template-columns:360px 1fr;gap:1.25rem;align-items:start;">
+                        <div style="display:grid;grid-template-columns:360px minmax(0,1fr);gap:1.25rem;align-items:start;">
 
                             {{-- COLUMNA IZQUIERDA ─── --}}
                             <div style="display:flex;flex-direction:column;gap:.875rem;">
@@ -547,20 +547,20 @@
                                     <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Presentación</div>
                                     <div class="form-group" style="margin-bottom:.875rem;">
                                         <label class="form-label" for="cv_name">Nombre completo</label>
-                                        <input type="text" id="cv_name" class="form-input" value="{{ $u->name }}"
+                                        <input type="text" id="cv_name" class="form-input" value="{{ $cvData['cv_name'] ?? $u->name }}"
                                                oninput="updatePreview('name',this.value)">
                                     </div>
                                     <div class="form-group" style="margin-bottom:.875rem;">
                                         <label class="form-label" for="cv_job_title">Título profesional</label>
                                         <input type="text" id="cv_job_title" class="form-input"
-                                               placeholder="ej. Desarrollador Full Stack" value="{{ $u->job_title ?? '' }}"
+                                               placeholder="ej. Desarrollador Full Stack" value="{{ $cvData['cv_job_title'] ?? $u->job_title ?? '' }}"
                                                oninput="updatePreview('job_title',this.value)">
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label" for="cv_bio">Resumen / Sobre mí</label>
                                         <textarea id="cv_bio" class="form-textarea" rows="5"
                                                   placeholder="Descripción profesional..."
-                                                  oninput="updatePreview('bio',this.value)">{{ $u->bio ?? '' }}</textarea>
+                                                  oninput="updatePreview('bio',this.value)">{{ $cvData['cv_bio'] ?? $u->bio ?? '' }}</textarea>
                                     </div>
                                 </div>
 
@@ -568,11 +568,11 @@
                                 <div id="cvpanel-contacto" class="panel-card" style="margin:0;display:none;">
                                     <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Contacto</div>
                                     @foreach([
-                                        ['cv_email',    'email',    'Correo electrónico', 'email', $u->email ?? '',         'tu@email.com'],
-                                        ['cv_phone',    'phone',    'Teléfono',           'tel',   $u->phone ?? '',         '+34 600 000 000'],
-                                        ['cv_location', 'location', 'Ubicación',          'text',  $u->location ?? '',      'ej. Madrid, España'],
-                                        ['cv_linkedin', 'linkedin', 'LinkedIn',           'url',   $u->linkedin_url ?? '',  'https://linkedin.com/in/...'],
-                                        ['cv_website',  'website',  'Sitio web',          'url',   $u->website_url ?? '',   'https://tuportfolio.com'],
+                                        ['cv_email',    'email',    'Correo electrónico', 'email', $cvData['cv_email']    ?? $u->email ?? '',        'tu@email.com'],
+                                        ['cv_phone',    'phone',    'Teléfono',           'tel',   $cvData['cv_phone']    ?? $u->phone ?? '',         '+34 600 000 000'],
+                                        ['cv_location', 'location', 'Ubicación',          'text',  $cvData['cv_location'] ?? $u->location ?? '',      'ej. Madrid, España'],
+                                        ['cv_linkedin', 'linkedin', 'LinkedIn',           'url',   $cvData['cv_linkedin'] ?? $u->linkedin_url ?? '',  'https://linkedin.com/in/...'],
+                                        ['cv_website',  'website',  'Sitio web',          'url',   $cvData['cv_website']  ?? $u->website_url ?? '',   'https://tuportfolio.com'],
                                     ] as [$id, $field, $label, $type, $val, $ph])
                                     <div class="form-group" style="margin-bottom:.75rem;">
                                         <label class="form-label" for="{{ $id }}">{{ $label }}</label>
@@ -592,17 +592,20 @@
                                         </button>
                                     </div>
                                     <div id="entries-experiencia">
+                                        @php $expEntries = $cvData['experiencia'] ?? [[]]; @endphp
+                                        @foreach($expEntries as $exp)
                                         <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
                                             <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                             </button>
                                             <div class="form-grid" style="gap:.625rem;">
-                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Empresa</label><input type="text" class="form-input" placeholder="Empresa S.L."></div>
-                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Cargo</label><input type="text" class="form-input" placeholder="Desarrollador Web"></div>
-                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Período</label><input type="text" class="form-input" placeholder="2022 – presente"></div>
-                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción</label><textarea class="form-textarea" rows="3" placeholder="Responsabilidades y logros..."></textarea></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Empresa</label><input type="text" data-field="empresa" class="form-input" placeholder="Empresa S.L." value="{{ $exp['empresa'] ?? '' }}"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Cargo</label><input type="text" data-field="cargo" class="form-input" placeholder="Desarrollador Web" value="{{ $exp['cargo'] ?? '' }}"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Período</label><input type="text" data-field="periodo" class="form-input" placeholder="2022 – presente" value="{{ $exp['periodo'] ?? '' }}"></div>
+                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción</label><textarea data-field="descripcion" class="form-textarea" rows="3" placeholder="Responsabilidades y logros...">{{ $exp['descripcion'] ?? '' }}</textarea></div>
                                             </div>
                                         </div>
+                                        @endforeach
                                     </div>
                                 </div>
 
@@ -615,17 +618,20 @@
                                         </button>
                                     </div>
                                     <div id="entries-formacion">
+                                        @php $formEntries = $cvData['formacion'] ?? [[]]; @endphp
+                                        @foreach($formEntries as $form)
                                         <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
                                             <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
                                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                             </button>
                                             <div class="form-grid" style="gap:.625rem;">
-                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Institución</label><input type="text" class="form-input" placeholder="Universidad / Centro"></div>
-                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Título / Grado</label><input type="text" class="form-input" placeholder="Grado en Informática"></div>
-                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Período</label><input type="text" class="form-input" placeholder="2018 – 2022"></div>
-                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción (opcional)</label><textarea class="form-textarea" rows="2" placeholder="Especialización, proyectos..."></textarea></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Institución</label><input type="text" data-field="institucion" class="form-input" placeholder="Universidad / Centro" value="{{ $form['institucion'] ?? '' }}"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Título / Grado</label><input type="text" data-field="titulo" class="form-input" placeholder="Grado en Informática" value="{{ $form['titulo'] ?? '' }}"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Período</label><input type="text" data-field="periodo" class="form-input" placeholder="2018 – 2022" value="{{ $form['periodo'] ?? '' }}"></div>
+                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción (opcional)</label><textarea data-field="descripcion" class="form-textarea" rows="2" placeholder="Especialización, proyectos...">{{ $form['descripcion'] ?? '' }}</textarea></div>
                                             </div>
                                         </div>
+                                        @endforeach
                                     </div>
                                 </div>
 
@@ -634,12 +640,12 @@
                                     <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Habilidades</div>
                                     <div class="form-group" style="margin-bottom:.875rem;">
                                         <label class="form-label" for="cv_skills">Habilidades técnicas</label>
-                                        <input type="text" id="cv_skills" class="form-input" placeholder="JavaScript, React, Laravel, PHP..." oninput="updatePreview('skills',this.value)">
+                                        <input type="text" id="cv_skills" class="form-input" placeholder="JavaScript, React, Laravel, PHP..." value="{{ $cvData['cv_skills'] ?? '' }}" oninput="updatePreview('skills',this.value)">
                                         <span class="form-hint">Separa con comas</span>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label" for="cv_soft_skills">Habilidades blandas</label>
-                                        <input type="text" id="cv_soft_skills" class="form-input" placeholder="Trabajo en equipo, liderazgo..." oninput="updatePreview('soft_skills',this.value)">
+                                        <input type="text" id="cv_soft_skills" class="form-input" placeholder="Trabajo en equipo, liderazgo..." value="{{ $cvData['cv_soft_skills'] ?? '' }}" oninput="updatePreview('soft_skills',this.value)">
                                     </div>
                                 </div>
 
@@ -652,31 +658,41 @@
                                         </button>
                                     </div>
                                     <div id="entries-idiomas">
+                                        @php $idiomaEntries = $cvData['idiomas'] ?? [[]]; @endphp
+                                        @foreach($idiomaEntries as $idioma)
+                                        @php $niveles = ['Nativo','C2 – Maestría','C1 – Avanzado','B2 – Intermedio alto','B1 – Intermedio','A2 – Básico','A1 – Elemental']; @endphp
                                         <div class="cv-entry" style="display:flex;gap:.625rem;align-items:center;margin-bottom:.5rem;">
-                                            <input type="text" class="form-input" placeholder="Idioma" style="flex:1;">
-                                            <select class="form-input" style="flex:1;">
+                                            <input type="text" data-field="idioma" class="form-input" placeholder="Idioma" style="flex:1;" value="{{ $idioma['idioma'] ?? '' }}">
+                                            <select data-field="nivel" class="form-input" style="flex:1;">
                                                 <option value="">Nivel</option>
-                                                @foreach(['Nativo','C2 – Maestría','C1 – Avanzado','B2 – Intermedio alto','B1 – Intermedio','A2 – Básico','A1 – Elemental'] as $nivel)
-                                                <option>{{ $nivel }}</option>
+                                                @foreach($niveles as $nv)
+                                                <option {{ ($idioma['nivel'] ?? '') === $nv ? 'selected' : '' }}>{{ $nv }}</option>
                                                 @endforeach
                                             </select>
                                             <button type="button" onclick="removeEntry(this.parentElement)" style="background:none;border:none;cursor:pointer;color:var(--color-text-muted);flex-shrink:0;">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                             </button>
                                         </div>
+                                        @endforeach
                                     </div>
                                 </div>
 
-                                {{-- Guardar --}}
-                                <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.25rem 0;">
+                                {{-- Guardar + Analizar con IA --}}
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:.25rem 0;flex-wrap:wrap;">
                                     <button type="button" onclick="showCvView('selector')" class="btn btn--ghost btn--sm">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                                         Cambiar plantilla
                                     </button>
-                                    <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="btn btn--primary btn--sm">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
-                                        Guardar cambios
-                                    </button>
+                                    <div style="display:flex;gap:.5rem;">
+                                        <button type="button" onclick="openAiModal()" class="btn btn--ghost btn--sm" style="color:var(--color-primary);border-color:var(--color-primary);">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                            Analizar CV con IA
+                                        </button>
+                                        <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="btn btn--primary btn--sm">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
+                                            Guardar
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>{{-- / columna izquierda --}}
@@ -705,10 +721,10 @@
                                         @if($selected && $selected->preview_html_url)
                                             <iframe id="cv-preview-iframe"
                                                     src="{{ $selected->preview_html_url }}"
-                                                    style="width:1280px;height:900px;transform-origin:top left;border:none;pointer-events:none;"
-                                                    scrolling="no"
+                                                    style="position:absolute;top:0;left:0;width:1280px;height:900px;transform-origin:top left;border:none;"
+                                                    scrolling="auto"
                                                     sandbox="allow-same-origin allow-scripts"
-                                                    onload="scaleCvPreview()">
+                                                    onload="onPreviewLoaded(this)">
                                             </iframe>
                                         @else
                                             <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:.75rem;color:var(--color-text-muted);">
@@ -1045,6 +1061,111 @@
     </div>
 </div>
 
+{{-- ══════════════════════════════════════════════
+     MODAL: Analizar CV con IA
+     ══════════════════════════════════════════════ --}}
+<div id="ai-modal-overlay"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
+    <div style="background:#fff;border-radius:20px;padding:2rem;max-width:520px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.2);position:relative;">
+        {{-- Cerrar --}}
+        <button type="button" onclick="closeAiModal()"
+                style="position:absolute;top:1rem;right:1rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);padding:.25rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        {{-- ESTADO: selección --}}
+        <div id="ai-modal-select">
+            <div style="display:flex;align-items:center;gap:.875rem;margin-bottom:1.5rem;">
+                <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="18" cy="6" r="3" fill="#fff" stroke="none"/></svg>
+                </div>
+                <div>
+                    <div style="font-size:1.1rem;font-weight:800;color:var(--color-text-primary);">Analizar CV con Inteligencia Artificial</div>
+                    <div style="font-size:.82rem;color:var(--color-text-muted);">La IA leerá tu CV y rellenará automáticamente todos los campos</div>
+                </div>
+            </div>
+
+            @if($u->cv_path)
+            {{-- Opción A: usar CV existente --}}
+            <div id="ai-option-existing"
+                 onclick="selectAiOption('existing')"
+                 style="border:2px solid var(--color-border);border-radius:14px;padding:1rem 1.25rem;cursor:pointer;margin-bottom:.75rem;transition:all .15s;display:flex;align-items:center;gap:1rem;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#eff6ff;color:#1A56DB;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:.9rem;font-weight:700;color:var(--color-text-primary);">Usar CV guardado</div>
+                    <div style="font-size:.78rem;color:var(--color-text-muted);">{{ $u->cv_original_name ?? 'curriculum.pdf' }}</div>
+                </div>
+                <div id="ai-check-existing" style="display:none;color:var(--color-primary);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            @endif
+
+            {{-- Opción B: subir nuevo --}}
+            <div id="ai-option-new"
+                 onclick="selectAiOption('new')"
+                 style="border:2px solid var(--color-border);border-radius:14px;padding:1rem 1.25rem;cursor:pointer;margin-bottom:1.25rem;transition:all .15s;display:flex;align-items:center;gap:1rem;">
+                <div style="width:40px;height:40px;border-radius:10px;background:#f0fdf4;color:#16a34a;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:.9rem;font-weight:700;color:var(--color-text-primary);">Subir nuevo CV</div>
+                    <div style="font-size:.78rem;color:var(--color-text-muted);">PDF hasta 10 MB</div>
+                </div>
+                <div id="ai-check-new" style="display:none;color:var(--color-primary);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+
+            {{-- Zona drop de archivo (solo visible si source=new) --}}
+            <div id="ai-drop-zone" style="display:none;border:2px dashed var(--color-border);border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.25rem;cursor:pointer;transition:border-color .2s;"
+                 ondragover="event.preventDefault();this.style.borderColor='var(--color-primary)'"
+                 ondragleave="this.style.borderColor='var(--color-border)'"
+                 ondrop="onAiDrop(event)">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" style="margin:0 auto .5rem;display:block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <div style="font-size:.875rem;font-weight:600;color:var(--color-text-secondary);" id="ai-drop-label">Arrastra tu CV aquí o <span style="color:var(--color-primary);text-decoration:underline;cursor:pointer;" onclick="document.getElementById('ai-file-input').click()">selecciona archivo</span></div>
+                <input type="file" id="ai-file-input" accept=".pdf" style="display:none;" onchange="onAiFileSelected(this)">
+            </div>
+
+            <button type="button" id="ai-analyze-btn" onclick="startAiAnalysis()" class="btn btn--primary" style="width:100%;justify-content:center;" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Analizar con IA
+            </button>
+        </div>
+
+        {{-- ESTADO: procesando --}}
+        <div id="ai-modal-processing" style="display:none;text-align:center;padding:1rem 0;">
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);margin:0 auto 1.25rem;display:flex;align-items:center;justify-content:center;animation:ai-pulse 1.5s ease-in-out infinite;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div style="font-size:1.1rem;font-weight:800;color:var(--color-text-primary);margin-bottom:.5rem;">Analizando tu CV…</div>
+            <div id="ai-processing-step" style="font-size:.85rem;color:var(--color-text-muted);margin-bottom:1.5rem;">Extrayendo texto del PDF…</div>
+            <div style="background:var(--color-bg-secondary);border-radius:999px;height:6px;overflow:hidden;">
+                <div id="ai-progress-bar" style="height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:999px;width:15%;transition:width .5s ease;"></div>
+            </div>
+        </div>
+
+        {{-- ESTADO: error --}}
+        <div id="ai-modal-error" style="display:none;text-align:center;padding:1rem 0;">
+            <div style="width:56px;height:56px;border-radius:50%;background:#fee2e2;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <div style="font-size:1rem;font-weight:700;color:var(--color-text-primary);margin-bottom:.5rem;">Error en el análisis</div>
+            <div id="ai-error-msg" style="font-size:.83rem;color:#dc2626;margin-bottom:1.25rem;"></div>
+            <button type="button" onclick="resetAiModal()" class="btn btn--ghost btn--sm">Intentar de nuevo</button>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes ai-pulse {
+    0%,100% { transform:scale(1); opacity:1; }
+    50%      { transform:scale(1.08); opacity:.85; }
+}
+</style>
+
 @push('scripts')
 <script>
     // ── Section switcher ──
@@ -1064,6 +1185,8 @@
         closeSidebar();
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Scale iframe after section becomes visible
+        if (sectionId === 'templates') setTimeout(scaleCvPreview, 80);
     }
 
     // ── Mobile sidebar ──
@@ -1122,6 +1245,17 @@
         if (view === 'editor') scaleCvPreview();
     }
 
+    // Mapa: tab del editor → IDs/selectores de sección en la plantilla
+    var _SECTION_ANCHORS = {
+        presentacion: ['#perfil','#profile','#about','#inicio','#home','#hero','.hero','header'],
+        contacto:     ['#contacto','#contact','#contactame'],
+        experiencia:  ['#experiencia','#experience','#trabajo','#work','#exp'],
+        formacion:    ['#formacion','#education','#estudios','#educacion'],
+        habilidades:  ['#habilidades','#skills','#competencias','#abilities'],
+        idiomas:      ['#idiomas','#languages','#lenguajes'],
+    };
+
+    // ── CV Section tabs ──
     function showCvSection(section) {
         document.querySelectorAll('[id^="cvpanel-"]').forEach(function(p) { p.style.display = 'none'; });
         document.querySelectorAll('[id^="cvtab-"]').forEach(function(t) {
@@ -1132,71 +1266,188 @@
         var tab   = document.getElementById('cvtab-' + section);
         if (panel) panel.style.display = '';
         if (tab) { tab.style.background = 'var(--color-primary)'; tab.style.color = '#fff'; }
+
+        var iframe = document.getElementById('cv-preview-iframe');
+        if (!iframe) return;
+        var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
+        if (!doc) return;
+        var anchors = (_SECTION_ANCHORS[section] || []);
+        for (var i = 0; i < anchors.length; i++) {
+            var el = doc.querySelector(anchors[i]);
+            if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+        }
+        doc.querySelectorAll('a[href]').forEach(function(a) {
+            if (anchors.indexOf(a.getAttribute('href')) !== -1) { a.click(); }
+        });
     }
 
+    // ── Scale iframe ──
     function scaleCvPreview() {
         var wrap   = document.getElementById('cv-preview-wrap');
         var iframe = document.getElementById('cv-preview-iframe');
         if (!wrap || !iframe) return;
         var scale = wrap.offsetWidth / 1280;
+        if (!scale) return;
         iframe.style.transform = 'scale(' + scale + ')';
-        iframe.style.width  = '1280px';
-        iframe.style.height = Math.round(wrap.offsetHeight / scale) + 'px';
+        iframe.style.width     = '1280px';
+        iframe.style.height    = Math.round(580 / scale) + 'px';
     }
     window.addEventListener('resize', scaleCvPreview);
 
-    // Real-time preview field mapping
-    var _CV_SELECTORS = {
-        name:       ['h1','.name','.cv-name','#name','header h1','.hero-name','.profile-name','.full-name'],
-        job_title:  ['.job-title','.cv-title','.role','.tagline','.subtitle','h2','header h2','.position'],
-        bio:        ['.bio','.summary','.about','.intro','.description','p.lead','.profile-bio','.cv-summary'],
-        email:      ['a[href^="mailto"]','.email','.cv-email'],
-        phone:      ['a[href^="tel"]','.phone','.cv-phone'],
-        location:   ['.location','.address','.city','.cv-location'],
-        linkedin:   ['.linkedin','a[href*="linkedin"]'],
-        website:    ['.website','.portfolio'],
-        skills:     ['.skills','.cv-skills','.skills-list','.tech-skills'],
-        soft_skills:['.soft-skills','.personal-skills'],
-    };
-    var _cvTimer = null;
+    // ── HTML escape helper ──
+    function _esc(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
 
+    // ── Build HTML for dynamic sections ──
+    function _buildExperienciaHTML(entries) {
+        if (!entries.length) return '<p style="color:var(--color-text-muted,#999);font-style:italic;padding:.5rem 0;">Sin experiencia añadida.</p>';
+        return entries.map(function(e) {
+            var desc = _esc(e.descripcion || '').replace(/\n/g, '<br>');
+            return '<div class="timeline-item">' +
+                '<div class="timeline-date">' + _esc(e.periodo) + '</div>' +
+                '<div class="timeline-content">' +
+                '<h3>' + _esc(e.cargo) + '</h3>' +
+                '<h4>' + _esc(e.empresa) + '</h4>' +
+                '<p>' + desc + '</p>' +
+                '</div></div>';
+        }).join('');
+    }
+
+    function _buildFormacionHTML(entries) {
+        if (!entries.length) return '<p style="color:var(--color-text-muted,#999);font-style:italic;padding:.5rem 0;">Sin formación añadida.</p>';
+        return entries.map(function(e) {
+            return '<div class="education-item">' +
+                '<div class="education-icon">🎓</div>' +
+                '<div class="education-content">' +
+                '<h3>' + _esc(e.titulo) + '</h3>' +
+                '<h4>' + _esc(e.institucion) + '</h4>' +
+                '<p class="education-date">' + _esc(e.periodo) + '</p>' +
+                '<p class="education-description">' + _esc(e.descripcion) + '</p>' +
+                '</div></div>';
+        }).join('');
+    }
+
+    function _buildIdiomasHTML(entries) {
+        if (!entries.length) return '';
+        return entries.map(function(e) {
+            if (!e.idioma) return '';
+            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);">' +
+                '<span style="font-weight:600;">' + _esc(e.idioma) + '</span>' +
+                '<span style="opacity:.75;">' + _esc(e.nivel) + '</span>' +
+                '</div>';
+        }).join('');
+    }
+
+    // ── Serialize entries from DOM ──
+    function _serializeEntries(type) {
+        var result = [];
+        var container = document.getElementById('entries-' + type);
+        if (!container) return result;
+        container.querySelectorAll('.cv-entry').forEach(function(entry) {
+            var obj = {};
+            entry.querySelectorAll('[data-field]').forEach(function(el) {
+                obj[el.dataset.field] = el.value;
+            });
+            if (Object.values(obj).some(function(v){ return (v || '').trim(); })) {
+                result.push(obj);
+            }
+        });
+        return result;
+    }
+
+    // ── Update entries section in iframe ──
+    var _entriesTimers = {};
+    function updateEntriesPreview(type) {
+        clearTimeout(_entriesTimers[type]);
+        _entriesTimers[type] = setTimeout(function() {
+            var iframe = document.getElementById('cv-preview-iframe');
+            if (!iframe) return;
+            var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
+            if (!doc) return;
+            var entries = _serializeEntries(type);
+            var section = doc.querySelector('[data-cv-section="' + type + '"]');
+            if (!section) return;
+            if (type === 'experiencia') section.innerHTML = _buildExperienciaHTML(entries);
+            if (type === 'formacion')   section.innerHTML = _buildFormacionHTML(entries);
+            if (type === 'idiomas')     section.innerHTML = _buildIdiomasHTML(entries);
+        }, 220);
+    }
+
+    // ── Event delegation for entry fields ──
+    ['experiencia','formacion','idiomas'].forEach(function(type) {
+        var cont = document.getElementById('entries-' + type);
+        if (!cont) return;
+        cont.addEventListener('input', function() { updateEntriesPreview(type); });
+        cont.addEventListener('change', function() { updateEntriesPreview(type); });
+    });
+
+    // ── Simple field update ──
+    var _cvTimer = null;
     function updatePreview(field, value) {
         clearTimeout(_cvTimer);
         _cvTimer = setTimeout(function() {
             var iframe = document.getElementById('cv-preview-iframe');
             if (!iframe) return;
-            var doc;
-            try { doc = iframe.contentDocument; } catch(e) { return; }
+            var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
             if (!doc) return;
-            var sels = _CV_SELECTORS[field] || [];
-            for (var i = 0; i < sels.length; i++) {
-                var els = doc.querySelectorAll(sels[i]);
-                if (els.length > 0) {
-                    els.forEach(function(el) {
-                        if (el.tagName === 'A') {
-                            el.textContent = value;
-                            if (field === 'email')   el.href = 'mailto:' + value;
-                            if (field === 'phone')   el.href = 'tel:' + value;
-                            if (field === 'linkedin' || field === 'website') el.href = value;
-                        } else {
-                            el.textContent = value;
-                        }
-                    });
-                    break;
-                }
+            var el = doc.querySelector('[data-cv="' + field + '"]');
+            if (!el) return;
+            if (el.tagName === 'A') {
+                el.textContent = value;
+                if (field === 'email')                       el.href = 'mailto:' + value;
+                else if (field === 'phone')                  el.href = 'tel:' + value;
+                else if (field === 'linkedin' || field === 'website') el.href = value;
+            } else {
+                el.textContent = value;
             }
         }, 180);
     }
 
+    // ── Fill ALL fields into iframe ──
+    function fillAllPreview() {
+        var iframe = document.getElementById('cv-preview-iframe');
+        if (!iframe) return;
+        var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
+        if (!doc || !doc.body) return;
+
+        // Simple fields
+        var simpleMap = {
+            name: 'cv_name', job_title: 'cv_job_title', bio: 'cv_bio',
+            email: 'cv_email', phone: 'cv_phone', location: 'cv_location',
+            linkedin: 'cv_linkedin', website: 'cv_website'
+        };
+        Object.keys(simpleMap).forEach(function(field) {
+            var input = document.getElementById(simpleMap[field]);
+            if (!input || !input.value.trim()) return;
+            var el = doc.querySelector('[data-cv="' + field + '"]');
+            if (!el) return;
+            if (el.tagName === 'A') {
+                el.textContent = input.value;
+                if (field === 'email')   el.href = 'mailto:' + input.value;
+                if (field === 'phone')   el.href = 'tel:'    + input.value;
+                if (field === 'linkedin' || field === 'website') el.href = input.value;
+            } else {
+                el.textContent = input.value;
+            }
+        });
+
+        // Entry sections
+        ['experiencia','formacion','idiomas'].forEach(function(type) {
+            var entries = _serializeEntries(type);
+            if (!entries.length) return;
+            var section = doc.querySelector('[data-cv-section="' + type + '"]');
+            if (!section) return;
+            if (type === 'experiencia') section.innerHTML = _buildExperienciaHTML(entries);
+            if (type === 'formacion')   section.innerHTML = _buildFormacionHTML(entries);
+            if (type === 'idiomas')     section.innerHTML = _buildIdiomasHTML(entries);
+        });
+    }
+
+    // ── Banner ──
     function fillFromProfile() {
         dismissImportBanner();
-        var map = { name:'cv_name', job_title:'cv_job_title', bio:'cv_bio',
-                    email:'cv_email', phone:'cv_phone', location:'cv_location',
-                    linkedin:'cv_linkedin', website:'cv_website' };
-        Object.keys(map).forEach(function(field) {
-            var el = document.getElementById(map[field]);
-            if (el && el.value) updatePreview(field, el.value);
-        });
+        fillAllPreview();
     }
 
     function dismissImportBanner() {
@@ -1204,13 +1455,30 @@
         if (b) { b.style.opacity = '0'; b.style.transition = 'opacity .3s'; setTimeout(function(){ b.style.display='none'; }, 300); }
     }
 
+    // ── iframe load ──
+    function onPreviewLoaded(iframe) {
+        scaleCvPreview();
+        setTimeout(fillAllPreview, 50);
+        try {
+            var doc = iframe.contentDocument;
+            if (!doc) return;
+            doc.addEventListener('click', function(e) {
+                var link = e.target.closest ? e.target.closest('a[href]') : (e.target.tagName === 'A' ? e.target : null);
+                if (!link) return;
+                var href = link.getAttribute('href') || '';
+                var isInternal = href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href === '' || href === '/';
+                if (!isInternal) e.preventDefault();
+            });
+        } catch(e) {}
+    }
+
     function onCvFileSelected(input) {
         if (input.files && input.files[0]) {
             dismissImportBanner();
-            // TODO: send to server for parsing when tables are ready
         }
     }
 
+    // ── Add / Remove entries ──
     function addEntry(type) {
         var container = document.getElementById('entries-' + type);
         if (!container) return;
@@ -1220,18 +1488,26 @@
         clone.querySelectorAll('input,textarea').forEach(function(el){ el.value = ''; });
         clone.querySelectorAll('select').forEach(function(el){ el.selectedIndex = 0; });
         container.appendChild(clone);
+        var first = clone.querySelector('input,textarea,select');
+        if (first) { first.focus(); first.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
     }
 
     function removeEntry(btn) {
         var entry = btn.closest ? btn.closest('.cv-entry') : btn.parentElement;
         if (!entry) return;
         var cont = entry.parentElement;
+        var type = cont.id ? cont.id.replace('entries-','') : null;
         if (cont.querySelectorAll('.cv-entry').length <= 1) {
             entry.querySelectorAll('input,textarea').forEach(function(el){ el.value=''; });
+            entry.querySelectorAll('select').forEach(function(el){ el.selectedIndex=0; });
+            if (type) updateEntriesPreview(type);
             return;
         }
         entry.style.opacity = '0'; entry.style.transition = 'opacity .2s';
-        setTimeout(function(){ entry.remove(); }, 200);
+        setTimeout(function(){
+            entry.remove();
+            if (type) updateEntriesPreview(type);
+        }, 200);
     }
 
     function saveCvData(e) {
@@ -1241,28 +1517,37 @@
             var el = document.getElementById(id);
             if (el) data[id] = el.value;
         });
-        try { localStorage.setItem('cvdata_{{ auth()->id() }}', JSON.stringify(data)); } catch(ex) {}
-        var btn = document.getElementById('btn-save-cv');
-        if (btn) {
-            var orig = btn.innerHTML;
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Guardado';
-            btn.style.background = '#16a34a';
-            setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 2200);
-        }
-    }
+        data.experiencia = _serializeEntries('experiencia');
+        data.formacion   = _serializeEntries('formacion');
+        data.idiomas     = _serializeEntries('idiomas');
 
-    // Restore from localStorage
-    (function() {
-        try {
-            var saved = localStorage.getItem('cvdata_{{ auth()->id() }}');
-            if (!saved) return;
-            var data = JSON.parse(saved);
-            Object.keys(data).forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el && data[id]) el.value = data[id];
-            });
-        } catch(ex) {}
-    })();
+        var btn = document.getElementById('btn-save-cv');
+        if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+
+        fetch('{{ route("dashboard.cv-data.update") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ cv_data: data }),
+        })
+        .then(function(r) { return r.json(); })
+        .then(function() {
+            if (btn) {
+                btn.disabled = false; btn.style.opacity = '';
+                var orig = btn.innerHTML;
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Guardado';
+                btn.style.background = '#16a34a';
+                setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 2200);
+            }
+        })
+        .catch(function() {
+            if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+            alert('Error al guardar. Inténtalo de nuevo.');
+        });
+    }
 
     // ── Profile view/edit toggle ──
     function toggleProfileEdit() {
@@ -1311,6 +1596,294 @@
     @endphp
         switchSection('{{ $openSection }}', '{{ $sectionLabels[$openSection] ?? 'Inicio' }}');
     @endif
+
+    // ════════════════════════════════════════════════
+    //  MODAL AI — Analizar CV con IA
+    // ════════════════════════════════════════════════
+    var _aiSource   = null;   // 'existing' | 'new'
+    var _aiFile     = null;   // File object si es nuevo
+    var _aiParseId  = null;
+    var _aiPollTimer = null;
+
+    var _aiSteps = [
+        [15,  'Extrayendo texto del PDF…'],
+        [35,  'Procesando el contenido…'],
+        [55,  'Enviando a la IA…'],
+        [75,  'La IA está analizando tu CV…'],
+        [88,  'Estructurando los datos…'],
+        [95,  'Casi listo…'],
+    ];
+    var _aiStepIdx = 0;
+
+    function openAiModal() {
+        resetAiModal();
+        var overlay = document.getElementById('ai-modal-overlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        @if($u->cv_path)
+        // Si ya tiene CV, preseleccionar "existente"
+        selectAiOption('existing');
+        @endif
+    }
+
+    function closeAiModal() {
+        clearInterval(_aiPollTimer);
+        document.getElementById('ai-modal-overlay').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function resetAiModal() {
+        _aiSource = null; _aiFile = null; _aiParseId = null; _aiStepIdx = 0;
+        clearInterval(_aiPollTimer);
+        _showAiState('select');
+        // Deselect options
+        ['existing','new'].forEach(function(o) {
+            var el = document.getElementById('ai-option-' + o);
+            var ch = document.getElementById('ai-check-' + o);
+            if (el) el.style.borderColor = 'var(--color-border)';
+            if (ch) ch.style.display = 'none';
+        });
+        var drop = document.getElementById('ai-drop-zone');
+        if (drop) drop.style.display = 'none';
+        var btn = document.getElementById('ai-analyze-btn');
+        if (btn) btn.disabled = true;
+        _aiFile = null;
+        var lbl = document.getElementById('ai-drop-label');
+        if (lbl) lbl.innerHTML = 'Arrastra tu CV aquí o <span style="color:var(--color-primary);text-decoration:underline;cursor:pointer;" onclick="document.getElementById(\'ai-file-input\').click()">selecciona archivo</span>';
+    }
+
+    function _showAiState(state) {
+        ['select','processing','error'].forEach(function(s) {
+            var el = document.getElementById('ai-modal-' + s);
+            if (el) el.style.display = s === state ? '' : 'none';
+        });
+    }
+
+    function selectAiOption(option) {
+        _aiSource = option;
+        ['existing','new'].forEach(function(o) {
+            var card  = document.getElementById('ai-option-' + o);
+            var check = document.getElementById('ai-check-' + o);
+            if (!card) return;
+            var active = o === option;
+            card.style.borderColor  = active ? 'var(--color-primary)' : 'var(--color-border)';
+            card.style.background   = active ? '#f5f3ff' : '';
+            if (check) check.style.display = active ? '' : 'none';
+        });
+        var drop = document.getElementById('ai-drop-zone');
+        if (drop) drop.style.display = option === 'new' ? '' : 'none';
+
+        var btn = document.getElementById('ai-analyze-btn');
+        if (btn) btn.disabled = option === 'new' ? (_aiFile === null) : false;
+    }
+
+    function onAiFileSelected(input) {
+        if (input.files && input.files[0]) {
+            _aiFile = input.files[0];
+            var lbl = document.getElementById('ai-drop-label');
+            if (lbl) lbl.textContent = '✓ ' + _aiFile.name;
+            var btn = document.getElementById('ai-analyze-btn');
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    function onAiDrop(e) {
+        e.preventDefault();
+        document.getElementById('ai-drop-zone').style.borderColor = 'var(--color-border)';
+        var file = e.dataTransfer.files[0];
+        if (file && file.type === 'application/pdf') {
+            _aiFile = file;
+            var lbl = document.getElementById('ai-drop-label');
+            if (lbl) lbl.textContent = '✓ ' + file.name;
+            var btn = document.getElementById('ai-analyze-btn');
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    function startAiAnalysis() {
+        if (!_aiSource) return;
+        if (_aiSource === 'new' && !_aiFile) return;
+
+        _showAiState('processing');
+        _aiStepIdx = 0;
+        _advanceAiStep();
+
+        var formData = new FormData();
+        formData.append('source', _aiSource);
+        formData.append('_token', '{{ csrf_token() }}');
+        if (_aiSource === 'new') formData.append('cv', _aiFile);
+
+        fetch('{{ route("dashboard.cv.parse") }}', {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+            body: formData,
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.error) { _showAiError(data.error); return; }
+            _aiParseId = data.parse_id;
+            _startPolling();
+        })
+        .catch(function(e) { _showAiError('Error de conexión. Inténtalo de nuevo.'); });
+    }
+
+    function _advanceAiStep() {
+        if (_aiStepIdx >= _aiSteps.length) return;
+        var step = _aiSteps[_aiStepIdx++];
+        var bar  = document.getElementById('ai-progress-bar');
+        var lbl  = document.getElementById('ai-processing-step');
+        if (bar) bar.style.width = step[0] + '%';
+        if (lbl) lbl.textContent = step[1];
+        if (_aiStepIdx < _aiSteps.length) {
+            setTimeout(_advanceAiStep, 2500 + Math.random() * 1500);
+        }
+    }
+
+    function _startPolling() {
+        _aiPollTimer = setInterval(function() {
+            if (!_aiParseId) return;
+            fetch('{{ url("dashboard/cv/parse") }}/' + _aiParseId + '/status', {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.status === 'completed') {
+                    clearInterval(_aiPollTimer);
+                    _onAiCompleted(data.cv_data || {});
+                } else if (data.status === 'failed') {
+                    clearInterval(_aiPollTimer);
+                    _showAiError(data.error || 'El análisis falló. Inténtalo de nuevo.');
+                }
+                // pending/processing → seguir esperando
+            })
+            .catch(function() {});
+        }, 2500);
+    }
+
+    function _onAiCompleted(cvData) {
+        // Completar barra al 100%
+        var bar = document.getElementById('ai-progress-bar');
+        var lbl = document.getElementById('ai-processing-step');
+        if (bar) bar.style.width = '100%';
+        if (lbl) lbl.textContent = '¡Análisis completado!';
+
+        setTimeout(function() {
+            closeAiModal();
+            _applyAiData(cvData);
+        }, 800);
+    }
+
+    function _applyAiData(cvData) {
+        // Rellena todos los inputs simples
+        var simpleFields = {
+            'cv_name': cvData.cv_name, 'cv_job_title': cvData.cv_job_title,
+            'cv_bio': cvData.cv_bio, 'cv_email': cvData.cv_email,
+            'cv_phone': cvData.cv_phone, 'cv_location': cvData.cv_location,
+            'cv_linkedin': cvData.cv_linkedin, 'cv_website': cvData.cv_website,
+            'cv_skills': cvData.cv_skills, 'cv_soft_skills': cvData.cv_soft_skills
+        };
+        Object.keys(simpleFields).forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && simpleFields[id]) {
+                el.value = simpleFields[id];
+                // Dispara el oninput para actualizar preview
+                el.dispatchEvent(new Event('input'));
+            }
+        });
+
+        // Rellena entradas dinámicas
+        _rebuildEntries('experiencia', cvData.experiencia || [],
+            function(e) { return [e.empresa||'', e.cargo||'', e.periodo||'', e.descripcion||'']; });
+        _rebuildEntries('formacion', cvData.formacion || [],
+            function(e) { return [e.institucion||'', e.titulo||'', e.periodo||'', e.descripcion||'']; });
+        _rebuildIdiomaEntries(cvData.idiomas || []);
+
+        // Actualiza el preview
+        setTimeout(fillAllPreview, 100);
+
+        // Feedback visual
+        var btn = document.getElementById('btn-save-cv');
+        if (btn) {
+            var orig = btn.innerHTML;
+            btn.innerHTML = '✓ Datos cargados desde IA';
+            btn.style.background = '#16a34a';
+            setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 3000);
+        }
+    }
+
+    function _rebuildEntries(type, entries, fieldsFn) {
+        if (!entries.length) return;
+        var container = document.getElementById('entries-' + type);
+        if (!container) return;
+        var tmpl = container.querySelector('.cv-entry');
+        if (!tmpl) return;
+
+        // Rellena la primera entrada
+        var inputs = tmpl.querySelectorAll('[data-field]');
+        var fields = fieldsFn(entries[0]);
+        inputs.forEach(function(inp, idx) {
+            if (fields[idx] !== undefined) inp.value = fields[idx];
+        });
+
+        // Crea las siguientes
+        for (var i = 1; i < entries.length; i++) {
+            var clone = tmpl.cloneNode(true);
+            var cloneInputs = clone.querySelectorAll('[data-field]');
+            var f = fieldsFn(entries[i]);
+            cloneInputs.forEach(function(inp, idx) {
+                if (f[idx] !== undefined) inp.value = f[idx];
+            });
+            container.appendChild(clone);
+        }
+
+        updateEntriesPreview(type);
+    }
+
+    function _rebuildIdiomaEntries(idiomas) {
+        if (!idiomas.length) return;
+        var container = document.getElementById('entries-idiomas');
+        if (!container) return;
+        var tmpl = container.querySelector('.cv-entry');
+        if (!tmpl) return;
+
+        var idiomaInput = tmpl.querySelector('[data-field="idioma"]');
+        var nivelSelect = tmpl.querySelector('[data-field="nivel"]');
+        if (idiomaInput) idiomaInput.value = idiomas[0].idioma || '';
+        if (nivelSelect) {
+            for (var o = 0; o < nivelSelect.options.length; o++) {
+                if (nivelSelect.options[o].text === idiomas[0].nivel) {
+                    nivelSelect.selectedIndex = o; break;
+                }
+            }
+        }
+
+        for (var i = 1; i < idiomas.length; i++) {
+            var clone = tmpl.cloneNode(true);
+            var inp = clone.querySelector('[data-field="idioma"]');
+            var sel = clone.querySelector('[data-field="nivel"]');
+            if (inp) inp.value = idiomas[i].idioma || '';
+            if (sel) {
+                for (var j = 0; j < sel.options.length; j++) {
+                    if (sel.options[j].text === idiomas[i].nivel) { sel.selectedIndex = j; break; }
+                }
+            }
+            container.appendChild(clone);
+        }
+
+        updateEntriesPreview('idiomas');
+    }
+
+    function _showAiError(msg) {
+        _showAiState('error');
+        var el = document.getElementById('ai-error-msg');
+        if (el) el.textContent = msg;
+    }
+
+    // Cerrar modal al hacer click fuera
+    document.getElementById('ai-modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeAiModal();
+    });
 </script>
 @endpush
 

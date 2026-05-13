@@ -30,7 +30,9 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates'));
+        $cvData = Auth::user()->cv_data ?? [];
+
+        return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates', 'cvData'));
     }
 
     public function selectTemplate(UserPurchase $purchase, Template $template)
@@ -164,6 +166,14 @@ class DashboardController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'Cambios guardados correctamente.')
             ->with('open_section', $request->hasFile('cv_file') ? 'cvs' : 'profile');
+    }
+
+    public function updateCvData(Request $request)
+    {
+        $user = Auth::user();
+        $user->cv_data = $request->input('cv_data', []);
+        $user->save();
+        return response()->json(['ok' => true]);
     }
 
     public function downloadCv()

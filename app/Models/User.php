@@ -34,6 +34,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'cv_path',
         'cv_original_name',
         'cv_uploaded_at',
+        'cv_data',
+        'latest_cv_parse_id',
     ];
 
     /**
@@ -57,12 +59,23 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'cv_uploaded_at'    => 'datetime',
             'password'          => 'hashed',
+            'cv_data'           => 'array',
         ];
     }
 
     public function purchases()
     {
         return $this->hasMany(\App\Models\UserPurchase::class);
+    }
+
+    public function latestCvParse()
+    {
+        return $this->belongsTo(\App\Models\CvParse::class, 'latest_cv_parse_id');
+    }
+
+    public function cvParses()
+    {
+        return $this->hasMany(\App\Models\CvParse::class)->latest();
     }
 
     public function activePurchase()

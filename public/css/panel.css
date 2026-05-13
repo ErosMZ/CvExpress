@@ -183,6 +183,11 @@
   max-width: 900px;
 }
 
+/* Editor CV Web necesita más ancho para el preview */
+.panel__main:has(#section-templates.panel__section--active) {
+  max-width: 1160px;
+}
+
 @media (max-width: 767px) {
   .panel__main {
     padding: var(--space-6) var(--space-4);

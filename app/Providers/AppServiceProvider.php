@@ -11,7 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\App\Services\Cv\OpenAICvParser::class, function () {
+            $client = \OpenAI::client(config('services.openai.api_key'));
+
+            return new \App\Services\Cv\OpenAICvParser($client);
+        });
     }
 
     /**

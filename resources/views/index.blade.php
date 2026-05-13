@@ -127,6 +127,54 @@
     </div>
 </section>
 
+<!-- ===================== CÓMO FUNCIONA ===================== -->
+<section class="section" id="como-funciona" aria-labelledby="steps-title">
+    <div class="container">
+        <div class="section__header">
+            <div class="label">Proceso simple</div>
+            <h2 class="section__title" id="steps-title">De PDF a portfolio web<br>en tres pasos</h2>
+            <p class="section__subtitle">Sin conocimientos técnicos. Sin horas de diseño. Solo sube tu CV y deja que la automatización trabaje por ti.</p>
+        </div>
+
+        <ol class="steps" role="list">
+            <li class="step">
+                <div class="step__number" aria-hidden="true">01</div>
+                <div class="step__icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h3 class="step__title">Sube tu CV en PDF</h3>
+                <p class="step__desc">Arrastra o selecciona tu currículum. Nuestra IA analiza y extrae toda la información: experiencia, formación, habilidades y logros.</p>
+            </li>
+
+            <li class="step" aria-hidden="true">
+                <div class="step__connector" aria-hidden="true"></div>
+            </li>
+
+            <li class="step">
+                <div class="step__number" aria-hidden="true">02</div>
+                <div class="step__icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <h3 class="step__title">Tu portfolio se genera automáticamente</h3>
+                <p class="step__desc">En segundos tendrás un portfolio web profesional y responsivo, con tu dominio personalizado, listo para compartir.</p>
+            </li>
+
+            <li class="step" aria-hidden="true">
+                <div class="step__connector" aria-hidden="true"></div>
+            </li>
+
+            <li class="step">
+                <div class="step__number" aria-hidden="true">03</div>
+                <div class="step__icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+                <h3 class="step__title">Edita y mantén actualizado</h3>
+                <p class="step__desc">Desde tu panel de control puedes añadir nuevas experiencias, actualizar proyectos y personalizar el diseño en cualquier momento.</p>
+            </li>
+        </ol>
+    </div>
+</section>
+
 <!-- ===================== MARQUEE PLANTILLAS DESTACADAS ===================== -->
 @if($featuredTemplates->isNotEmpty())
 <section class="marquee-section" aria-labelledby="marquee-title">
@@ -191,143 +239,6 @@
 </section>
 @endif
 
-<!-- ===================== ¿AÚN NO TIENES CV EN PDF? ===================== -->
-<section class="no-pdf-section" id="crear-cv" aria-labelledby="no-pdf-title">
-    <div class="container">
-        <div class="no-pdf__inner">
-
-            {{-- Visual: form mockup --}}
-            <div class="no-pdf__visual" aria-hidden="true">
-                <div class="no-pdf__card">
-                    <div class="no-pdf__card-bar">
-                        <span class="no-pdf__dot no-pdf__dot--r"></span>
-                        <span class="no-pdf__dot no-pdf__dot--y"></span>
-                        <span class="no-pdf__dot no-pdf__dot--g"></span>
-                        <span>Crear mi CV — CvExpress</span>
-                    </div>
-                    <div class="no-pdf__fields">
-                        <div class="no-pdf__field">
-                            <div class="no-pdf__field-lbl"></div>
-                            <div class="no-pdf__field-inp"></div>
-                        </div>
-                        <div class="no-pdf__field">
-                            <div class="no-pdf__field-lbl"></div>
-                            <div class="no-pdf__field-inp"></div>
-                        </div>
-                        <div class="no-pdf__field-row">
-                            <div class="no-pdf__field">
-                                <div class="no-pdf__field-lbl"></div>
-                                <div class="no-pdf__field-inp"></div>
-                            </div>
-                            <div class="no-pdf__field">
-                                <div class="no-pdf__field-lbl"></div>
-                                <div class="no-pdf__field-inp"></div>
-                            </div>
-                        </div>
-                        <div class="no-pdf__field no-pdf__field--section">
-                            <div class="no-pdf__field-lbl no-pdf__field-lbl--section"></div>
-                            <div class="no-pdf__field-inp no-pdf__field-inp--area"></div>
-                        </div>
-                        <div class="no-pdf__card-footer">
-                            <div class="no-pdf__card-btn"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="no-pdf__export-chip">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="12" y1="12" x2="12" y2="18"/>
-                        <polyline points="9 15 12 18 15 15"/>
-                    </svg>
-                    Exportar a PDF
-                </div>
-            </div>
-
-            {{-- Content --}}
-            <div class="no-pdf__content">
-                <div class="badge badge--feature" role="status">
-                    <span class="badge__dot" aria-hidden="true"></span>
-                    Próximamente
-                </div>
-                <h2 class="no-pdf__title" id="no-pdf-title">
-                    ¿Aún no tienes<br><em>tu CV en PDF?</em>
-                </h2>
-                <p class="no-pdf__desc">
-                    No te preocupes. Pronto podrás crear tu currículum profesional directamente en CvExpress, con plantillas guiadas paso a paso y exportación instantánea a PDF.
-                </p>
-                <ul class="no-pdf__feats" role="list">
-                    <li>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        Plantillas de CV profesionales incluidas
-                    </li>
-                    <li>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        Exportación a PDF en un clic
-                    </li>
-                    <li>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        Integrado con tu portfolio web
-                    </li>
-                </ul>
-                <a href="{{ route('register') }}" class="btn btn--primary btn--lg">
-                    Crear mi cuenta
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<!-- ===================== CÓMO FUNCIONA ===================== -->
-<section class="section" id="como-funciona" aria-labelledby="steps-title">
-    <div class="container">
-        <div class="section__header">
-            <div class="label">Proceso simple</div>
-            <h2 class="section__title" id="steps-title">De PDF a portfolio web<br>en tres pasos</h2>
-            <p class="section__subtitle">Sin conocimientos técnicos. Sin horas de diseño. Solo sube tu CV y deja que la automatización trabaje por ti.</p>
-        </div>
-
-        <ol class="steps" role="list">
-            <li class="step">
-                <div class="step__number" aria-hidden="true">01</div>
-                <div class="step__icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                </div>
-                <h3 class="step__title">Sube tu CV en PDF</h3>
-                <p class="step__desc">Arrastra o selecciona tu currículum. Nuestra IA analiza y extrae toda la información: experiencia, formación, habilidades y logros.</p>
-            </li>
-
-            <li class="step" aria-hidden="true">
-                <div class="step__connector" aria-hidden="true"></div>
-            </li>
-
-            <li class="step">
-                <div class="step__number" aria-hidden="true">02</div>
-                <div class="step__icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                </div>
-                <h3 class="step__title">Tu portfolio se genera automáticamente</h3>
-                <p class="step__desc">En segundos tendrás un portfolio web profesional y responsivo, con tu dominio personalizado, listo para compartir.</p>
-            </li>
-
-            <li class="step" aria-hidden="true">
-                <div class="step__connector" aria-hidden="true"></div>
-            </li>
-
-            <li class="step">
-                <div class="step__number" aria-hidden="true">03</div>
-                <div class="step__icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </div>
-                <h3 class="step__title">Edita y mantén actualizado</h3>
-                <p class="step__desc">Desde tu panel de control puedes añadir nuevas experiencias, actualizar proyectos y personalizar el diseño en cualquier momento.</p>
-            </li>
-        </ol>
-    </div>
-</section>
-
 <!-- ===================== CARACTERÍSTICAS ===================== -->
 <section class="section section--alt" id="caracteristicas" aria-labelledby="features-title">
     <div class="container">
@@ -389,107 +300,8 @@
     </div>
 </section>
 
-<!-- ===================== LINKEDIN COMING SOON ===================== -->
-<section class="linkedin-preview" aria-labelledby="linkedin-title">
-    <div class="container">
-        <div class="linkedin-preview__inner">
-            <div class="linkedin-preview__content">
-                <div class="badge badge--soon-white">Próximamente</div>
-                <h2 class="linkedin-preview__title" id="linkedin-title">Automatiza tu presencia en LinkedIn</h2>
-                <p class="linkedin-preview__desc">
-                    Estamos trabajando en una integración con LinkedIn para que puedas publicar actualizaciones de tu portfolio, logros y novedades de forma automática. Tu red sabrá siempre lo que estás haciendo sin que tengas que hacerlo tú.
-                </p>
-                <ul class="linkedin-preview__list" role="list">
-                    <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        Publicaciones automáticas cuando actualizas tu perfil
-                    </li>
-                    <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        Comparte proyectos y logros con un clic
-                    </li>
-                    <li>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                        Programación de publicaciones inteligente
-                    </li>
-                </ul>
-                <a href="#" class="btn btn--white">Avísame cuando esté disponible</a>
-            </div>
-            <div class="linkedin-preview__visual" aria-hidden="true">
-                <div class="li-card">
-                    <div class="li-card__header">
-                        <div class="li-card__avatar"></div>
-                        <div>
-                            <div class="li-card__name"></div>
-                            <div class="li-card__meta"></div>
-                        </div>
-                    </div>
-                    <div class="li-card__body">
-                        <div class="li-card__line"></div>
-                        <div class="li-card__line li-card__line--short"></div>
-                        <div class="li-card__portfolio-preview">
-                            <div class="li-card__preview-img"></div>
-                            <div class="li-card__preview-text">
-                                <div class="li-card__preview-title"></div>
-                                <div class="li-card__preview-url"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="li-card__badge">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                        Auto-publicado por CVPortfolio
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ===================== FORMACIÓN / BLOG PREVIEW ===================== -->
-<section class="section" id="formacion" aria-labelledby="learn-title">
-    <div class="container">
-        <div class="section__header">
-            <div class="label">Aprende y mejora</div>
-            <h2 class="section__title" id="learn-title">Recursos para destacar<br>en el mercado laboral</h2>
-            <p class="section__subtitle">Consejos, guías y formación para que tu portfolio y tu carrera lleguen más lejos.</p>
-        </div>
-
-        <div class="cards-grid">
-            <article class="card">
-                <div class="card__img card__img--1" aria-hidden="true"></div>
-                <div class="card__body">
-                    <span class="card__category">Guía</span>
-                    <h3 class="card__title">Cómo crear un portfolio que enamora a los reclutadores</h3>
-                    <p class="card__excerpt">Los 7 elementos que nunca deben faltar en tu portfolio profesional y cómo presentarlos de forma efectiva.</p>
-                    <a href="#" class="card__link">Leer guía →</a>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="card__img card__img--2" aria-hidden="true"></div>
-                <div class="card__body">
-                    <span class="card__category">Consejo</span>
-                    <h3 class="card__title">El CV que supera los filtros ATS y llega a las personas</h3>
-                    <p class="card__excerpt">Aprende a optimizar tu currículum para que los sistemas de selección automática no lo descarten antes de tiempo.</p>
-                    <a href="#" class="card__link">Leer más →</a>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="card__img card__img--3" aria-hidden="true"></div>
-                <div class="card__body">
-                    <span class="card__category">LinkedIn</span>
-                    <h3 class="card__title">LinkedIn en 2025: estrategias para aumentar tu visibilidad</h3>
-                    <p class="card__excerpt">Las mejores prácticas actuales para que tu perfil y publicaciones alcancen a más reclutadores y empresas.</p>
-                    <a href="#" class="card__link">Leer más →</a>
-                </div>
-            </article>
-        </div>
-    </div>
-</section>
-
 <!-- ===================== PRECIOS ===================== -->
-<section class="section section--alt" id="precios" aria-labelledby="pricing-title">
+<section class="section" id="precios" aria-labelledby="pricing-title">
     <div class="container">
         <div class="section__header">
             <div class="label">Planes de pago único</div>
@@ -585,6 +397,151 @@
     </div>
 </section>
 
+<!-- ===================== ¿AÚN NO TIENES CV EN PDF? ===================== -->
+<section class="no-pdf-section section--alt" id="crear-cv" aria-labelledby="no-pdf-title">
+    <div class="container">
+        <div class="no-pdf__inner">
+
+            {{-- Visual: form mockup --}}
+            <div class="no-pdf__visual" aria-hidden="true">
+                <div class="no-pdf__card">
+                    <div class="no-pdf__card-bar">
+                        <span class="no-pdf__dot no-pdf__dot--r"></span>
+                        <span class="no-pdf__dot no-pdf__dot--y"></span>
+                        <span class="no-pdf__dot no-pdf__dot--g"></span>
+                        <span>Crear mi CV — CvExpress</span>
+                    </div>
+                    <div class="no-pdf__fields">
+                        <div class="no-pdf__field">
+                            <div class="no-pdf__field-lbl"></div>
+                            <div class="no-pdf__field-inp"></div>
+                        </div>
+                        <div class="no-pdf__field">
+                            <div class="no-pdf__field-lbl"></div>
+                            <div class="no-pdf__field-inp"></div>
+                        </div>
+                        <div class="no-pdf__field-row">
+                            <div class="no-pdf__field">
+                                <div class="no-pdf__field-lbl"></div>
+                                <div class="no-pdf__field-inp"></div>
+                            </div>
+                            <div class="no-pdf__field">
+                                <div class="no-pdf__field-lbl"></div>
+                                <div class="no-pdf__field-inp"></div>
+                            </div>
+                        </div>
+                        <div class="no-pdf__field no-pdf__field--section">
+                            <div class="no-pdf__field-lbl no-pdf__field-lbl--section"></div>
+                            <div class="no-pdf__field-inp no-pdf__field-inp--area"></div>
+                        </div>
+                        <div class="no-pdf__card-footer">
+                            <div class="no-pdf__card-btn"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="no-pdf__export-chip">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="12" x2="12" y2="18"/>
+                        <polyline points="9 15 12 18 15 15"/>
+                    </svg>
+                    Exportar a PDF
+                </div>
+            </div>
+
+            {{-- Content --}}
+            <div class="no-pdf__content">
+                <div class="badge badge--feature" role="status">
+                    <span class="badge__dot" aria-hidden="true"></span>
+                    Próximamente
+                </div>
+                <h2 class="no-pdf__title" id="no-pdf-title">
+                    ¿Aún no tienes<br><em>tu CV en PDF?</em>
+                </h2>
+                <p class="no-pdf__desc">
+                    No te preocupes. Pronto podrás crear tu currículum profesional directamente en CvExpress, con plantillas guiadas paso a paso y exportación instantánea a PDF.
+                </p>
+                <ul class="no-pdf__feats" role="list">
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Plantillas de CV profesionales incluidas
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Exportación a PDF en un clic
+                    </li>
+                    <li>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Integrado con tu portfolio web
+                    </li>
+                </ul>
+                <a href="{{ route('register') }}" class="btn btn--primary btn--lg">
+                    Crear mi cuenta
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===================== LINKEDIN COMING SOON ===================== -->
+<section class="linkedin-preview" aria-labelledby="linkedin-title">
+    <div class="container">
+        <div class="linkedin-preview__inner">
+            <div class="linkedin-preview__content">
+                <div class="badge badge--soon-white">Próximamente</div>
+                <h2 class="linkedin-preview__title" id="linkedin-title">Automatiza tu presencia en LinkedIn</h2>
+                <p class="linkedin-preview__desc">
+                    Estamos trabajando en una integración con LinkedIn para que puedas publicar actualizaciones de tu portfolio, logros y novedades de forma automática. Tu red sabrá siempre lo que estás haciendo sin que tengas que hacerlo tú.
+                </p>
+                <ul class="linkedin-preview__list" role="list">
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Publicaciones automáticas cuando actualizas tu perfil
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Comparte proyectos y logros con un clic
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                        Programación de publicaciones inteligente
+                    </li>
+                </ul>
+                <a href="#" class="btn btn--white">Avísame cuando esté disponible</a>
+            </div>
+            <div class="linkedin-preview__visual" aria-hidden="true">
+                <div class="li-card">
+                    <div class="li-card__header">
+                        <div class="li-card__avatar"></div>
+                        <div>
+                            <div class="li-card__name"></div>
+                            <div class="li-card__meta"></div>
+                        </div>
+                    </div>
+                    <div class="li-card__body">
+                        <div class="li-card__line"></div>
+                        <div class="li-card__line li-card__line--short"></div>
+                        <div class="li-card__portfolio-preview">
+                            <div class="li-card__preview-img"></div>
+                            <div class="li-card__preview-text">
+                                <div class="li-card__preview-title"></div>
+                                <div class="li-card__preview-url"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="li-card__badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        Auto-publicado por CVPortfolio
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ===================== CTA FINAL ===================== -->
 <section class="cta-section" aria-labelledby="cta-title">
     <div class="container">
@@ -605,7 +562,6 @@
 <script>
 (function () {
     function scaleMarqueeIframes() {
-        // Solo escala la primera copia (la segunda es clon visual, mismo tamaño)
         document.querySelectorAll('.mq-card__iframe-wrap').forEach(function (wrap) {
             var iframe = wrap.querySelector('iframe');
             if (!iframe) return;

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CvParseController;
 use App\Http\Controllers\DashboardController;
 
 use App\Http\Controllers\Admin\TemplateController;
@@ -63,9 +64,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/dashboard/profile',                     [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');
     Route::get('/dashboard/cv/download',                 [DashboardController::class, 'downloadCv'])->name('dashboard.cv.download');
     Route::post('/dashboard/plan/{plan}/activate',       [DashboardController::class, 'activatePlan'])->name('dashboard.plan.activate');
+    Route::post('/dashboard/cv-data',                        [DashboardController::class, 'updateCvData'])->name('dashboard.cv-data.update');
     Route::patch('/dashboard/purchase/{purchase}/hosting', [DashboardController::class, 'updateHosting'])->name('dashboard.purchase.hosting');
     Route::delete('/dashboard/purchase/{purchase}/cancel', [DashboardController::class, 'cancelPlan'])->name('dashboard.purchase.cancel');
     Route::post('/dashboard/purchase/{purchase}/template/{template}', [DashboardController::class, 'selectTemplate'])->name('dashboard.template.select');
+
+    // AI CV parsing
+    Route::post('/dashboard/cv/parse',              [CvParseController::class, 'store'])->name('dashboard.cv.parse');
+    Route::get('/dashboard/cv/parse/{cvParse}/status', [CvParseController::class, 'status'])->name('dashboard.cv.parse.status');
 });
 
 // Route::middleware('auth')->group(function () {
