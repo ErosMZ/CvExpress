@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Plan;
 use App\Models\Template;
 use App\Models\UserPurchase;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +31,7 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        $cvData = Auth::user()->cv_data ?? [];
+        $cvData = $this->cleanCvData(Auth::user()->cv_data ?? []);
 
         return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates', 'cvData'));
     }
@@ -174,6 +175,18 @@ class DashboardController extends Controller
         $user->cv_data = $request->input('cv_data', []);
         $user->save();
         return response()->json(['ok' => true]);
+    }
+
+    private function cleanCvData(array $data): array
+    {
+        array_walk_recursive($data, function (&$v) {
+            if (!is_string($v)) return;
+            $t = trim($v);
+            if (strcasecmp($t, 'null') === 0 || preg_match('/^null\s*[–\-]\s*null$/i', $t)) {
+                $v = '';
+            }
+        });
+        return $data;
     }
 
     public function downloadCv()

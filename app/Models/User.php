@@ -36,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'cv_uploaded_at',
         'cv_data',
         'latest_cv_parse_id',
+        'profile_photo',
     ];
 
     /**

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="./img/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+
+  <!-- ════════════════════ HEADER NAV ════════════════════ -->
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+      <span class="header-logo" data-cv="name">Elena Martínez</span>
+      <nav class="header-nav">
+        <a href="#hero"        class="nav-link">Inicio</a>
+        <a href="#about"       class="nav-link">Sobre mí</a>
+        <a href="#experiencia" class="nav-link">Experiencia</a>
+        <a href="#formacion"   class="nav-link">Formación</a>
+        <a href="#idiomas"     class="nav-link">Idiomas</a>
+        <a href="#contacto"    class="nav-link nav-cta">Contacto</a>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-shape"></div>
+    <div class="hero-bg-shape hero-bg-shape--2"></div>
+
+    <div class="hero-content">
+      <!-- Nombre sobre la foto -->
+      <div class="hero-name-wrapper">
+        <h1 class="hero-name" data-cv="name">Elena Martínez</h1>
+        <p class="hero-job" data-cv="job_title">Diseñadora UX / UI Senior</p>
+      </div>
+
+      <!-- Foto horizontal prominente -->
+      <div class="hero-photo-frame">
+        <img
+          src="./img/foto.jpg"
+          alt="Foto de perfil"
+          class="profile-image"
+          data-cv="photo"
+        />
+        <div class="photo-accent"></div>
+      </div>
+
+      <!-- Bio corta + CTA -->
+      <div class="hero-bio-block">
+        <p class="hero-bio" data-cv="bio">
+          Apasionada del diseño centrado en el usuario con más de 8 años de experiencia
+          creando experiencias digitales que conectan personas y productos.
+        </p>
+        <div class="hero-actions">
+          <a href="#contacto" class="btn btn-primary">Hablemos</a>
+          <a href="#experiencia" class="btn btn-ghost">Ver trayectoria</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ ABOUT ════════════════════ -->
+  <section class="section about-section" id="about">
+    <div class="container">
+      <div class="section-label">Sobre mí</div>
+      <div class="about-grid">
+        <div class="about-text">
+          <h2 class="section-title">Quién soy</h2>
+          <p data-cv="bio">
+            Apasionada del diseño centrado en el usuario con más de 8 años de experiencia
+            creando experiencias digitales que conectan personas y productos.
+          </p>
+        </div>
+        <div class="about-contact-card">
+          <div class="contact-row">
+            <span class="contact-icon">✉</span>
+            <a href="mailto:elena@ejemplo.com" data-cv="email">elena@ejemplo.com</a>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">📞</span>
+            <a href="tel:+34600000000" data-cv="phone">+34 600 000 000</a>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">📍</span>
+            <span data-cv="location">Madrid, España</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">in</span>
+            <a href="https://linkedin.com" data-cv="linkedin" target="_blank" rel="noopener">linkedin.com/in/elena</a>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">🌐</span>
+            <a href="https://ejemplo.com" data-cv="website" target="_blank" rel="noopener">elena-portfolio.com</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ EXPERIENCIA ════════════════════ -->
+  <section class="section experience-section" id="experiencia">
+    <div class="container">
+      <div class="section-label">Trayectoria</div>
+      <h2 class="section-title">Experiencia profesional</h2>
+
+      <div class="timeline" data-cv-section="experiencia">
+        <!-- placeholder — el editor lo reemplaza -->
+        <div class="timeline-item">
+          <div class="timeline-date">2021 – Actualidad</div>
+          <div class="timeline-content">
+            <h3>Lead UX Designer</h3>
+            <h4>Empresa Ejemplo S.L.</h4>
+            <p>Dirección del equipo de diseño y definición de la estrategia de producto digital.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2018 – 2021</div>
+          <div class="timeline-content">
+            <h3>UX Designer</h3>
+            <h4>Startup Digital</h4>
+            <p>Diseño de interfaces y sistemas de diseño escalables para plataformas SaaS.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ FORMACIÓN ════════════════════ -->
+  <section class="section education-section" id="formacion">
+    <div class="container">
+      <div class="section-label">Estudios</div>
+      <h2 class="section-title">Formación académica</h2>
+
+      <div class="education-list" data-cv-section="formacion">
+        <!-- placeholder -->
+        <div class="education-item">
+          <div class="education-icon">🎓</div>
+          <div class="education-content">
+            <h3>Máster en Diseño de Interacción</h3>
+            <h4>Universidad Ejemplo</h4>
+            <p class="education-date">2016 – 2018</p>
+            <p class="education-description">Especialización en UX research y prototipado.</p>
+          </div>
+        </div>
+        <div class="education-item">
+          <div class="education-icon">🎓</div>
+          <div class="education-content">
+            <h3>Grado en Diseño Gráfico</h3>
+            <h4>Escuela de Artes</h4>
+            <p class="education-date">2012 – 2016</p>
+            <p class="education-description">Fundamentos de diseño visual y comunicación.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ IDIOMAS ════════════════════ -->
+  <section class="section languages-section" id="idiomas">
+    <div class="container languages-container">
+      <div>
+        <div class="section-label">Competencias</div>
+        <h2 class="section-title">Idiomas</h2>
+      </div>
+      <div class="languages-card" data-cv-section="idiomas">
+        <!-- placeholder -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);">
+          <span style="font-weight:600;">Español</span>
+          <span style="opacity:.75;">Nativo</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);">
+          <span style="font-weight:600;">Inglés</span>
+          <span style="opacity:.75;">C1 – Avanzado</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);">
+          <span style="font-weight:600;">Francés</span>
+          <span style="opacity:.75;">B2 – Intermedio alto</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ CONTACTO ════════════════════ -->
+  <section class="section contact-section" id="contacto">
+    <div class="container contact-inner">
+      <div class="section-label light">Contacto</div>
+      <h2 class="section-title light">¿Hablamos?</h2>
+      <a href="mailto:elena@ejemplo.com" class="contact-email-link" data-cv="email">
+        elena@ejemplo.com
+      </a>
+      <div class="contact-links">
+        <a href="https://linkedin.com" data-cv="linkedin" target="_blank" rel="noopener" class="contact-pill">LinkedIn</a>
+        <a href="https://ejemplo.com"  data-cv="website"  target="_blank" rel="noopener" class="contact-pill">Web</a>
+        <a href="tel:+34600000000"     data-cv="phone"    class="contact-pill">Teléfono</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <span data-cv="name">Elena Martínez</span> · CV generado con <strong>CvExpress</strong>
+  </footer>
+
+  <script src="./js/main.js"></script>
+</body>
+</html>

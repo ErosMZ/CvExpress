@@ -12,41 +12,51 @@ class CvDataMapper
     {
         return [
             // Campos simples (panel Presentación + Contacto)
-            'cv_name'       => $parsed['name']     ?? '',
-            'cv_job_title'  => $parsed['title']    ?? '',
-            'cv_bio'        => $parsed['bio']       ?? '',
-            'cv_email'      => $parsed['email']     ?? '',
-            'cv_phone'      => $parsed['phone']     ?? '',
-            'cv_location'   => $parsed['location']  ?? '',
-            'cv_linkedin'   => $parsed['linkedin']  ?? '',
-            'cv_website'    => $parsed['website']   ?? '',
+            'cv_name'       => $this->clean($parsed['name']     ?? null),
+            'cv_job_title'  => $this->clean($parsed['title']    ?? null),
+            'cv_bio'        => $this->clean($parsed['bio']      ?? null),
+            'cv_email'      => $this->clean($parsed['email']    ?? null),
+            'cv_phone'      => $this->clean($parsed['phone']    ?? null),
+            'cv_location'   => $this->clean($parsed['location'] ?? null),
+            'cv_linkedin'   => $this->clean($parsed['linkedin'] ?? null),
+            'cv_website'    => $this->clean($parsed['website']  ?? null),
             'cv_skills'     => implode(', ', $parsed['skills'] ?? []),
             'cv_soft_skills'=> implode(', ', $parsed['soft_skills'] ?? []),
 
             // Arrays dinámicos (panels Experiencia, Formación, Idiomas)
             'experiencia' => array_map(fn($e) => [
-                'empresa'     => $e['company']     ?? '',
-                'cargo'       => $e['position']    ?? '',
-                'periodo'     => $e['period']       ?? '',
-                'descripcion' => $e['description']  ?? '',
+                'empresa'     => $this->clean($e['company']     ?? null),
+                'cargo'       => $this->clean($e['position']    ?? null),
+                'periodo'     => $this->clean($e['period']      ?? null),
+                'descripcion' => $this->clean($e['description'] ?? null),
             ], $parsed['experience'] ?? []),
 
             'formacion' => array_map(fn($e) => [
-                'institucion' => $e['institution'] ?? '',
-                'titulo'      => $e['degree']      ?? '',
-                'periodo'     => $e['period']      ?? '',
-                'descripcion' => $e['description'] ?? '',
+                'institucion' => $this->clean($e['institution'] ?? null),
+                'titulo'      => $this->clean($e['degree']      ?? null),
+                'periodo'     => $this->clean($e['period']      ?? null),
+                'descripcion' => $this->clean($e['description'] ?? null),
             ], $parsed['education'] ?? []),
 
             'idiomas' => array_map(fn($e) => [
-                'idioma' => $e['language'] ?? '',
-                'nivel'  => $e['level']    ?? '',
+                'idioma' => $this->clean($e['language'] ?? null),
+                'nivel'  => $this->clean($e['level']    ?? null),
             ], $parsed['languages'] ?? []),
 
             // Datos extra (para uso futuro / plantillas avanzadas)
             'projects'       => $parsed['projects']       ?? [],
             'certifications' => $parsed['certifications'] ?? [],
-            'github'         => $parsed['github']         ?? '',
+            'github'         => $this->clean($parsed['github'] ?? null),
         ];
+    }
+
+    private function clean(?string $val): string
+    {
+        if ($val === null) return '';
+        $t = trim($val);
+        // La IA a veces devuelve literales "null", "null – null", "null - null"
+        if (strcasecmp($t, 'null') === 0) return '';
+        if (preg_match('/^null\s*[–\-]\s*null$/i', $t)) return '';
+        return $t;
     }
 }

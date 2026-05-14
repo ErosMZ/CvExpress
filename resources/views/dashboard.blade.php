@@ -1383,16 +1383,16 @@
             if (!iframe) return;
             var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
             if (!doc) return;
-            var el = doc.querySelector('[data-cv="' + field + '"]');
-            if (!el) return;
-            if (el.tagName === 'A') {
-                el.textContent = value;
-                if (field === 'email')                       el.href = 'mailto:' + value;
-                else if (field === 'phone')                  el.href = 'tel:' + value;
-                else if (field === 'linkedin' || field === 'website') el.href = value;
-            } else {
-                el.textContent = value;
-            }
+            doc.querySelectorAll('[data-cv="' + field + '"]').forEach(function(el) {
+                if (el.tagName === 'A') {
+                    el.textContent = value;
+                    if (field === 'email')                           el.href = 'mailto:' + value;
+                    else if (field === 'phone')                      el.href = 'tel:' + value;
+                    else if (field === 'linkedin' || field === 'website') el.href = value;
+                } else {
+                    el.textContent = value;
+                }
+            });
         }, 180);
     }
 
@@ -1412,16 +1412,17 @@
         Object.keys(simpleMap).forEach(function(field) {
             var input = document.getElementById(simpleMap[field]);
             if (!input || !input.value.trim()) return;
-            var el = doc.querySelector('[data-cv="' + field + '"]');
-            if (!el) return;
-            if (el.tagName === 'A') {
-                el.textContent = input.value;
-                if (field === 'email')   el.href = 'mailto:' + input.value;
-                if (field === 'phone')   el.href = 'tel:'    + input.value;
-                if (field === 'linkedin' || field === 'website') el.href = input.value;
-            } else {
-                el.textContent = input.value;
-            }
+            var value = input.value;
+            doc.querySelectorAll('[data-cv="' + field + '"]').forEach(function(el) {
+                if (el.tagName === 'A') {
+                    el.textContent = value;
+                    if (field === 'email')   el.href = 'mailto:' + value;
+                    if (field === 'phone')   el.href = 'tel:'    + value;
+                    if (field === 'linkedin' || field === 'website') el.href = value;
+                } else {
+                    el.textContent = value;
+                }
+            });
         });
 
         // Entry sections
@@ -1791,9 +1792,9 @@
 
         // 3. Reconstruir entradas dinámicas (limpia primero)
         _rebuildEntries('experiencia', cvData.experiencia || [],
-            function(e) { return [e.empresa||'', e.cargo||'', e.periodo||'', e.descripcion||'']; });
+            function(e) { return [_nullClean(e.empresa), _nullClean(e.cargo), _nullClean(e.periodo), _nullClean(e.descripcion)]; });
         _rebuildEntries('formacion', cvData.formacion || [],
-            function(e) { return [e.institucion||'', e.titulo||'', e.periodo||'', e.descripcion||'']; });
+            function(e) { return [_nullClean(e.institucion), _nullClean(e.titulo), _nullClean(e.periodo), _nullClean(e.descripcion)]; });
         _rebuildIdiomaEntries(cvData.idiomas || []);
 
         // 4. Actualizar plantilla en el iframe
@@ -1820,6 +1821,14 @@
             btn.style.background = '#16a34a';
             setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 4000);
         }
+    }
+
+    function _nullClean(v) {
+        if (!v) return '';
+        var t = String(v).trim();
+        if (t.toLowerCase() === 'null') return '';
+        if (/^null\s*[–\-]\s*null$/i.test(t)) return '';
+        return t;
     }
 
     function _rebuildEntries(type, entries, fieldsFn) {
