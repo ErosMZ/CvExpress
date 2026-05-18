@@ -19,6 +19,7 @@ class Template extends Model
         'is_featured',
         'is_active',
         'plan_tier',
+        'photo_orientation',
     ];
 
     const PLAN_TIERS = [

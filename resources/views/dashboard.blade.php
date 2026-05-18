@@ -525,6 +525,40 @@
                                 {{-- PANEL: Presentación --}}
                                 <div id="cvpanel-presentacion" class="panel-card" style="margin:0;">
                                     <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Presentación</div>
+
+                                    {{-- Foto de perfil --}}
+                                    <div class="form-group" style="margin-bottom:1.25rem;">
+                                        <label class="form-label">Foto de perfil</label>
+                                        @if($photoOrientation)
+                                        <div style="font-size:.72rem;color:#1e40af;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:.35rem .6rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;">
+                                            @if($photoOrientation === 'vertical')
+                                            <svg width="9" height="12" viewBox="0 0 9 12" fill="none" stroke="currentColor" stroke-width="2"><rect x="0.5" y="0.5" width="8" height="11" rx="1"/></svg>
+                                            Plantilla requiere foto <strong>vertical</strong> (3:4)
+                                            @else
+                                            <svg width="12" height="9" viewBox="0 0 12 9" fill="none" stroke="currentColor" stroke-width="2"><rect x="0.5" y="0.5" width="11" height="8" rx="1"/></svg>
+                                            Plantilla requiere foto <strong>horizontal</strong> (4:3)
+                                            @endif
+                                        </div>
+                                        @endif
+                                        <div style="display:flex;align-items:center;gap:.875rem;">
+                                            <div id="editor-photo-preview" style="width:56px;height:56px;border-radius:10px;overflow:hidden;background:var(--color-border);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                                                @if($photoUrl)
+                                                <img src="{{ $photoUrl }}" style="width:100%;height:100%;object-fit:cover;" id="editor-photo-img">
+                                                @else
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" id="editor-photo-placeholder"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                                                @endif
+                                            </div>
+                                            <div>
+                                                <button type="button" onclick="document.getElementById('editor-photo-file').click()"
+                                                        class="btn btn--ghost btn--sm" style="margin-bottom:.3rem;">
+                                                    {{ $photoUrl ? 'Cambiar foto' : 'Subir foto' }}
+                                                </button>
+                                                <input type="file" id="editor-photo-file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="uploadProfilePhoto(this)">
+                                                <div style="font-size:.7rem;color:var(--color-text-muted);">JPG, PNG o WebP · Máx. 3 MB</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group" style="margin-bottom:.875rem;">
                                         <label class="form-label" for="cv_name">Nombre completo</label>
                                         <input type="text" id="cv_name" class="form-input" value="{{ $cvData['cv_name'] ?? $u->name }}"
@@ -572,7 +606,7 @@
                                         </button>
                                     </div>
                                     <div id="entries-experiencia">
-                                        @php $expEntries = $cvData['experiencia'] ?: [[]]; @endphp
+                                        @php $expEntries = !empty($cvData['experiencia']) ? $cvData['experiencia'] : [[]]; @endphp
                                         @foreach($expEntries as $exp)
                                         <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
                                             <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
@@ -598,7 +632,7 @@
                                         </button>
                                     </div>
                                     <div id="entries-formacion">
-                                        @php $formEntries = $cvData['formacion'] ?: [[]]; @endphp
+                                        @php $formEntries = !empty($cvData['formacion']) ? $cvData['formacion'] : [[]]; @endphp
                                         @foreach($formEntries as $form)
                                         <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
                                             <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
@@ -639,7 +673,7 @@
                                     </div>
                                     <div id="entries-idiomas">
                                         @php
-                                            $idiomaEntries = $cvData['idiomas'] ?: [[]];
+                                            $idiomaEntries = !empty($cvData['idiomas']) ? $cvData['idiomas'] : [[]];
                                             $nivelesOpts = [
                                                 '── Nivel general ──' => ['Nativo','C2 – Maestría','C1 – Avanzado','B2 – Intermedio alto','B1 – Intermedio','A2 – Básico','A1 – Elemental'],
                                                 '── Certificados Inglés ──' => ['Cambridge A2 Key (KET)','Cambridge B1 Preliminary (PET)','Cambridge B2 First (FCE)','Cambridge C1 Advanced (CAE)','Cambridge C2 Proficiency (CPE)','IELTS 4.0–5.0 (B1)','IELTS 5.5–6.0 (B2)','IELTS 6.5–7.0 (C1)','IELTS 8.0+ (C2)','TOEFL 42–71 (B1)','TOEFL 72–94 (B2)','TOEFL 95–110 (C1)','TOEFL 111+ (C2)','TOEIC 550–780','TOEIC 785–900','TOEIC 905+'],
@@ -679,8 +713,15 @@
                                     </div>
                                 </div>
 
-                                {{-- Guardar --}}
-                                <div style="display:flex;justify-content:flex-end;padding:.25rem 0;">
+                                {{-- Guardar / Limpiar --}}
+                                <div style="display:flex;align-items:center;justify-content:space-between;padding:.25rem 0;gap:.5rem;">
+                                    <button type="button" onclick="confirmClearCvData()"
+                                            class="btn btn--ghost btn--sm"
+                                            style="color:#ef4444;border-color:#fca5a5;"
+                                            title="Borrar todos los datos del CV">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                        Limpiar datos
+                                    </button>
                                     <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="btn btn--primary btn--sm">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
                                         Guardar
@@ -1121,6 +1162,49 @@
                 <input type="file" id="ai-file-input" accept=".pdf" style="display:none;" onchange="onAiFileSelected(this)">
             </div>
 
+            {{-- Foto de perfil opcional --}}
+            <div style="border:1px solid var(--color-border);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;background:var(--color-bg-secondary);">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+                    <div style="font-size:.85rem;font-weight:700;color:var(--color-text-primary);">
+                        📷 Foto de perfil
+                        <span style="font-size:.72rem;font-weight:400;color:var(--color-text-muted);margin-left:.4rem;">(opcional, puedes añadirla después)</span>
+                    </div>
+                    @if($photoUrl)
+                    <span style="font-size:.72rem;color:#16a34a;font-weight:600;">✓ Ya tienes foto</span>
+                    @endif
+                </div>
+
+                @if($photoOrientation)
+                <div style="display:flex;align-items:center;gap:.5rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:#1e40af;">
+                    @if($photoOrientation === 'vertical')
+                    <svg width="12" height="16" viewBox="0 0 12 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="10" height="14" rx="1.5"/></svg>
+                    Esta plantilla recomienda foto <strong>vertical</strong> (formato retrato, ej. 3:4)
+                    @else
+                    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="14" height="10" rx="1.5"/></svg>
+                    Esta plantilla recomienda foto <strong>horizontal</strong> (formato paisaje, ej. 4:3)
+                    @endif
+                </div>
+                @endif
+
+                <div style="display:flex;align-items:center;gap:.875rem;">
+                    <div id="ai-photo-preview" style="width:52px;height:52px;border-radius:10px;overflow:hidden;background:var(--color-border);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                        @if($photoUrl)
+                        <img src="{{ $photoUrl }}" style="width:100%;height:100%;object-fit:cover;" id="ai-photo-img">
+                        @else
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" id="ai-photo-placeholder"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                        @endif
+                    </div>
+                    <div style="flex:1;">
+                        <button type="button" onclick="document.getElementById('ai-photo-file').click()"
+                                class="btn btn--ghost btn--sm" style="margin-bottom:.3rem;">
+                            {{ $photoUrl ? 'Cambiar foto' : 'Subir foto' }}
+                        </button>
+                        <input type="file" id="ai-photo-file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="uploadProfilePhoto(this)">
+                        <div style="font-size:.7rem;color:var(--color-text-muted);">JPG, PNG o WebP · Máx. 3 MB</div>
+                    </div>
+                </div>
+            </div>
+
             <button type="button" id="ai-analyze-btn" onclick="startAiAnalysis()" class="btn btn--primary" style="width:100%;justify-content:center;" disabled>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 Analizar con IA
@@ -1425,6 +1509,13 @@
             });
         });
 
+        // Foto de perfil
+        if (_currentPhotoUrl) {
+            doc.querySelectorAll('[data-cv="photo"]').forEach(function(el) {
+                if (el.tagName === 'IMG') el.src = _currentPhotoUrl;
+            });
+        }
+
         // Entry sections
         ['experiencia','formacion','idiomas'].forEach(function(type) {
             var entries = _serializeEntries(type);
@@ -1503,6 +1594,52 @@
         }, 200);
     }
 
+    // ── Foto de perfil ──
+    var _currentPhotoUrl = '{{ $photoUrl ?? '' }}';
+
+    function uploadProfilePhoto(input) {
+        var file = input.files[0];
+        if (!file) return;
+        if (file.size > 3 * 1024 * 1024) { alert('La imagen no puede superar 3 MB.'); return; }
+        var fd = new FormData();
+        fd.append('photo', file);
+        fd.append('_token', '{{ csrf_token() }}');
+        fetch('{{ route("dashboard.photo.upload") }}', { method: 'POST', body: fd })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.url) return;
+                _currentPhotoUrl = data.url;
+                // Actualizar ambas vistas previas (modal + editor)
+                ['ai-photo-preview','editor-photo-preview'].forEach(function(id) {
+                    var wrap = document.getElementById(id);
+                    if (!wrap) return;
+                    var img = wrap.querySelector('img');
+                    if (img) { img.src = data.url; }
+                    else {
+                        wrap.innerHTML = '<img src="' + data.url + '" style="width:100%;height:100%;object-fit:cover;">';
+                    }
+                });
+                // Actualizar botones
+                document.querySelectorAll('#ai-photo-file,#editor-photo-file').forEach(function(inp) {
+                    var btn = inp.previousElementSibling;
+                    if (btn) btn.textContent = 'Cambiar foto';
+                });
+                // Inyectar en iframe
+                _injectPhotoToIframe(data.url);
+            })
+            .catch(function() { alert('Error al subir la foto. Inténtalo de nuevo.'); });
+    }
+
+    function _injectPhotoToIframe(url) {
+        var iframe = document.getElementById('cv-preview-iframe');
+        if (!iframe) return;
+        var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
+        if (!doc) return;
+        doc.querySelectorAll('[data-cv="photo"]').forEach(function(el) {
+            if (el.tagName === 'IMG') el.src = url;
+        });
+    }
+
     function saveCvData(e) {
         var data = {};
         ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location',
@@ -1540,6 +1677,65 @@
             if (btn) { btn.disabled = false; btn.style.opacity = ''; }
             alert('Error al guardar. Inténtalo de nuevo.');
         });
+    }
+
+    // ── Limpiar todos los datos del CV ──
+    function confirmClearCvData() {
+        if (!confirm('¿Seguro que quieres borrar todos los datos de tu CV?\nEsta acción no se puede deshacer.')) return;
+
+        fetch('{{ route("dashboard.cv-data.clear") }}', {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+        })
+        .then(function(r) { return r.json(); })
+        .then(function() {
+            // Limpiar campos simples
+            ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location',
+             'cv_linkedin','cv_website','cv_skills','cv_soft_skills'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+
+            // Limpiar entradas dinámicas (dejar solo una vacía)
+            ['experiencia','formacion'].forEach(function(type) {
+                var container = document.getElementById('entries-' + type);
+                if (!container) return;
+                var entries = container.querySelectorAll('.cv-entry');
+                for (var i = 1; i < entries.length; i++) entries[i].remove();
+                var first = container.querySelector('.cv-entry');
+                if (first) {
+                    first.querySelectorAll('input,textarea').forEach(function(el) { el.value = ''; });
+                    first.querySelectorAll('select').forEach(function(el) { el.selectedIndex = 0; });
+                }
+            });
+            _rebuildIdiomaEntries([]);
+
+            // Limpiar foto de perfil
+            _currentPhotoUrl = '';
+            ['ai-photo-preview','editor-photo-preview'].forEach(function(id) {
+                var wrap = document.getElementById(id);
+                if (wrap) wrap.innerHTML = '';
+            });
+            document.querySelectorAll('#ai-photo-file,#editor-photo-file').forEach(function(inp) {
+                inp.value = '';
+                var btn = inp.previousElementSibling;
+                if (btn) btn.textContent = 'Subir foto';
+            });
+
+            // Recargar iframe (quita todos los datos inyectados)
+            var iframe = document.getElementById('cv-preview-iframe');
+            if (iframe) iframe.src = iframe.src;
+
+            // Feedback
+            var btn = document.getElementById('btn-save-cv');
+            if (btn) {
+                var orig = btn.innerHTML;
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Limpiado';
+                btn.style.background = '#64748b';
+                setTimeout(function(){ btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+            }
+        })
+        .catch(function() { alert('Error al limpiar los datos.'); });
     }
 
     // ── Profile view/edit toggle ──

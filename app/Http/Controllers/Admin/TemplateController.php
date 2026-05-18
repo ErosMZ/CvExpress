@@ -119,10 +119,11 @@ class TemplateController extends Controller
             'preview_image' => $previewPath,
             'main_file'     => $zipPath,
             'price'         => $request->price ?? 0,
-            'plan_tier'     => $request->plan_tier ?? 'basic',
-            'is_premium'    => $request->plan_tier !== 'basic',
-            'is_featured'   => $request->has('is_featured'),
-            'is_active'     => $request->has('is_active'),
+            'plan_tier'          => $request->plan_tier ?? 'basic',
+            'is_premium'         => $request->plan_tier !== 'basic',
+            'is_featured'        => $request->has('is_featured'),
+            'is_active'          => $request->has('is_active'),
+            'photo_orientation'  => $request->photo_orientation ?: null,
         ]);
 
         return redirect()
@@ -234,10 +235,11 @@ class TemplateController extends Controller
             'preview_image' => $previewPath,
             'main_file'     => $zipPath,
             'price'         => $request->price ?? 0,
-            'plan_tier'     => $request->plan_tier ?? 'basic',
-            'is_premium'    => $request->plan_tier !== 'basic',
-            'is_featured'   => $request->has('is_featured'),
-            'is_active'     => $request->has('is_active'),
+            'plan_tier'          => $request->plan_tier ?? 'basic',
+            'is_premium'         => $request->plan_tier !== 'basic',
+            'is_featured'        => $request->has('is_featured'),
+            'is_active'          => $request->has('is_active'),
+            'photo_orientation'  => $request->photo_orientation ?: null,
         ]);
 
         return redirect()

@@ -429,6 +429,38 @@
                                     <span class="hint">Determina en qué plan de pago aparece esta plantilla.</span>
                                 </div>
 
+                                {{-- Orientación de la foto --}}
+                                <div class="form-field">
+                                    <label>Orientación de la foto de perfil</label>
+                                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.25rem;">
+                                        @foreach([
+                                            '' => ['label' => 'Sin preferencia', 'desc' => 'Cualquier formato'],
+                                            'vertical' => ['label' => 'Vertical', 'desc' => 'Retrato (3:4)'],
+                                            'horizontal' => ['label' => 'Horizontal', 'desc' => 'Paisaje (4:3)'],
+                                        ] as $val => $opt)
+                                        <label style="cursor:pointer;">
+                                            <input type="radio" name="photo_orientation" value="{{ $val }}"
+                                                   {{ old('photo_orientation', $template->photo_orientation ?? '') === $val ? 'checked' : '' }}
+                                                   style="display:none;" class="orientation-radio">
+                                            <div class="orientation-card" style="border:2px solid var(--admin-border);border-radius:var(--radius);padding:.6rem .4rem;text-align:center;transition:all .15s;background:var(--admin-bg);">
+                                                <div style="margin-bottom:.2rem;">
+                                                    @if($val === 'vertical')
+                                                        <svg width="18" height="24" viewBox="0 0 18 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;"><rect x="1" y="1" width="16" height="22" rx="2"/></svg>
+                                                    @elseif($val === 'horizontal')
+                                                        <svg width="24" height="18" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;"><rect x="1" y="1" width="22" height="16" rx="2"/></svg>
+                                                    @else
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                                                    @endif
+                                                </div>
+                                                <div style="font-size:.75rem;font-weight:700;color:var(--admin-text);">{{ $opt['label'] }}</div>
+                                                <div style="font-size:.67rem;color:var(--admin-text-muted);">{{ $opt['desc'] }}</div>
+                                            </div>
+                                        </label>
+                                        @endforeach
+                                    </div>
+                                    <span class="hint">El usuario verá esta recomendación al subir su foto de perfil.</span>
+                                </div>
+
                                 <div class="toggle-list">
                                     <div class="toggle-row">
                                         <div class="toggle-info">
@@ -549,10 +581,28 @@
 
     const zipInput = document.getElementById('zipInput');
     const zipName  = document.getElementById('zipName');
-    zipInput.addEventListener('change', function () {
+    if (zipInput) zipInput.addEventListener('change', function () {
         const file = this.files[0];
         if (file) zipName.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(2) + ' MB)';
     });
+
+    // Orientación foto
+    function updateOrientationCards() {
+        document.querySelectorAll('.orientation-radio').forEach(function(radio) {
+            const card = radio.nextElementSibling;
+            if (radio.checked) {
+                card.style.borderColor = 'var(--blue-400,#60a5fa)';
+                card.style.boxShadow = '0 0 0 1px var(--blue-400,#60a5fa)';
+                card.style.background = 'var(--blue-50,#eff6ff)';
+            } else {
+                card.style.borderColor = 'var(--admin-border)';
+                card.style.boxShadow = 'none';
+                card.style.background = 'var(--admin-bg)';
+            }
+        });
+    }
+    document.querySelectorAll('.orientation-radio').forEach(r => r.addEventListener('change', updateOrientationCards));
+    updateOrientationCards();
 })();
 </script>
 

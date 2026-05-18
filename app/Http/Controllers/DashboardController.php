@@ -31,9 +31,13 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        $cvData = $this->cleanCvData(Auth::user()->cv_data ?? []);
+        $cvData           = $this->cleanCvData(Auth::user()->cv_data ?? []);
+        $photoUrl         = Auth::user()->profile_photo
+                            ? '/storage/' . Auth::user()->profile_photo
+                            : null;
+        $photoOrientation = $activePurchase?->selectedTemplate?->photo_orientation;
 
-        return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates', 'cvData'));
+        return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates', 'cvData', 'photoUrl', 'photoOrientation'));
     }
 
     public function selectTemplate(UserPurchase $purchase, Template $template)
@@ -175,6 +179,37 @@ class DashboardController extends Controller
         $user->cv_data = $request->input('cv_data', []);
         $user->save();
         return response()->json(['ok' => true]);
+    }
+
+    public function clearCvData(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if ($user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        $user->update(['cv_data' => [], 'profile_photo' => null]);
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function uploadPhoto(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:3072'],
+        ]);
+
+        $user = Auth::user();
+
+        if ($user->profile_photo) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        $path = $request->file('photo')->store('photos/' . $user->id, 'public');
+        $user->update(['profile_photo' => $path]);
+
+        return response()->json(['url' => '/storage/' . $path]);
     }
 
     private function cleanCvData(array $data): array

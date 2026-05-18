@@ -65,9 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/cv/download',                 [DashboardController::class, 'downloadCv'])->name('dashboard.cv.download');
     Route::post('/dashboard/plan/{plan}/activate',       [DashboardController::class, 'activatePlan'])->name('dashboard.plan.activate');
     Route::post('/dashboard/cv-data',                        [DashboardController::class, 'updateCvData'])->name('dashboard.cv-data.update');
+    Route::delete('/dashboard/cv-data',                      [DashboardController::class, 'clearCvData'])->name('dashboard.cv-data.clear');
     Route::patch('/dashboard/purchase/{purchase}/hosting', [DashboardController::class, 'updateHosting'])->name('dashboard.purchase.hosting');
     Route::delete('/dashboard/purchase/{purchase}/cancel', [DashboardController::class, 'cancelPlan'])->name('dashboard.purchase.cancel');
     Route::post('/dashboard/purchase/{purchase}/template/{template}', [DashboardController::class, 'selectTemplate'])->name('dashboard.template.select');
+
+    // Foto de perfil
+    Route::post('/dashboard/photo', [DashboardController::class, 'uploadPhoto'])->name('dashboard.photo.upload');
 
     // AI CV parsing
     Route::post('/dashboard/cv/parse',              [CvParseController::class, 'store'])->name('dashboard.cv.parse');
