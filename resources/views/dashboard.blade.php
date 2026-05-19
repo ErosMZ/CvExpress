@@ -407,22 +407,28 @@
 
                 @else
                     @php
-                        $selected = $activePurchase->selectedTemplate;
-                        $tiers    = \App\Models\Template::PLAN_TIERS;
-                        $u        = auth()->user();
+                        $selected  = $activePurchase->selectedTemplate;
+                        $tiers     = \App\Models\Template::PLAN_TIERS;
+                        $u         = auth()->user();
+                        $showHub   = $selected && session('show_hub');
                     @endphp
+
+                    {{-- ─── FORMULARIOS OCULTOS DE SELECCIÓN ─── --}}
+                    @foreach($availableTemplates as $tpl)
+                    <form id="sel-tpl-{{ $tpl->id }}" method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $tpl->id]) }}" style="display:none;">@csrf</form>
+                    @endforeach
 
                     {{-- ─── VISTA: SELECTOR DE PLANTILLA ─── --}}
                     <div id="cv-selector-view" style="{{ $selected ? 'display:none' : '' }}">
                         <div class="panel__header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
                             <div>
                                 <h1 class="panel__title">Mi CV Web</h1>
-                                <p class="panel__subtitle">Elige la plantilla para tu portfolio.</p>
+                                <p class="panel__subtitle">Elige tu plantilla para empezar.</p>
                             </div>
                             @if($selected)
-                            <button onclick="showCvView('editor')" class="btn btn--ghost btn--sm">
+                            <button onclick="showCvView('hub')" class="btn btn--ghost btn--sm">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                                Volver al editor
+                                Volver
                             </button>
                             @endif
                         </div>
@@ -433,22 +439,26 @@
                             </div>
                         @else
                             <p style="font-size:.82rem;color:var(--color-text-secondary);margin-bottom:1.25rem;">
-                                Tu plan <strong>{{ $activePurchase->plan->name }}</strong> incluye {{ $availableTemplates->count() }} plantilla(s). Al elegir una, podrás editarla en tiempo real.
+                                Tu plan <strong>{{ $activePurchase->plan->name }}</strong> incluye {{ $availableTemplates->count() }} plantilla(s). <strong>Haz doble clic</strong> para seleccionar una.
                             </p>
-                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem;">
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1.25rem;">
                                 @foreach($availableTemplates as $tpl)
                                 @php $isActive = $selected && $selected->id === $tpl->id; @endphp
-                                <div style="border:2px solid {{ $isActive ? '#16a34a' : 'var(--color-border)' }};border-radius:14px;overflow:hidden;background:var(--color-surface);{{ $isActive ? 'box-shadow:0 0 0 3px #bbf7d0;' : '' }}">
+                                <div ondblclick="{{ $isActive ? "showCvView('editor')" : "document.getElementById('sel-tpl-{$tpl->id}').submit()" }}"
+                                     title="{{ $isActive ? 'Ya está en uso — doble clic para editar' : 'Doble clic para usar esta plantilla' }}"
+                                     style="border:2px solid {{ $isActive ? '#16a34a' : 'var(--color-border)' }};border-radius:14px;overflow:hidden;background:var(--color-surface);cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s;user-select:none;{{ $isActive ? 'box-shadow:0 0 0 3px #bbf7d0;' : '' }}"
+                                     onmouseover="if(!{{ $isActive ? 'true' : 'false' }})this.style.borderColor='var(--color-primary)'"
+                                     onmouseout="this.style.borderColor='{{ $isActive ? '#16a34a' : 'var(--color-border)' }}'">
                                     <div style="position:relative;aspect-ratio:4/3;background:#f1f5f9;overflow:hidden;">
                                         @if($tpl->preview_image)
-                                            <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}" style="width:100%;height:100%;object-fit:cover;">
+                                            <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
                                         @else
                                             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                                             </div>
                                         @endif
                                         @if($isActive)
-                                            <div style="position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;border-radius:99px;padding:3px 10px;font-size:.68rem;font-weight:700;">✓ Activa</div>
+                                            <div style="position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;border-radius:99px;padding:3px 10px;font-size:.68rem;font-weight:700;">✓ En uso</div>
                                         @endif
                                         @php $tierData = $tiers[$tpl->plan_tier] ?? null; @endphp
                                         @if($tierData)
@@ -456,17 +466,12 @@
                                         @endif
                                     </div>
                                     <div style="padding:.875rem;">
-                                        <div style="font-weight:700;font-size:.9rem;color:var(--color-text-primary);margin-bottom:.2rem;">{{ $tpl->name }}</div>
-                                        @if($tpl->category)<div style="font-size:.75rem;color:var(--color-text-secondary);margin-bottom:.75rem;">{{ $tpl->category->name }}</div>@else<div style="margin-bottom:.75rem;"></div>@endif
+                                        <div style="font-weight:700;font-size:.9rem;color:var(--color-text-primary);margin-bottom:.15rem;">{{ $tpl->name }}</div>
+                                        @if($tpl->category)<div style="font-size:.72rem;color:var(--color-text-secondary);margin-bottom:.5rem;">{{ $tpl->category->name }}</div>@else<div style="margin-bottom:.5rem;"></div>@endif
                                         @if($isActive)
-                                            <div style="width:100%;padding:.5rem;text-align:center;border-radius:8px;background:#dcfce7;color:#16a34a;font-size:.8rem;font-weight:700;">✓ En uso</div>
+                                            <div style="width:100%;padding:.4rem;text-align:center;border-radius:7px;background:#dcfce7;color:#16a34a;font-size:.75rem;font-weight:700;">✓ En uso</div>
                                         @else
-                                            <form method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $tpl->id]) }}">
-                                                @csrf
-                                                <button type="submit" style="width:100%;padding:.5rem;border-radius:8px;background:var(--color-primary);color:#fff;border:none;font-size:.8rem;font-weight:700;cursor:pointer;">
-                                                    Usar esta plantilla
-                                                </button>
-                                            </form>
+                                            <div style="width:100%;padding:.4rem;text-align:center;border-radius:7px;background:var(--color-bg-secondary);color:var(--color-text-muted);font-size:.72rem;font-weight:600;">Doble clic para usar</div>
                                         @endif
                                     </div>
                                 </div>
@@ -475,8 +480,133 @@
                         @endif
                     </div>
 
+                    {{-- ─── VISTA: HUB — elegir método ─── --}}
+                    <div id="cv-hub-view" style="{{ $showHub ? '' : 'display:none' }}">
+
+                        {{-- Cabecera prominente --}}
+                        <div style="margin-bottom:1.75rem;">
+                            <div style="display:inline-flex;align-items:center;gap:.4rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:99px;padding:.3rem .875rem;font-size:.72rem;font-weight:700;color:#1d4ed8;margin-bottom:.75rem;letter-spacing:.03em;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                Mi CV Web
+                            </div>
+                            <h1 style="font-size:1.6rem;font-weight:800;color:var(--color-text-primary);margin:0 0 .4rem;line-height:1.2;">¿Cómo quieres crear tu CV?</h1>
+                            <p style="font-size:.9rem;color:var(--color-text-secondary);margin:0;">Elige un método para rellenar tu plantilla <strong style="color:var(--color-text-primary);">{{ $selected?->name }}</strong>.</p>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;">
+
+                            {{-- IZQUIERDA: dos CTAs grandes --}}
+                            <div style="display:flex;flex-direction:column;gap:.875rem;">
+
+                                {{-- CTA: IA — opción destacada --}}
+                                <div onclick="openAiModal()"
+                                     style="position:relative;border:2px solid #3b82f6;border-radius:16px;padding:1.75rem;cursor:pointer;background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);transition:box-shadow .15s,transform .12s;display:flex;gap:1.25rem;align-items:center;"
+                                     onmouseover="this.style.boxShadow='0 8px 28px rgba(59,130,246,.25)';this.style.transform='translateY(-3px)'"
+                                     onmouseout="this.style.boxShadow='none';this.style.transform=''">
+                                    <div style="position:absolute;top:-1px;right:14px;background:#3b82f6;color:#fff;border-radius:0 0 8px 8px;padding:.2rem .75rem;font-size:.65rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;">Recomendado</div>
+                                    <div style="width:56px;height:56px;border-radius:14px;background:#3b82f6;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(59,130,246,.4);">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <div style="font-size:1.15rem;font-weight:800;color:#1e3a8a;margin-bottom:.3rem;">Generar con IA</div>
+                                        <div style="font-size:.84rem;color:#1e40af;line-height:1.55;opacity:.85;">Sube tu CV en PDF y la IA rellena todo en segundos automáticamente.</div>
+                                        <div style="margin-top:.75rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:700;color:#2563eb;background:#fff;padding:.35rem .875rem;border-radius:99px;box-shadow:0 1px 4px rgba(0,0,0,.08);">
+                                            Empezar ahora
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Separador --}}
+                                <div style="display:flex;align-items:center;gap:.75rem;">
+                                    <div style="flex:1;height:1px;background:var(--color-border);"></div>
+                                    <span style="font-size:.72rem;font-weight:600;color:var(--color-text-muted);white-space:nowrap;">o si prefieres</span>
+                                    <div style="flex:1;height:1px;background:var(--color-border);"></div>
+                                </div>
+
+                                {{-- CTA: Manual --}}
+                                <div onclick="showCvView('editor')"
+                                     style="border:2px solid var(--color-border);border-radius:16px;padding:1.75rem;cursor:pointer;background:var(--color-surface);transition:box-shadow .15s,transform .12s,border-color .15s;display:flex;gap:1.25rem;align-items:center;"
+                                     onmouseover="this.style.boxShadow='0 6px 20px rgba(0,0,0,.08)';this.style.borderColor='var(--color-text-secondary)';this.style.transform='translateY(-2px)'"
+                                     onmouseout="this.style.boxShadow='none';this.style.borderColor='var(--color-border)';this.style.transform=''">
+                                    <div style="width:56px;height:56px;border-radius:14px;background:var(--color-bg-secondary);border:1.5px solid var(--color-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    </div>
+                                    <div style="flex:1;">
+                                        <div style="font-size:1.05rem;font-weight:700;color:var(--color-text-primary);margin-bottom:.3rem;">Rellenar a mano</div>
+                                        <div style="font-size:.84rem;color:var(--color-text-secondary);line-height:1.55;">Escribe cada campo directamente y personaliza tu CV a tu ritmo.</div>
+                                        <div style="margin-top:.75rem;display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;font-weight:600;color:var(--color-text-secondary);">
+                                            Ir al editor
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{-- DERECHA: plantilla activa + cambiar --}}
+                            <div style="display:flex;flex-direction:column;gap:.875rem;">
+
+                                @if($selected)
+                                <div style="border:2px solid #16a34a;border-radius:14px;overflow:hidden;background:var(--color-surface);box-shadow:0 0 0 3px #bbf7d0;">
+                                    <div style="position:relative;aspect-ratio:4/3;background:#f1f5f9;overflow:hidden;">
+                                        @if($selected->preview_image)
+                                            <img src="{{ asset('storage/'.$selected->preview_image) }}" alt="{{ $selected->name }}" style="width:100%;height:100%;object-fit:cover;">
+                                        @else
+                                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+                                        @endif
+                                        <div style="position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;border-radius:99px;padding:3px 10px;font-size:.68rem;font-weight:700;">✓ En uso</div>
+                                        @php $tierData = $tiers[$selected->plan_tier] ?? null; @endphp
+                                        @if($tierData)
+                                            <div style="position:absolute;top:8px;left:8px;background:{{ $tierData['bg'] }};color:{{ $tierData['color'] }};border-radius:99px;padding:2px 8px;font-size:.65rem;font-weight:700;">{{ $tierData['label'] }}</div>
+                                        @endif
+                                    </div>
+                                    <div style="padding:.75rem .875rem;">
+                                        <div style="font-weight:700;font-size:.9rem;color:var(--color-text-primary);">{{ $selected->name }}</div>
+                                        @if($selected->category)<div style="font-size:.72rem;color:var(--color-text-secondary);margin-top:.1rem;">{{ $selected->category->name }}</div>@endif
+                                    </div>
+                                </div>
+                                @endif
+
+                                {{-- Otras plantillas disponibles --}}
+                                @php $otrasPlantillas = $availableTemplates->filter(fn($t) => !$selected || $t->id !== $selected->id); @endphp
+                                @if($otrasPlantillas->isNotEmpty())
+                                <div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-muted);margin-top:.25rem;">Otras disponibles</div>
+                                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                                    @foreach($otrasPlantillas as $tpl)
+                                    <div ondblclick="document.getElementById('sel-tpl-{{ $tpl->id }}').submit()"
+                                         title="Doble clic para usar esta plantilla"
+                                         style="display:flex;align-items:center;gap:.75rem;border:1.5px solid var(--color-border);border-radius:10px;overflow:hidden;background:var(--color-surface);cursor:pointer;padding-right:.75rem;transition:border-color .15s;"
+                                         onmouseover="this.style.borderColor='var(--color-primary)'"
+                                         onmouseout="this.style.borderColor='var(--color-border)'">
+                                        <div style="width:64px;height:48px;background:#f1f5f9;flex-shrink:0;overflow:hidden;">
+                                            @if($tpl->preview_image)
+                                                <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
+                                            @else
+                                                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+                                            @endif
+                                        </div>
+                                        <div style="flex:1;min-width:0;">
+                                            <div style="font-size:.82rem;font-weight:600;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $tpl->name }}</div>
+                                            <div style="font-size:.7rem;color:var(--color-text-muted);">Doble clic para usar</div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endif
+
+                                <button onclick="showCvView('selector')" style="width:100%;padding:.5rem;border-radius:8px;border:1.5px solid var(--color-border);background:none;font-size:.78rem;font-weight:600;color:var(--color-text-secondary);cursor:pointer;transition:border-color .15s,color .15s;"
+                                        onmouseover="this.style.borderColor='var(--color-primary)';this.style.color='var(--color-primary)'"
+                                        onmouseout="this.style.borderColor='var(--color-border)';this.style.color='var(--color-text-secondary)'">
+                                    Ver todas las plantillas →
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- ─── VISTA: EDITOR DE CV ─── --}}
-                    <div id="cv-editor-view" style="{{ $selected ? '' : 'display:none' }}">
+                    <div id="cv-editor-view" style="{{ ($selected && !$showHub) ? '' : 'display:none' }}">
 
                         {{-- Header editor --}}
                         <div class="panel__header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
@@ -492,7 +622,7 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                                 Analizar CV con IA
                             </button>
-                            <button type="button" onclick="showCvView('selector')" class="btn btn--ghost btn--sm" style="flex:1;justify-content:center;">
+                            <button type="button" onclick="showCvView('selector')" class="btn btn--ghost btn--sm">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                                 Cambiar plantilla
                             </button>
@@ -1314,10 +1444,11 @@
     // ── CV Editor ──
     function showCvView(view) {
         var sel = document.getElementById('cv-selector-view');
+        var hub = document.getElementById('cv-hub-view');
         var ed  = document.getElementById('cv-editor-view');
-        if (!sel || !ed) return;
-        sel.style.display = view === 'selector' ? '' : 'none';
-        ed.style.display  = view === 'editor'   ? '' : 'none';
+        if (sel) sel.style.display = (view === 'selector') ? '' : 'none';
+        if (hub) hub.style.display = (view === 'hub')      ? '' : 'none';
+        if (ed)  ed.style.display  = (view === 'editor')   ? '' : 'none';
         if (view === 'editor') scaleCvPreview();
     }
 

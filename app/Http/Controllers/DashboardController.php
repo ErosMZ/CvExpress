@@ -52,7 +52,8 @@ class DashboardController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Plantilla «' . $template->name . '» seleccionada correctamente.')
-            ->with('open_section', 'templates');
+            ->with('open_section', 'templates')
+            ->with('show_hub', true);
     }
 
     public function activatePlan(Plan $plan)

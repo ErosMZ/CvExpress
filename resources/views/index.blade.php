@@ -19,8 +19,8 @@
             </div>
 
             <h1 class="hero__title" id="hero-title">
-                Tu CV se merece<br>
-                <em>una web propia</em>
+                Tu Currículum se merece  <em>una  web propia</em><br>
+                
             </h1>
 
             <p class="hero__subtitle">

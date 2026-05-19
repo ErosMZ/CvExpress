@@ -538,20 +538,27 @@
                             </div>
                             <div class="form-card__body">
                                 <p style="font-size:.8rem;color:var(--admin-text-muted);line-height:1.5;">Eliminar la plantilla borrará también todos sus archivos y la vista previa. Esta acción no se puede deshacer.</p>
-                                <form action="{{ route('templates.destroy', $template) }}" method="POST" data-confirm="¿Seguro que quieres eliminar «{{ $template->name }}»? Esta acción no se puede deshacer.">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-admin btn-admin--danger" style="width:100%;justify-content:center;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-                                        Eliminar plantilla
-                                    </button>
-                                </form>
+                                <button type="button" onclick="document.getElementById('delete-template-form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))" class="btn-admin btn-admin--danger" style="width:100%;justify-content:center;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                                    Eliminar plantilla
+                                </button>
                             </div>
                         </div>
 
                     </div>
                 </div>
             </form>
+
+            {{-- Form DELETE separado, fuera del form UPDATE para evitar anidamiento --}}
+            <form id="delete-template-form"
+                  action="{{ route('templates.destroy', $template) }}"
+                  method="POST"
+                  data-confirm="¿Seguro que quieres eliminar «{{ $template->name }}»? Esta acción no se puede deshacer."
+                  style="display:none;">
+                @csrf
+                @method('DELETE')
+            </form>
+
         </div>
     </main>
 </div>
