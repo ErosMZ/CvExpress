@@ -16,7 +16,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Carpeta app
 WORKDIR /app
 
-# Copiar archivos bhfv
+# Copiar archivos
 COPY . .
 
 # Instalar dependencias Laravel
@@ -27,6 +27,12 @@ RUN npm install && npm run build
 
 # Cache Laravel
 RUN php artisan config:cache
+
+# Ejecutar migraciones
+RUN php artisan migrate --force || true
+
+# Optimizar Laravel
+RUN php artisan optimize
 
 # Puerto Render
 EXPOSE 10000
