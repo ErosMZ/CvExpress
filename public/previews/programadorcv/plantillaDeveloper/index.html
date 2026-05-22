@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio - CvExpress</title>
+  <link rel="icon" type="image/svg+xml" href="./img/favicon.svg">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo" title="Home">./</a>
+      <div class="nav-links">
+        <a href="#work" class="nav-link">Work</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">
+            <span class="name" data-cv="name">Adrian Martinez</span>
+          </h1>
+          <p class="hero-subtitle" data-cv="job_title">Product & UX/UI Designer</p>
+          <p class="hero-tagline">Frontend Developer too! 😁</p>
+        </div>
+
+        <!-- Profile Image -->
+        <div class="profile-container">
+          <div class="profile-frame">
+            <img 
+              src="./img/foto.jpg" 
+              alt="Foto de perfil" 
+              class="profile-image" 
+              data-cv="photo"
+            >
+            <div class="profile-glow"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Status -->
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        <span class="status-text">Currently @ <strong>Your Company</strong></span>
+      </div>
+    </section>
+
+    <!-- Bio Section -->
+    <section class="bio-section">
+      <div class="bio-container">
+        <p class="bio-text" data-cv="bio">
+          I design human-centered interfaces ✨, and I love turning ideas 🧠 into clean, intuitive, and genuinely enjoyable digital experiences.
+        </p>
+      </div>
+    </section>
+
+    <!-- Work Section -->
+    <section class="work-section" id="work">
+      <div class="section-header">
+        <h2 class="section-title">Selected Work</h2>
+        <p class="section-subtitle">Here are some of the projects I've loved shaping lately</p>
+      </div>
+
+      <!-- Work Grid -->
+      <div class="work-grid">
+        <div class="work-card">
+          <div class="work-image-placeholder">Project 1</div>
+          <div class="work-info">
+            <h3 class="work-title">NotedYou</h3>
+            <p class="work-description">A human-centered mobile app designed to help people maintain meaningful personal and professional relationships.</p>
+            <span class="work-tag">Design Thinking</span>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-image-placeholder">Project 2</div>
+          <div class="work-info">
+            <h3 class="work-title">TripVibes</h3>
+            <p class="work-description">A travel app concept created through a Design Sprint to transform how Gen Z plans and experiences trips.</p>
+            <span class="work-tag">Design Sprint</span>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-image-placeholder">Project 3</div>
+          <div class="work-info">
+            <h3 class="work-title">CashGuard</h3>
+            <p class="work-description">A redesigned personal finance mobile app with modern Liquid Glass visual language and AI-driven guidance.</p>
+            <span class="work-tag">UX/UI</span>
+          </div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-image-placeholder">Project 4</div>
+          <div class="work-info">
+            <h3 class="work-title">Burger Julian's</h3>
+            <p class="work-description">Complete redesign of a restaurant website with improved accessibility, visual hierarchy, and user flows.</p>
+            <span class="work-tag">Visual Design</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills-section" id="about">
+      <div class="section-header">
+        <h2 class="section-title">What I Bring to the Table</h2>
+        <p class="section-subtitle">I help teams create fun, memorable, and human experiences</p>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skill-card">
+          <span class="skill-emoji">💻</span>
+          <p class="skill-name">FrontEnd Development</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">🎨</span>
+          <p class="skill-name">Branding</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">✨</span>
+          <p class="skill-name">Visual Design</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">🎯</span>
+          <p class="skill-name">User Interface Design</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">🧠</span>
+          <p class="skill-name">Product Design</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">👥</span>
+          <p class="skill-name">User Experience Design</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">🔍</span>
+          <p class="skill-name">User Research</p>
+        </div>
+        <div class="skill-card">
+          <span class="skill-emoji">📊</span>
+          <p class="skill-name">Pitch Deck Design</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="experience-section">
+      <div class="section-header">
+        <h2 class="section-title">Experience</h2>
+      </div>
+      <div class="timeline" data-cv-section="experiencia">
+        <div class="timeline-item">
+          <div class="timeline-date">2023 - Present</div>
+          <div class="timeline-content">
+            <h3>Senior Product Designer</h3>
+            <h4>Tech Company</h4>
+            <p>Led design strategy and user research for multiple products impacting 100k+ users. Collaborated with cross-functional teams to deliver data-driven solutions.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-date">2021 - 2023</div>
+          <div class="timeline-content">
+            <h3>UX/UI Designer</h3>
+            <h4>Design Studio</h4>
+            <p>Designed digital experiences for startups and established brands. Conducted user research, created prototypes, and delivered pixel-perfect designs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="education-section">
+      <div class="section-header">
+        <h2 class="section-title">Education</h2>
+      </div>
+      <div class="education-list" data-cv-section="formacion">
+        <div class="education-item">
+          <div class="education-icon">🎓</div>
+          <div class="education-content">
+            <h3>Degree in Design</h3>
+            <h4>University Name</h4>
+            <p class="education-date">2018 - 2022</p>
+            <p class="education-description">Studied digital design, user experience, and interactive media.</p>
+          </div>
+        </div>
+
+        <div class="education-item">
+          <div class="education-icon">🏆</div>
+          <div class="education-content">
+            <h3>UX/UI Bootcamp</h3>
+            <h4>Design School</h4>
+            <p class="education-date">2023</p>
+            <p class="education-description">Intensive bootcamp focusing on modern design tools and methodologies.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Languages Section -->
+    <section class="languages-section">
+      <div class="section-header">
+        <h2 class="section-title">Languages</h2>
+      </div>
+      <div class="languages-list" data-cv-section="idiomas">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.08);">
+          <span style="font-weight:600;">Spanish</span>
+          <span style="opacity:.75;">Native</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.08);">
+          <span style="font-weight:600;">English</span>
+          <span style="opacity:.75;">Fluent</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;">
+          <span style="font-weight:600;">Catalan</span>
+          <span style="opacity:.75;">Native</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+      <div class="section-header">
+        <h2 class="section-title">Let's Connect</h2>
+      </div>
+
+      <div class="contact-grid">
+        <a href="mailto:hello@example.com" class="contact-item" data-cv="email">
+          <span class="contact-icon">✉</span>
+          <div>
+            <p class="contact-label">Email</p>
+            <p class="contact-value" data-cv="email">hello@example.com</p>
+          </div>
+        </a>
+
+        <a href="tel:+34612345678" class="contact-item" data-cv="phone">
+          <span class="contact-icon">📞</span>
+          <div>
+            <p class="contact-label">Phone</p>
+            <p class="contact-value" data-cv="phone">+34 612 345 678</p>
+          </div>
+        </a>
+
+        <div class="contact-item">
+          <span class="contact-icon">📍</span>
+          <div>
+            <p class="contact-label">Location</p>
+            <p class="contact-value" data-cv="location">Barcelona, Spain</p>
+          </div>
+        </div>
+
+        <a href="https://linkedin.com/in/example" class="contact-item" data-cv="linkedin">
+          <span class="contact-icon">💼</span>
+          <div>
+            <p class="contact-label">LinkedIn</p>
+            <p class="contact-value">Visit Profile</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p class="footer-text">© 2025 All rights reserved</p>
+        <a href="#" class="footer-link">Back to top ↑</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="./js/main.js"></script>
+</body>
+</html>

@@ -15,18 +15,17 @@
         <div class="hero__text">
             <div class="badge badge--feature" role="status">
                 <span class="badge__dot" aria-hidden="true"></span>
-                Automatización inteligente de portfolios
+                Tu CV convertido en portfolio web
             </div>
 
             <h1 class="hero__title" id="hero-title">
                 Tu Currículum se merece  <em>una  web propia</em><br>
-                
             </h1>
 
             <p class="hero__subtitle">
                 Sube tu PDF, nosotros hacemos el resto. En minutos tendrás un portfolio web profesional alojado, editable y listo para destacar en el mercado laboral.
             </p>
-
+ 
             <div class="hero__actions">
                 <a href="{{ auth()->check() ? route('templates.list') : route('register') }}" class="btn btn--primary btn--lg">
                     Crear mi CV Web
@@ -49,54 +48,108 @@
         </div>
 
         <div class="hero__visual" aria-hidden="true">
-            <!-- Mockup CV → Portfolio -->
-            <div class="mockup">
-                <div class="mockup__cv">
-                    <div class="mockup__doc-header">
-                        <div class="mockup__line mockup__line--name"></div>
-                        <div class="mockup__line mockup__line--role"></div>
+            <div class="hero-flow">
+
+                <!-- ── Transformación visual: PDF → Portfolio ── -->
+                <div class="hero-flow__top">
+                    <div class="hero-flow__cv">
+                        <div class="hero-flow__cv-header">
+                            <div class="hero-flow__cv-line hero-flow__cv-line--name"></div>
+                            <div class="hero-flow__cv-line hero-flow__cv-line--role"></div>
+                        </div>
+                        <div class="hero-flow__cv-body">
+                            <div class="hero-flow__cv-section"></div>
+                            <div class="hero-flow__cv-line"></div>
+                            <div class="hero-flow__cv-line hero-flow__cv-line--short"></div>
+                            <div class="hero-flow__cv-section"></div>
+                            <div class="hero-flow__cv-line"></div>
+                            <div class="hero-flow__cv-line hero-flow__cv-line--short"></div>
+                        </div>
+                        <div class="hero-flow__cv-footer">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            curriculum.pdf
+                        </div>
                     </div>
-                    <div class="mockup__doc-body">
-                        <div class="mockup__section-title"></div>
-                        <div class="mockup__line"></div>
-                        <div class="mockup__line mockup__line--short"></div>
-                        <div class="mockup__section-title"></div>
-                        <div class="mockup__line"></div>
-                        <div class="mockup__line"></div>
-                        <div class="mockup__line mockup__line--short"></div>
+
+                    <div class="hero-flow__arrow">
+                        <div class="hero-flow__arrow-track">
+                            <div class="hero-flow__arrow-dot"></div>
+                            <div class="hero-flow__arrow-dot"></div>
+                            <div class="hero-flow__arrow-dot"></div>
+                        </div>
+                        <div class="hero-flow__arrow-badge">Automático</div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </div>
-                    <div class="mockup__cv-label">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                        curriculum.pdf
+
+                    <div class="hero-flow__browser">
+                        <div class="hero-flow__browser-bar">
+                            <div class="hero-flow__browser-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="hero-flow__browser-url">miportfolio.cvexpress.es</div>
+                        </div>
+                        <div class="hero-flow__browser-body">
+                            <div class="hero-flow__browser-avatar"></div>
+                            <div class="hero-flow__browser-name"></div>
+                            <div class="hero-flow__browser-role"></div>
+                            <div class="hero-flow__browser-tags">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="hero-flow__browser-line"></div>
+                            <div class="hero-flow__browser-line hero-flow__browser-line--short"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mockup__arrow">
-                    <div class="mockup__arrow-line"></div>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    <span>Automágico</span>
+                <!-- ── Separador ── -->
+                <div class="hero-flow__sep">
+                    <span>En 3 pasos, sin conocimientos técnicos</span>
                 </div>
 
-                <div class="mockup__portfolio">
-                    <div class="mockup__browser">
-                        <div class="mockup__browser-bar">
-                            <div class="mockup__dots">
-                                <span></span><span></span><span></span>
-                            </div>
-                            <div class="mockup__url">miportfolio.cvportfolio.es</div>
+                <!-- ── Pasos ── -->
+                <div class="hero-flow__steps">
+
+                    <div class="hero-flow__step">
+                        <div class="hero-flow__step-num">01</div>
+                        <div class="hero-flow__step-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
                         </div>
-                        <div class="mockup__browser-content">
-                            <div class="mockup__avatar-circle"></div>
-                            <div class="mockup__portfolio-name"></div>
-                            <div class="mockup__portfolio-role"></div>
-                            <div class="mockup__tags">
-                                <span></span><span></span><span></span>
-                            </div>
-                            <div class="mockup__portfolio-section"></div>
-                            <div class="mockup__portfolio-line"></div>
-                            <div class="mockup__portfolio-line mockup__portfolio-line--short"></div>
+                        <div class="hero-flow__step-body">
+                            <strong>Sube tu CV en PDF</strong>
+                            <span>Extraemos toda tu información automáticamente.</span>
                         </div>
                     </div>
+
+                    <div class="hero-flow__connector">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                    </div>
+
+                    <div class="hero-flow__step">
+                        <div class="hero-flow__step-num">02</div>
+                        <div class="hero-flow__step-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        </div>
+                        <div class="hero-flow__step-body">
+                            <strong>Tu portfolio se genera solo</strong>
+                            <span>Web profesional con tu dominio, lista en segundos.</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-flow__connector">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                    </div>
+
+                    <div class="hero-flow__step">
+                        <div class="hero-flow__step-num">03</div>
+                        <div class="hero-flow__step-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </div>
+                        <div class="hero-flow__step-body">
+                            <strong>Edita cuando quieras</strong>
+                            <span>Panel de control para mantenerlo siempre al día.</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -127,53 +180,6 @@
     </div>
 </section>
 
-<!-- ===================== CÓMO FUNCIONA ===================== -->
-<section class="section" id="como-funciona" aria-labelledby="steps-title">
-    <div class="container">
-        <div class="section__header">
-            <div class="label">Proceso simple</div>
-            <h2 class="section__title" id="steps-title">De PDF a portfolio web<br>en tres pasos</h2>
-            <p class="section__subtitle">Sin conocimientos técnicos. Sin horas de diseño. Solo sube tu CV y deja que la automatización trabaje por ti.</p>
-        </div>
-
-        <ol class="steps" role="list">
-            <li class="step">
-                <div class="step__number" aria-hidden="true">01</div>
-                <div class="step__icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                </div>
-                <h3 class="step__title">Sube tu CV en PDF</h3>
-                <p class="step__desc">Arrastra o selecciona tu currículum. Nuestra IA analiza y extrae toda la información: experiencia, formación, habilidades y logros.</p>
-            </li>
-
-            <li class="step" aria-hidden="true">
-                <div class="step__connector" aria-hidden="true"></div>
-            </li>
-
-            <li class="step">
-                <div class="step__number" aria-hidden="true">02</div>
-                <div class="step__icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                </div>
-                <h3 class="step__title">Tu portfolio se genera automáticamente</h3>
-                <p class="step__desc">En segundos tendrás un portfolio web profesional y responsivo, con tu dominio personalizado, listo para compartir.</p>
-            </li>
-
-            <li class="step" aria-hidden="true">
-                <div class="step__connector" aria-hidden="true"></div>
-            </li>
-
-            <li class="step">
-                <div class="step__number" aria-hidden="true">03</div>
-                <div class="step__icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </div>
-                <h3 class="step__title">Edita y mantén actualizado</h3>
-                <p class="step__desc">Desde tu panel de control puedes añadir nuevas experiencias, actualizar proyectos y personalizar el diseño en cualquier momento.</p>
-            </li>
-        </ol>
-    </div>
-</section>
 
 <!-- ===================== MARQUEE PLANTILLAS DESTACADAS ===================== -->
 @if($featuredTemplates->isNotEmpty())
@@ -556,6 +562,204 @@
         </div>
     </div>
 </section>
+
+@push('styles')
+<style>
+/* ── Hero flow card ── */
+.hero-flow {
+    background: #fff;
+    border: 1px solid var(--color-border, #E5E7EB);
+    border-radius: 1.25rem;
+    box-shadow: 0 8px 32px rgba(15,40,100,.10), 0 1px 4px rgba(0,0,0,.06);
+    overflow: hidden;
+    width: 100%;
+}
+
+/* TOP: transformación visual */
+.hero-flow__top {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    padding: 1.5rem 1.5rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    border-bottom: 1px solid #BFDBFE;
+}
+
+/* Mini documento CV */
+.hero-flow__cv {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: .75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    padding: .875rem;
+    width: 120px;
+    flex-shrink: 0;
+}
+.hero-flow__cv-header { margin-bottom: .625rem; }
+.hero-flow__cv-line {
+    height: 7px; background: #E5E7EB;
+    border-radius: 4px; margin-bottom: .3rem;
+}
+.hero-flow__cv-line--name { width: 75%; height: 10px; background: #D1D5DB; }
+.hero-flow__cv-line--role { width: 55%; background: #BFDBFE; }
+.hero-flow__cv-line--short { width: 60%; }
+.hero-flow__cv-body { padding-top: .25rem; }
+.hero-flow__cv-section {
+    height: 6px; width: 40%; background: #93C5FD;
+    border-radius: 4px; margin: .5rem 0 .3rem;
+}
+.hero-flow__cv-footer {
+    display: flex; align-items: center; gap: .3rem;
+    font-size: 9px; color: #9CA3AF;
+    margin-top: .625rem; padding-top: .5rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+/* Flecha central */
+.hero-flow__arrow {
+    display: flex; flex-direction: column;
+    align-items: center; gap: .375rem;
+    flex-shrink: 0; color: #2563EB;
+}
+.hero-flow__arrow-track {
+    display: flex; flex-direction: column; gap: 4px; align-items: center;
+}
+.hero-flow__arrow-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #93C5FD;
+    animation: flow-dot 1.4s ease-in-out infinite;
+}
+.hero-flow__arrow-dot:nth-child(2) { animation-delay: .2s; }
+.hero-flow__arrow-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes flow-dot {
+    0%,100% { opacity: .3; transform: scaleY(1); }
+    50%      { opacity: 1;  transform: scaleY(1.3); }
+}
+.hero-flow__arrow-badge {
+    font-size: .6rem; font-weight: 700;
+    background: #1D4ED8; color: #fff;
+    padding: .2rem .5rem; border-radius: 100px;
+    letter-spacing: .05em;
+}
+
+/* Mini navegador */
+.hero-flow__browser {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: .75rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    overflow: hidden;
+    width: 170px;
+    flex-shrink: 0;
+}
+.hero-flow__browser-bar {
+    background: #F9FAFB;
+    border-bottom: 1px solid #F3F4F6;
+    padding: .375rem .625rem;
+    display: flex; align-items: center; gap: .375rem;
+}
+.hero-flow__browser-dots { display: flex; gap: 3px; }
+.hero-flow__browser-dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+}
+.hero-flow__browser-dots span:nth-child(1) { background: #FC5C57; }
+.hero-flow__browser-dots span:nth-child(2) { background: #FDBC40; }
+.hero-flow__browser-dots span:nth-child(3) { background: #34C749; }
+.hero-flow__browser-url {
+    font-size: 8.5px; color: #9CA3AF;
+    background: #F3F4F6; border-radius: 4px;
+    padding: 1px 6px; flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.hero-flow__browser-body { padding: .75rem; }
+.hero-flow__browser-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    margin-bottom: .5rem;
+}
+.hero-flow__browser-name {
+    height: 8px; width: 65%; background: #1F2937;
+    border-radius: 4px; margin-bottom: .3rem;
+}
+.hero-flow__browser-role {
+    height: 6px; width: 50%; background: #93C5FD;
+    border-radius: 4px; margin-bottom: .5rem;
+}
+.hero-flow__browser-tags { display: flex; gap: .25rem; margin-bottom: .625rem; }
+.hero-flow__browser-tags span {
+    height: 14px; width: 32px;
+    background: #DBEAFE; border-radius: 100px;
+}
+.hero-flow__browser-line {
+    height: 5px; background: #E5E7EB;
+    border-radius: 4px; margin-bottom: .25rem;
+}
+.hero-flow__browser-line--short { width: 70%; }
+
+/* Separador */
+.hero-flow__sep {
+    padding: .75rem 1.5rem;
+    text-align: center;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    color: #6B7280;
+    text-transform: uppercase;
+    background: #FAFAFA;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+/* Steps */
+.hero-flow__steps {
+    padding: 1rem 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.hero-flow__step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .875rem;
+    padding: .875rem .75rem;
+    border-radius: .875rem;
+    transition: background .18s, transform .18s;
+    cursor: default;
+}
+.hero-flow__step:hover {
+    background: #EFF6FF;
+    transform: translateX(3px);
+}
+.hero-flow__step-num {
+    font-size: .6rem; font-weight: 700;
+    letter-spacing: .1em; color: #2563EB;
+    flex-shrink: 0; width: 18px;
+}
+.hero-flow__step-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: #EFF6FF; border: 1px solid #BFDBFE;
+    border-radius: .75rem;
+    display: flex; align-items: center; justify-content: center;
+    color: #1D4ED8;
+}
+.hero-flow__step-body {
+    min-width: 0;
+}
+.hero-flow__step-body strong {
+    display: block;
+    font-size: .875rem; font-weight: 600;
+    color: #111827; margin-bottom: .15rem;
+}
+.hero-flow__step-body span {
+    font-size: .75rem; color: #6B7280; line-height: 1.5;
+}
+.hero-flow__connector {
+    display: flex; align-items: center; justify-content: center;
+    color: #93C5FD;
+}
+</style>
+@endpush
 
 @push('scripts')
 @if($featuredTemplates->isNotEmpty())
