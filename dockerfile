@@ -16,7 +16,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Carpeta app
 WORKDIR /app
 
-# Copiar archivos
+# Copiar archivos bhfv
 COPY . .
 
 # Instalar dependencias Laravel
