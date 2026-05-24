@@ -298,13 +298,13 @@ body {
    EDIFICIO 0 — SOBRE MÍ (horizontal, más bajo, más ancho)
    ════════════════════════════════ */
 .b0-top {
-  width:240px; height:10px;
+  width:210px; height:10px;
   background:linear-gradient(180deg,#78350F,#92400E);
   border-radius:4px 4px 0 0;
   border-top:2px solid #F59E0B;
 }
 .b0-body {
-  width:240px; height:120px;
+  width:210px; height:195px;
   background:linear-gradient(180deg,#A16207 0%,#92400E 50%,#78350F 100%);
   border-left:4px solid rgba(255,255,255,.15);
   border-right:4px solid rgba(0,0,0,.2);
@@ -316,12 +316,11 @@ body {
   position:absolute; top:0; left:9%; width:12%; height:100%;
   background:rgba(255,255,255,.09);
 }
-/* Sección izquierda: foto */
+/* Foto — ocupa todo el cuerpo del edificio */
 .b0-photo {
-  width:90px; flex-shrink:0;
+  flex:1;
   background:linear-gradient(135deg,#1E40AF,#3B82F6);
   display:flex; align-items:center; justify-content:center;
-  border-right:2px solid rgba(0,0,0,.15);
   position:relative; overflow:hidden;
 }
 .b0-photo-img {
@@ -358,7 +357,7 @@ body {
 }
 .b0-dot.on { background:#FCD34D; box-shadow:0 0 4px rgba(252,211,77,.5); }
 .b0-base {
-  width:256px; height:26px;
+  width:226px; height:26px;
   background:linear-gradient(180deg,#451A03,#2D1001);
   border-left:4px solid rgba(255,255,255,.08);
   border-right:4px solid rgba(0,0,0,.2);
@@ -493,6 +492,7 @@ body {
 
 /* modal sobre mí */
 .sobre-mi-modal { display:flex; gap:20px; align-items:flex-start; }
+/* .sobre-mi-foto ya no se usa — edificio muestra foto, modal muestra solo texto */
 .sobre-mi-foto {
   width:110px; height:110px; border-radius:50%; flex-shrink:0;
   background:linear-gradient(135deg,#1E40AF,#3B82F6);
@@ -501,10 +501,10 @@ body {
   font-size:40px;
   /* imagen real: background-image:url('../img/foto.jpg'); background-size:cover; */
 }
-.sobre-mi-texto { flex:1; }
-.sobre-mi-texto h3 { font-size:18px; font-weight:700; color:#111827; margin-bottom:4px; }
-.sobre-mi-texto .sobre-mi-rol { font-family:var(--mono); font-size:11px; color:#2563EB; letter-spacing:.1em; margin-bottom:12px; }
-.sobre-mi-texto p { font-size:14px; color:#4B5563; line-height:1.75; }
+.sobre-mi-texto { width:100%; }
+.sobre-mi-texto h3 { font-size:20px; font-weight:700; color:#111827; margin-bottom:5px; }
+.sobre-mi-texto .sobre-mi-rol { font-family:var(--mono); font-size:11px; color:#2563EB; letter-spacing:.1em; margin-bottom:14px; }
+.sobre-mi-texto p { font-size:14px; color:#4B5563; line-height:1.8; }
 .sobre-mi-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
 .sobre-mi-chip { font-family:var(--mono); font-size:10px; padding:3px 10px; border-radius:100px; background:#EFF6FF; color:#1D4ED8; border:1px solid #BFDBFE; }
 @media(max-width:520px) { .sobre-mi-modal { flex-direction:column; align-items:center; } }
@@ -567,3 +567,32 @@ body {
   .skg { grid-template-columns:1fr; }
   .mh,.mb { padding:16px; }
 }
+
+/* ── Aliases para inyección CvExpress (data-cv-section) ── */
+.timeline-item { padding:15px 0; border-bottom:1px solid #F3F4F6; }
+.timeline-item:last-child { border-bottom:none; padding-bottom:0; }
+.timeline-date { font-family:var(--mono); font-size:11px; color:#2563EB; letter-spacing:.1em; margin-bottom:4px; }
+.timeline-content h3 { font-size:16px; font-weight:700; color:#111827; margin-bottom:2px; }
+.timeline-content h4 { font-size:13px; color:#1D4ED8; font-weight:500; margin-bottom:7px; }
+.timeline-content p  { font-size:13px; color:#4B5563; line-height:1.7; }
+.education-item { display:flex; gap:13px; padding:14px 0; border-bottom:1px solid #F3F4F6; }
+.education-item:last-child { border-bottom:none; padding-bottom:0; }
+.education-icon { width:40px; height:40px; border-radius:10px; background:#EFF6FF; border:1px solid #BFDBFE; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
+.education-content h3 { font-size:14px; font-weight:700; color:#111827; margin-bottom:2px; }
+.education-content h4 { font-size:12px; color:#1D4ED8; font-weight:500; }
+.education-date { font-family:var(--mono); font-size:10px; color:#9CA3AF; margin-top:3px; }
+.education-description { font-size:13px; color:#4B5563; line-height:1.7; margin-top:5px; }
+
+/* Injected skill chips */
+.cv-skill-chip { display:inline-block; background:#FFF7ED; border:1.5px solid #FED7AA; color:#C2410C; font-family:var(--mono); font-size:12px; font-weight:600; padding:5px 13px; border-radius:20px; letter-spacing:.02em; }
+
+/* Injected project items */
+.cv-project-item { padding:14px; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:12px; margin-bottom:9px; transition:border-color .18s; }
+.cv-project-item:last-child { margin-bottom:0; }
+.cv-project-item:hover { border-color:#93C5FD; }
+.cv-project-name { font-size:14px; font-weight:700; color:#111827; margin-bottom:5px; }
+.cv-project-link { color:#1D4ED8; text-decoration:none; }
+.cv-project-link:hover { text-decoration:underline; }
+.cv-project-desc { font-size:13px; color:#4B5563; line-height:1.65; margin-bottom:6px; }
+.cv-project-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+.cv-project-tag { font-family:var(--mono); font-size:10px; padding:2px 8px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1D4ED8; border-radius:100px; }

@@ -642,6 +642,7 @@
                                         'experiencia'  => 'Experiencia',
                                         'formacion'    => 'Formación',
                                         'habilidades'  => 'Habilidades',
+                                        'proyectos'    => 'Proyectos',
                                         'idiomas'      => 'Idiomas',
                                     ] as $key => $label)
                                     <button type="button" onclick="showCvSection('{{ $key }}')"
@@ -782,14 +783,58 @@
                                 {{-- PANEL: Habilidades --}}
                                 <div id="cvpanel-habilidades" class="panel-card" style="margin:0;display:none;">
                                     <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;">Habilidades</div>
-                                    <div class="form-group" style="margin-bottom:.875rem;">
-                                        <label class="form-label" for="cv_skills">Habilidades técnicas</label>
-                                        <input type="text" id="cv_skills" class="form-input" placeholder="JavaScript, React, Laravel, PHP..." value="{{ $cvData['cv_skills'] ?? '' }}" oninput="updatePreview('skills',this.value)">
-                                        <span class="form-hint">Separa con comas</span>
+                                    @php
+                                        $habilidades = $cvData['habilidades'] ?? [];
+                                        if (empty($habilidades) && !empty($cvData['cv_skills'])) {
+                                            $habilidades = array_values(array_filter(array_map('trim', explode(',', $cvData['cv_skills']))));
+                                        }
+                                        if (!empty($cvData['cv_soft_skills'])) {
+                                            $softSkills = array_values(array_filter(array_map('trim', explode(',', $cvData['cv_soft_skills']))));
+                                            $habilidades = array_merge($habilidades, $softSkills);
+                                        }
+                                    @endphp
+                                    <div id="skills-chips" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.875rem;min-height:2rem;">
+                                        @foreach($habilidades as $skill)
+                                            @if(trim($skill))
+                                            <span class="skill-chip-item" data-skill="{{ trim($skill) }}" style="display:inline-flex;align-items:center;gap:.25rem;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:.78rem;font-weight:600;padding:.25rem .6rem .25rem .75rem;border-radius:99px;line-height:1.3;">
+                                                {{ trim($skill) }}<button type="button" onclick="removeSkill(this)" title="Eliminar" style="background:none;border:none;cursor:pointer;color:#93c5fd;padding:0 0 0 2px;line-height:1;font-size:1.15rem;display:flex;align-items:center;">&times;</button>
+                                            </span>
+                                            @endif
+                                        @endforeach
                                     </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="cv_soft_skills">Habilidades blandas</label>
-                                        <input type="text" id="cv_soft_skills" class="form-input" placeholder="Trabajo en equipo, liderazgo..." value="{{ $cvData['cv_soft_skills'] ?? '' }}" oninput="updatePreview('soft_skills',this.value)">
+                                    <div style="display:flex;gap:.5rem;">
+                                        <input type="text" id="skill-input" class="form-input" placeholder="ej. JavaScript, trabajo en equipo..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();addSkill();}">
+                                        <button type="button" onclick="addSkill()" class="btn btn--ghost btn--sm">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                            Añadir
+                                        </button>
+                                    </div>
+                                    <span class="form-hint">Escribe una habilidad y pulsa Enter o el botón para añadirla.</span>
+                                </div>
+
+                                {{-- PANEL: Proyectos --}}
+                                <div id="cvpanel-proyectos" class="panel-card" style="margin:0;display:none;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                                        <div style="font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.07em;">Proyectos</div>
+                                        <button type="button" onclick="addEntry('proyectos')" style="font-size:.75rem;font-weight:700;color:var(--color-primary);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Añadir
+                                        </button>
+                                    </div>
+                                    <div id="entries-proyectos">
+                                        @php $proyEntries = !empty($cvData['proyectos']) ? $cvData['proyectos'] : [[]]; @endphp
+                                        @foreach($proyEntries as $proy)
+                                        <div class="cv-entry" style="border:1px solid var(--color-border);border-radius:10px;padding:.875rem;margin-bottom:.75rem;position:relative;">
+                                            <button type="button" onclick="removeEntry(this)" title="Eliminar" style="position:absolute;top:.5rem;right:.5rem;background:none;border:none;cursor:pointer;color:var(--color-text-muted);">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                            <div class="form-grid" style="gap:.625rem;">
+                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Nombre del proyecto</label><input type="text" data-field="nombre" class="form-input" placeholder="Mi Proyecto" value="{{ $proy['nombre'] ?? '' }}"></div>
+                                                <div class="form-group form-grid--full" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Descripción</label><textarea data-field="descripcion" class="form-textarea" rows="2" placeholder="Descripción breve del proyecto...">{{ $proy['descripcion'] ?? '' }}</textarea></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">URL / Link</label><input type="url" data-field="url" class="form-input" placeholder="https://github.com/..." value="{{ $proy['url'] ?? '' }}"></div>
+                                                <div class="form-group" style="margin:0;"><label class="form-label" style="font-size:.72rem;">Tecnologías</label><input type="text" data-field="tecnologias" class="form-input" placeholder="React, Node.js, PHP..." value="{{ $proy['tecnologias'] ?? '' }}"><span class="form-hint">Separa con comas</span></div>
+                                            </div>
+                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
 
@@ -1535,6 +1580,23 @@
         }).join('');
     }
 
+    function _buildProyectosHTML(entries) {
+        if (!entries.length) return '';
+        return entries.map(function(e) {
+            if (!e.nombre && !e.descripcion) return '';
+            var nameHtml = (e.url && e.url.trim())
+                ? '<a href="' + _esc(e.url) + '" class="cv-project-link" target="_blank" rel="noopener">' + _esc(e.nombre) + '</a>'
+                : _esc(e.nombre);
+            var tagsHtml = '';
+            if (e.tecnologias) {
+                var tags = e.tecnologias.split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+                if (tags.length) tagsHtml = '<div class="cv-project-tags">' + tags.map(function(t){ return '<span class="cv-project-tag">' + _esc(t) + '</span>'; }).join('') + '</div>';
+            }
+            var desc = e.descripcion ? '<p class="cv-project-desc">' + _esc(e.descripcion).replace(/\n/g,'<br>') + '</p>' : '';
+            return '<div class="cv-project-item"><div class="cv-project-name">' + nameHtml + '</div>' + desc + tagsHtml + '</div>';
+        }).filter(Boolean).join('');
+    }
+
     function _buildIdiomasHTML(entries) {
         if (!entries.length) return '';
         return entries.map(function(e) {
@@ -1577,12 +1639,13 @@
             if (!section) return;
             if (type === 'experiencia') section.innerHTML = _buildExperienciaHTML(entries);
             if (type === 'formacion')   section.innerHTML = _buildFormacionHTML(entries);
+            if (type === 'proyectos')   section.innerHTML = _buildProyectosHTML(entries);
             if (type === 'idiomas')     section.innerHTML = _buildIdiomasHTML(entries);
         }, 220);
     }
 
     // ── Event delegation for entry fields ──
-    ['experiencia','formacion','idiomas'].forEach(function(type) {
+    ['experiencia','formacion','proyectos','idiomas'].forEach(function(type) {
         var cont = document.getElementById('entries-' + type);
         if (!cont) return;
         cont.addEventListener('input', function() { updateEntriesPreview(type); });
@@ -1648,15 +1711,20 @@
         }
 
         // Entry sections
-        ['experiencia','formacion','idiomas'].forEach(function(type) {
+        ['experiencia','formacion','proyectos','idiomas'].forEach(function(type) {
             var entries = _serializeEntries(type);
             if (!entries.length) return;
             var section = doc.querySelector('[data-cv-section="' + type + '"]');
             if (!section) return;
             if (type === 'experiencia') section.innerHTML = _buildExperienciaHTML(entries);
             if (type === 'formacion')   section.innerHTML = _buildFormacionHTML(entries);
+            if (type === 'proyectos')   section.innerHTML = _buildProyectosHTML(entries);
             if (type === 'idiomas')     section.innerHTML = _buildIdiomasHTML(entries);
         });
+
+        // Habilidades
+        var habSection = doc.querySelector('[data-cv-section="habilidades"]');
+        if (habSection) habSection.innerHTML = _buildHabilidadesHTML(_getSkills());
     }
 
     // ── Banner ──
@@ -1771,15 +1839,75 @@
         });
     }
 
+    // ── Habilidades (chips) ──
+    var _skillsTimer = null;
+
+    function _getSkills() {
+        var skills = [];
+        document.querySelectorAll('#skills-chips .skill-chip-item').forEach(function(chip) {
+            var s = chip.dataset.skill;
+            if (s && s.trim()) skills.push(s.trim());
+        });
+        return skills;
+    }
+
+    function addSkill() {
+        var input = document.getElementById('skill-input');
+        if (!input) return;
+        var val = input.value.trim();
+        if (!val) return;
+        var chip = document.createElement('span');
+        chip.className = 'skill-chip-item';
+        chip.dataset.skill = val;
+        chip.style.cssText = 'display:inline-flex;align-items:center;gap:.25rem;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:.78rem;font-weight:600;padding:.25rem .6rem .25rem .75rem;border-radius:99px;line-height:1.3;';
+        chip.innerHTML = _esc(val) + '<button type="button" onclick="removeSkill(this)" title="Eliminar" style="background:none;border:none;cursor:pointer;color:#93c5fd;padding:0 0 0 2px;line-height:1;font-size:1.15rem;display:flex;align-items:center;">&times;</button>';
+        var container = document.getElementById('skills-chips');
+        if (container) container.appendChild(chip);
+        input.value = '';
+        updateSkillsPreview();
+    }
+
+    function removeSkill(btn) {
+        var chip = btn.closest ? btn.closest('.skill-chip-item') : btn.parentElement;
+        if (!chip) return;
+        chip.style.opacity = '0';
+        chip.style.transition = 'opacity .15s';
+        setTimeout(function() { chip.remove(); updateSkillsPreview(); }, 150);
+    }
+
+    function updateSkillsPreview() {
+        clearTimeout(_skillsTimer);
+        _skillsTimer = setTimeout(function() {
+            var iframe = document.getElementById('cv-preview-iframe');
+            if (!iframe) return;
+            var doc; try { doc = iframe.contentDocument; } catch(e) { return; }
+            if (!doc) return;
+            var section = doc.querySelector('[data-cv-section="habilidades"]');
+            if (!section) return;
+            section.innerHTML = _buildHabilidadesHTML(_getSkills());
+        }, 220);
+    }
+
+    function _buildHabilidadesHTML(skills) {
+        if (!skills.length) return '';
+        return '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;">' +
+            skills.map(function(s) {
+                return '<span class="cv-skill-chip">' + _esc(s) + '</span>';
+            }).join('') +
+            '</div>';
+    }
+
     function saveCvData(e) {
         var data = {};
         ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location',
-         'cv_linkedin','cv_website','cv_skills','cv_soft_skills'].forEach(function(id) {
+         'cv_linkedin','cv_website'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) data[id] = el.value;
         });
+        data.habilidades = _getSkills();
         data.experiencia = _serializeEntries('experiencia');
         data.formacion   = _serializeEntries('formacion');
+        data.proyectos   = _serializeEntries('proyectos');
         data.idiomas     = _serializeEntries('idiomas');
 
         var btn = document.getElementById('btn-save-cv');
@@ -1822,13 +1950,16 @@
         .then(function() {
             // Limpiar campos simples
             ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location',
-             'cv_linkedin','cv_website','cv_skills','cv_soft_skills'].forEach(function(id) {
+             'cv_linkedin','cv_website'].forEach(function(id) {
                 var el = document.getElementById(id);
                 if (el) el.value = '';
             });
+            // Limpiar chips de habilidades
+            var chipsContainer = document.getElementById('skills-chips');
+            if (chipsContainer) chipsContainer.innerHTML = '';
 
             // Limpiar entradas dinámicas (dejar solo una vacía)
-            ['experiencia','formacion'].forEach(function(type) {
+            ['experiencia','formacion','proyectos'].forEach(function(type) {
                 var container = document.getElementById('entries-' + type);
                 if (!container) return;
                 var entries = container.querySelectorAll('.cv-entry');
@@ -2101,27 +2232,47 @@
 
         // 2. Rellenar campos simples
         var simpleFields = {
-            'cv_name':       cvData.cv_name       || '',
-            'cv_job_title':  cvData.cv_job_title  || '',
-            'cv_bio':        cvData.cv_bio         || '',
-            'cv_email':      cvData.cv_email       || '',
-            'cv_phone':      cvData.cv_phone       || '',
-            'cv_location':   cvData.cv_location    || '',
-            'cv_linkedin':   cvData.cv_linkedin    || '',
-            'cv_website':    cvData.cv_website     || '',
-            'cv_skills':     cvData.cv_skills      || '',
-            'cv_soft_skills':cvData.cv_soft_skills || ''
+            'cv_name':      cvData.cv_name      || '',
+            'cv_job_title': cvData.cv_job_title || '',
+            'cv_bio':       cvData.cv_bio       || '',
+            'cv_email':     cvData.cv_email     || '',
+            'cv_phone':     cvData.cv_phone     || '',
+            'cv_location':  cvData.cv_location  || '',
+            'cv_linkedin':  cvData.cv_linkedin  || '',
+            'cv_website':   cvData.cv_website   || ''
         };
         Object.keys(simpleFields).forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.value = simpleFields[id];
         });
 
+        // Habilidades (chips)
+        var habContainer = document.getElementById('skills-chips');
+        if (habContainer) {
+            habContainer.innerHTML = '';
+            var habs = cvData.habilidades || [];
+            // Backward compat: old cv_skills string
+            if (!habs.length && cvData.cv_skills) {
+                habs = cvData.cv_skills.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+            }
+            habs.forEach(function(skill) {
+                if (!skill) return;
+                var chip = document.createElement('span');
+                chip.className = 'skill-chip-item';
+                chip.dataset.skill = skill;
+                chip.style.cssText = 'display:inline-flex;align-items:center;gap:.25rem;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:.78rem;font-weight:600;padding:.25rem .6rem .25rem .75rem;border-radius:99px;line-height:1.3;';
+                chip.innerHTML = _esc(skill) + '<button type="button" onclick="removeSkill(this)" title="Eliminar" style="background:none;border:none;cursor:pointer;color:#93c5fd;padding:0 0 0 2px;line-height:1;font-size:1.15rem;display:flex;align-items:center;">&times;</button>';
+                habContainer.appendChild(chip);
+            });
+        }
+
         // 3. Reconstruir entradas dinámicas (limpia primero)
         _rebuildEntries('experiencia', cvData.experiencia || [],
             function(e) { return [_nullClean(e.empresa), _nullClean(e.cargo), _nullClean(e.periodo), _nullClean(e.descripcion)]; });
         _rebuildEntries('formacion', cvData.formacion || [],
             function(e) { return [_nullClean(e.institucion), _nullClean(e.titulo), _nullClean(e.periodo), _nullClean(e.descripcion)]; });
+        _rebuildEntries('proyectos', cvData.proyectos || [],
+            function(e) { return [_nullClean(e.nombre), _nullClean(e.descripcion), _nullClean(e.url), _nullClean(e.tecnologias)]; });
         _rebuildIdiomaEntries(cvData.idiomas || []);
 
         // 4. Actualizar plantilla en el iframe

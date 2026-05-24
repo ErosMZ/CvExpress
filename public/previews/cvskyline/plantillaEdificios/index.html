@@ -90,25 +90,9 @@
         <div class="tip tip-down">👤 Click · Sobre Mí</div>
         <div class="b0-top"></div>
         <div class="b0-body">
-          <!-- Foto / avatar izquierda -->
           <div class="b0-photo">
+            <img data-cv="photo" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;display:none;" onload="this.style.display='block';this.nextElementSibling.style.display='none';">
             <div class="b0-photo-img">👤</div>
-            <!--
-              Para usar tu foto real, reemplaza el div anterior por:
-              <img src="img/foto.jpg" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.4);" alt="Foto">
-            -->
-          </div>
-          <!-- Texto bio derecha -->
-          <div class="b0-info">
-            
-            <div class="b0-bio">Desarrollador apasionado por crear experiencias digitales que marcan la diferencia.</div>
-            <div class="b0-dots">
-              <div class="b0-dot on"></div>
-              <div class="b0-dot on"></div>
-              <div class="b0-dot on"></div>
-              <div class="b0-dot"></div>
-              <div class="b0-dot"></div>
-            </div>
           </div>
         </div>
         <div class="b0-base"></div>
@@ -341,23 +325,14 @@
       <button class="mc" onclick="cm('sobre')">×</button>
     </div>
     <div class="mb">
-      <div class="sobre-mi-modal">
-        <div class="sobre-mi-foto">👤
-          <!-- Imagen real: <img src="img/foto.jpg" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="Tu foto"> -->
-        </div>
-        <div class="sobre-mi-texto">
-          <h3>TU NOMBRE APELLIDOS</h3>
-          <div class="sobre-mi-rol">FULL-STACK DEVELOPER · IA · UI/UX</div>
-          <p>
-            Desarrollador apasionado con más de 5 años de experiencia creando productos digitales que combinan tecnología de vanguardia con diseño cuidado. Me especializo en arquitecturas modernas, inteligencia artificial aplicada y experiencias de usuario que marcan la diferencia.<br><br>
-            Basado en Madrid, disponible para trabajo híbrido o remoto. Siempre buscando el siguiente reto interesante.
-          </p>
-          <div class="sobre-mi-chips">
-            <span class="sobre-mi-chip">Madrid, España</span>
-            <span class="sobre-mi-chip">Disponible ahora</span>
-            <span class="sobre-mi-chip">Trabajo híbrido</span>
-            <span class="sobre-mi-chip">5+ años exp.</span>
-          </div>
+      <div class="sobre-mi-texto">
+        <h3 data-cv="name">TU NOMBRE APELLIDOS</h3>
+        <div class="sobre-mi-rol" data-cv="job_title">FULL-STACK DEVELOPER · UI/UX</div>
+        <p data-cv="bio">
+          Desarrollador apasionado con más de 5 años de experiencia creando productos digitales que combinan tecnología de vanguardia con diseño cuidado.
+        </p>
+        <div class="sobre-mi-chips">
+          <span class="sobre-mi-chip" data-cv="location">Madrid, España</span>
         </div>
       </div>
     </div>
@@ -368,7 +343,7 @@
 <div class="ov" id="m-exp" onclick="cio(event,'exp')">
   <div class="modal">
     <div class="mh"><div class="mi" style="background:#EFF6FF;">🏢</div><div><div class="mt">Experiencia Laboral</div><div class="ms">DISTRITO EMPRESARIAL</div></div><button class="mc" onclick="cm('exp')">×</button></div>
-    <div class="mb">
+    <div class="mb" data-cv-section="experiencia">
       <div class="ei"><div class="ep"><div class="ed cur"></div>2022 — Presente</div><div class="ec">Empresa Actual S.L.</div><div class="er">Senior Full-Stack Developer</div><div class="edesc">Lideré el diseño e implementación de arquitecturas cloud-native para sistemas de alto tráfico. Reduje el tiempo de carga un 60% optimizando pipelines de datos. Coordiné un equipo de 4 desarrolladores.</div><div class="tags"><span class="tag">React</span><span class="tag">Node.js</span><span class="tag">AWS</span><span class="tag">Docker</span><span class="tag">PostgreSQL</span></div></div>
       <div class="ei"><div class="ep"><div class="ed"></div>2020 — 2022</div><div class="ec">Agencia Digital XYZ</div><div class="er">Frontend Developer</div><div class="edesc">Desarrollé interfaces de usuario para más de 15 clientes B2B. Implementé sistemas de diseño reutilizables y automaticé flujos con CI/CD.</div><div class="tags"><span class="tag">Vue.js</span><span class="tag">TypeScript</span><span class="tag">Figma</span><span class="tag">CI/CD</span></div></div>
       <div class="ei"><div class="ep"><div class="ed"></div>2018 — 2020</div><div class="ec">Startup Tech Alpha</div><div class="er">Junior Developer</div><div class="edesc">Contribuí al MVP que consiguió ronda Serie A. Primer despegue profesional bajo presión real de startup.</div><div class="tags"><span class="tag">JavaScript</span><span class="tag">Python</span><span class="tag">MongoDB</span></div></div>
@@ -380,7 +355,7 @@
 <div class="ov" id="m-edu" onclick="cio(event,'edu')">
   <div class="modal">
     <div class="mh"><div class="mi" style="background:#F5F3FF;">🎓</div><div><div class="mt">Formación Académica</div><div class="ms">CAMPUS TECNOLÓGICO</div></div><button class="mc" onclick="cm('edu')">×</button></div>
-    <div class="mb">
+    <div class="mb" data-cv-section="formacion">
       <div class="edui"><div class="eduic">🎓</div><div><div class="edudeg">Grado en Ingeniería Informática</div><div class="edusc">Universidad Politécnica</div><div class="eduyr">2014 — 2018 · Matrícula de Honor TFG</div></div></div>
       <div class="edui"><div class="eduic">🤖</div><div><div class="edudeg">Máster en IA &amp; Machine Learning</div><div class="edusc">Stanford Online · Coursera</div><div class="eduyr">2021 — 2022 · Certificado</div></div></div>
       <div class="edui"><div class="eduic">☁️</div><div><div class="edudeg">AWS Solutions Architect Professional</div><div class="edusc">Amazon Web Services</div><div class="eduyr">2023 · Activo · Renovación 2026</div></div></div>
@@ -392,15 +367,7 @@
 <div class="ov" id="m-skills" onclick="cio(event,'skills')">
   <div class="modal">
     <div class="mh"><div class="mi" style="background:#FFF7ED;">⚡</div><div><div class="mt">Habilidades Técnicas</div><div class="ms">MÓDULOS DE CAPACIDAD</div></div><button class="mc" onclick="cm('skills')">×</button></div>
-    <div class="mb">
-      <div class="skg" id="skg">
-        <div class="ski"><div class="skn">React / Next.js</div><div class="skbw"><div class="skb" data-w="95" style="width:0%"></div></div><div class="skp">95%</div></div>
-        <div class="ski"><div class="skn">TypeScript</div><div class="skbw"><div class="skb" data-w="90" style="width:0%"></div></div><div class="skp">90%</div></div>
-        <div class="ski"><div class="skn">Node.js / APIs</div><div class="skbw"><div class="skb" data-w="88" style="width:0%"></div></div><div class="skp">88%</div></div>
-        <div class="ski"><div class="skn">Python / IA</div><div class="skbw"><div class="skb" data-w="80" style="width:0%"></div></div><div class="skp">80%</div></div>
-        <div class="ski"><div class="skn">AWS / Cloud</div><div class="skbw"><div class="skb" data-w="75" style="width:0%"></div></div><div class="skp">75%</div></div>
-        <div class="ski"><div class="skn">UI/UX Design</div><div class="skbw"><div class="skb" data-w="70" style="width:0%"></div></div><div class="skp">70%</div></div>
-      </div>
+    <div class="mb" data-cv-section="habilidades">
     </div>
   </div>
 </div>
@@ -409,10 +376,7 @@
 <div class="ov" id="m-proj" onclick="cio(event,'proj')">
   <div class="modal">
     <div class="mh"><div class="mi" style="background:#F0FDF4;">🚀</div><div><div class="mt">Proyectos Destacados</div><div class="ms">DISTRITO INDUSTRIAL</div></div><button class="mc" onclick="cm('proj')">×</button></div>
-    <div class="mb">
-      <div class="pi"><div class="pn">Plataforma SaaS de Analítica</div><div class="pd">Dashboard en tiempo real para métricas B2B. 10.000+ usuarios activos, 2M eventos diarios.</div><div class="ps"><span class="pt">Next.js</span><span class="pt">GraphQL</span><span class="pt">Redis</span><span class="pt">Kubernetes</span></div></div>
-      <div class="pi"><div class="pn">Asistente IA Conversacional</div><div class="pd">Sistema RAG con LLMs para soporte técnico. Reducción del 40% en tickets de soporte humano.</div><div class="ps"><span class="pt">Python</span><span class="pt">LangChain</span><span class="pt">Pinecone</span><span class="pt">FastAPI</span></div></div>
-      <div class="pi"><div class="pn">E-Commerce Headless</div><div class="pd">Arquitectura headless Shopify + Astro. Lighthouse 98/100. +35% conversión.</div><div class="ps"><span class="pt">Astro</span><span class="pt">Shopify</span><span class="pt">Tailwind</span><span class="pt">Edge Functions</span></div></div>
+    <div class="mb" data-cv-section="proyectos">
     </div>
   </div>
 </div>
@@ -421,7 +385,7 @@
 <div class="ov" id="m-lang" onclick="cio(event,'lang')">
   <div class="modal">
     <div class="mh"><div class="mi" style="background:#FFFBEB;">🌍</div><div><div class="mt">Idiomas</div><div class="ms">AEROPUERTO INTERNACIONAL</div></div><button class="mc" onclick="cm('lang')">×</button></div>
-    <div class="mb">
+    <div class="mb" data-cv-section="idiomas">
       <div class="li"><div class="lih"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:21px;">🇪🇸</span><span class="lin">Español</span></span><span class="lil">NATIVO</span></div><div class="lbw"><div class="lb" style="width:100%"></div></div></div>
       <div class="li"><div class="lih"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:21px;">🇬🇧</span><span class="lin">English</span></span><span class="lil">C1 AVANZADO</span></div><div class="lbw"><div class="lb" style="width:85%"></div></div></div>
       <div class="li"><div class="lih"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:21px;">🇫🇷</span><span class="lin">Français</span></span><span class="lil">B1 INTERMEDIO</span></div><div class="lbw"><div class="lb" style="width:55%"></div></div></div>
@@ -435,10 +399,10 @@
     <div class="mh"><div class="mi" style="background:#F0FDF4;">📩</div><div><div class="mt">Contacto</div><div class="ms">ESTACIÓN CENTRAL</div></div><button class="mc" onclick="cm('contact')">×</button></div>
     <div class="mb">
       <div style="margin-bottom:16px;padding:13px 15px;background:#EFF6FF;border-radius:12px;border:1px solid #BFDBFE;font-size:14px;color:#4B5563;line-height:1.7;">¡Encantado de conocerte! Estoy disponible para nuevas oportunidades. Escríbeme sin compromiso.</div>
-      <a href="mailto:tuemail@email.com" class="ci"><div class="cic">✉️</div><div><div class="cil">EMAIL</div><div class="civ">tuemail@email.com</div></div></a>
-      <a href="tel:+34600000000" class="ci"><div class="cic">📞</div><div><div class="cil">TELÉFONO</div><div class="civ">+34 600 000 000</div></div></a>
-      <a href="#" class="ci"><div class="cic">💼</div><div><div class="cil">LINKEDIN</div><div class="civ">linkedin.com/in/tunombre</div></div></a>
-      <a href="#" class="ci"><div class="cic">💻</div><div><div class="cil">GITHUB</div><div class="civ">github.com/tunombre</div></div></a>
+      <div class="ci"><div class="cic">✉️</div><div><div class="cil">EMAIL</div><a href="mailto:tuemail@email.com" class="civ" data-cv="email" style="color:inherit;text-decoration:none;display:block;">tuemail@email.com</a></div></div>
+      <div class="ci"><div class="cic">📞</div><div><div class="cil">TELÉFONO</div><a href="tel:+34600000000" class="civ" data-cv="phone" style="color:inherit;text-decoration:none;display:block;">+34 600 000 000</a></div></div>
+      <div class="ci"><div class="cic">💼</div><div><div class="cil">LINKEDIN</div><a href="#" class="civ" data-cv="linkedin" target="_blank" style="color:inherit;text-decoration:none;display:block;">linkedin.com/in/tunombre</a></div></div>
+      <div class="ci"><div class="cic">💻</div><div><div class="cil">WEB / GITHUB</div><a href="#" class="civ" data-cv="website" target="_blank" style="color:inherit;text-decoration:none;display:block;">github.com/tunombre</a></div></div>
     </div>
   </div>
 </div>

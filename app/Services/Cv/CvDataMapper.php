@@ -20,8 +20,10 @@ class CvDataMapper
             'cv_location'   => $this->clean($parsed['location'] ?? null),
             'cv_linkedin'   => $this->clean($parsed['linkedin'] ?? null),
             'cv_website'    => $this->clean($parsed['website']  ?? null),
-            'cv_skills'     => implode(', ', $parsed['skills'] ?? []),
-            'cv_soft_skills'=> implode(', ', $parsed['soft_skills'] ?? []),
+            'habilidades'   => array_values(array_filter(array_merge(
+                array_map(fn($s) => $this->clean($s), $parsed['skills']      ?? []),
+                array_map(fn($s) => $this->clean($s), $parsed['soft_skills'] ?? []),
+            ))),
 
             // Arrays dinámicos (panels Experiencia, Formación, Idiomas)
             'experiencia' => array_map(fn($e) => [
@@ -43,8 +45,14 @@ class CvDataMapper
                 'nivel'  => $this->clean($e['level']    ?? null),
             ], $parsed['languages'] ?? []),
 
-            // Datos extra (para uso futuro / plantillas avanzadas)
-            'projects'       => $parsed['projects']       ?? [],
+            'proyectos' => array_map(fn($p) => [
+                'nombre'      => $this->clean($p['name']        ?? null),
+                'descripcion' => $this->clean($p['description'] ?? null),
+                'url'         => $this->clean($p['url']          ?? null),
+                'tecnologias' => implode(', ', $p['technologies'] ?? []),
+            ], $parsed['projects'] ?? []),
+
+            // Datos extra (para uso futuro)
             'certifications' => $parsed['certifications'] ?? [],
             'github'         => $this->clean($parsed['github'] ?? null),
         ];
