@@ -919,9 +919,9 @@
                                             {{ $selected ? $selected->slug . '.cvexpress.es' : 'preview' }}
                                         </div>
                                         @if($selected && $selected->preview_html_url)
-                                        <a href="{{ $selected->preview_html_url }}" target="_blank" title="Abrir en nueva pestaña" style="color:var(--color-text-muted);display:flex;flex-shrink:0;">
+                                        <button onclick="openPreviewTab('{{ $selected->preview_html_url }}')" title="Abrir en nueva pestaña" style="background:none;border:none;cursor:pointer;color:var(--color-text-muted);display:flex;flex-shrink:0;padding:0;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                                        </a>
+                                        </button>
                                         @endif
                                     </div>
                                     {{-- iframe --}}
@@ -1625,6 +1625,12 @@
         return result;
     }
 
+    function _toggleWrap(doc, type, show) {
+        doc.querySelectorAll('[data-cv-section-wrap="' + type + '"]').forEach(function(el) {
+            el.style.display = show ? '' : 'none';
+        });
+    }
+
     // ── Update entries section in iframe ──
     var _entriesTimers = {};
     function updateEntriesPreview(type) {
@@ -1639,7 +1645,11 @@
             if (!section) return;
             if (type === 'experiencia') section.innerHTML = _buildExperienciaHTML(entries);
             if (type === 'formacion')   section.innerHTML = _buildFormacionHTML(entries);
-            if (type === 'proyectos')   section.innerHTML = _buildProyectosHTML(entries);
+            if (type === 'proyectos') {
+                var html = _buildProyectosHTML(entries);
+                section.innerHTML = html;
+                _toggleWrap(doc, 'proyectos', html.trim() !== '');
+            }
             if (type === 'idiomas')     section.innerHTML = _buildIdiomasHTML(entries);
         }, 220);
     }
@@ -1713,13 +1723,16 @@
         // Entry sections
         ['experiencia','formacion','proyectos','idiomas'].forEach(function(type) {
             var entries = _serializeEntries(type);
-            if (!entries.length) return;
             var section = doc.querySelector('[data-cv-section="' + type + '"]');
             if (!section) return;
-            if (type === 'experiencia') section.innerHTML = _buildExperienciaHTML(entries);
-            if (type === 'formacion')   section.innerHTML = _buildFormacionHTML(entries);
-            if (type === 'proyectos')   section.innerHTML = _buildProyectosHTML(entries);
-            if (type === 'idiomas')     section.innerHTML = _buildIdiomasHTML(entries);
+            if (type === 'experiencia' && entries.length) section.innerHTML = _buildExperienciaHTML(entries);
+            if (type === 'formacion'   && entries.length) section.innerHTML = _buildFormacionHTML(entries);
+            if (type === 'proyectos') {
+                var html = _buildProyectosHTML(entries);
+                section.innerHTML = html;
+                _toggleWrap(doc, 'proyectos', html.trim() !== '');
+            }
+            if (type === 'idiomas'     && entries.length) section.innerHTML = _buildIdiomasHTML(entries);
         });
 
         // Habilidades
@@ -1731,6 +1744,35 @@
     function fillFromProfile() {
         dismissImportBanner();
         fillAllPreview();
+    }
+
+    // ── Abrir plantilla en nueva pestaña con datos actuales ──
+    function openPreviewTab(baseUrl) {
+        var data = { fields: {}, sections: {}, photo: _currentPhotoUrl || null, sectionVisibility: {} };
+        var simpleMap = {
+            name: 'cv_name', job_title: 'cv_job_title', bio: 'cv_bio',
+            email: 'cv_email', phone: 'cv_phone', location: 'cv_location',
+            linkedin: 'cv_linkedin', website: 'cv_website'
+        };
+        Object.keys(simpleMap).forEach(function(field) {
+            var el = document.getElementById(simpleMap[field]);
+            if (el) data.fields[field] = el.value;
+        });
+        ['experiencia','formacion','proyectos','idiomas'].forEach(function(type) {
+            var entries = _serializeEntries(type);
+            if (type === 'experiencia') data.sections[type] = _buildExperienciaHTML(entries);
+            if (type === 'formacion')   data.sections[type] = _buildFormacionHTML(entries);
+            if (type === 'proyectos') {
+                var html = _buildProyectosHTML(entries);
+                data.sections[type] = html;
+                data.sectionVisibility[type] = html.trim() !== '';
+            }
+            if (type === 'idiomas')     data.sections[type] = _buildIdiomasHTML(entries);
+        });
+        data.sections['habilidades'] = _buildHabilidadesHTML(_getSkills());
+        localStorage.setItem('cv_preview_live', JSON.stringify(data));
+        var url = baseUrl.split('?')[0];
+        window.open(url + '?live=1', '_blank');
     }
 
     function dismissImportBanner() {

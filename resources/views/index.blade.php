@@ -249,58 +249,42 @@
 <section class="section section--alt" id="caracteristicas" aria-labelledby="features-title">
     <div class="container">
         <div class="section__header">
-            <div class="label">Todo lo que necesitas</div>
-            <h2 class="section__title" id="features-title">Una plataforma completa<br>para tu presencia digital</h2>
+            <div class="label">¿Por qué CvXpress?</div>
+            <h2 class="section__title" id="features-title">Una plataforma completa para tu presencia digital</h2>
+            <p class="section__subtitle">Transforma tu CV en un portfolio web profesional que trabaja por ti las 24h. Más visibilidad, más oportunidades de trabajo y una imagen que deja huella en cada reclutador que te busque online.</p>
         </div>
 
-        <div class="features">
-            <article class="feature feature--large">
+        <div class="features features--four-col">
+            <article class="feature">
                 <div class="feature__icon feature__icon--blue" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 </div>
-                <h3 class="feature__title">Extracción inteligente con IA</h3>
-                <p class="feature__desc">Nuestra IA lee y comprende tu CV en cualquier formato, estructura y idioma. Extrae y organiza automáticamente toda la información relevante sin que tengas que tocar nada.</p>
+                <h3 class="feature__title">Más visibilidad online</h3>
+                <p class="feature__desc">Tu portfolio aparece en Google, LinkedIn y buscadores. Los reclutadores te encuentran aunque no estés buscando activamente.</p>
             </article>
 
             <article class="feature">
                 <div class="feature__icon feature__icon--teal" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
-                <h3 class="feature__title">Hosting incluido</h3>
-                <p class="feature__desc">Tu portfolio vive en nuestra infraestructura. URL personalizada, HTTPS incluido y accesible desde cualquier dispositivo.</p>
+                <h3 class="feature__title">Más oportunidades de trabajo</h3>
+                <p class="feature__desc">Comparte tu URL en cada candidatura y destaca entre cientos de CV en PDF. Una imagen profesional que genera confianza desde el primer clic.</p>
             </article>
 
             <article class="feature">
                 <div class="feature__icon feature__icon--blue" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                 </div>
-                <h3 class="feature__title">100% responsivo</h3>
-                <p class="feature__desc">Tu portfolio se adapta perfectamente a móvil, tablet y escritorio. Siempre impecable, sin importar el dispositivo del reclutador.</p>
+                <h3 class="feature__title">Listo en minutos con IA</h3>
+                <p class="feature__desc">Sube tu CV y nuestra IA extrae toda la información automáticamente. Hosting, HTTPS y dominio incluidos. Sin instalar nada ni tocar código.</p>
             </article>
 
             <article class="feature">
                 <div class="feature__icon feature__icon--teal" aria-hidden="true">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </div>
-                <h3 class="feature__title">Panel de edición</h3>
-                <p class="feature__desc">Añade nuevas experiencias, proyectos o formación directamente desde tu panel. Sin necesidad de volver a subir el CV.</p>
-            </article>
-
-            <article class="feature feature--soon">
-                <div class="feature__soon-badge">Próximamente</div>
-                <div class="feature__icon feature__icon--linkedin" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                </div>
-                <h3 class="feature__title">Publicación automática en LinkedIn</h3>
-                <p class="feature__desc">Pronto podrás automatizar publicaciones sobre tu portfolio y tus logros directamente en LinkedIn. Aumenta tu visibilidad sin esfuerzo.</p>
-            </article>
-
-            <article class="feature">
-                <div class="feature__icon feature__icon--blue" aria-hidden="true">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <h3 class="feature__title">Seguridad y privacidad</h3>
-                <p class="feature__desc">Tus datos están cifrados y protegidos. Tú decides qué información es pública y qué queda privada en tu perfil.</p>
+                <h3 class="feature__title">Actualízalo cuando quieras</h3>
+                <p class="feature__desc">Panel de edición para añadir proyectos, cambiar experiencia o elegir una plantilla nueva. Tu portfolio siempre al día sin volver a subir el CV.</p>
             </article>
         </div>
     </div>
@@ -697,6 +681,17 @@
 }
 .hero-flow__browser-line--short { width: 70%; }
 
+/* Responsive fixes */
+@media (max-width: 420px) {
+    .hero-flow__cv   { width: 96px; }
+    .hero-flow__browser { width: 136px; }
+    .hero-flow__top  { gap: .5rem; padding: 1rem .75rem; }
+    .hero-flow__steps { padding: .75rem .875rem 1rem; }
+    .hero-flow__step { gap: .625rem; padding: .75rem .5rem; }
+    .hero-flow__step-body strong { font-size: .8rem; }
+    .hero-flow__step-body span   { font-size: .7rem; }
+}
+
 /* Separador */
 .hero-flow__sep {
     padding: .75rem 1.5rem;
@@ -708,6 +703,9 @@
     text-transform: uppercase;
     background: #FAFAFA;
     border-bottom: 1px solid #F3F4F6;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Steps */
@@ -762,6 +760,28 @@
 @endpush
 
 @push('scripts')
+<script>
+(function () {
+    var items = document.querySelectorAll('.cv-acc__item');
+    items.forEach(function (item) {
+        var btn = item.querySelector('.cv-acc__trigger');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            var isOpen = item.classList.contains('cv-acc__item--open');
+            // close all
+            items.forEach(function (i) {
+                i.classList.remove('cv-acc__item--open');
+                i.querySelector('.cv-acc__trigger').setAttribute('aria-expanded', 'false');
+            });
+            // open clicked (toggle)
+            if (!isOpen) {
+                item.classList.add('cv-acc__item--open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+})();
+</script>
 @if($featuredTemplates->isNotEmpty())
 <script>
 (function () {

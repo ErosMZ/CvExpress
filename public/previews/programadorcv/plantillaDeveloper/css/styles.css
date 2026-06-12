@@ -370,8 +370,9 @@ body {
 .work-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2xl);
+  gap: var(--space-xl);
   animation: fadeInUp 0.8s ease-out 0.2s both;
+  min-height: 1rem;
 }
 
 .work-card {
@@ -446,40 +447,84 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
+/* Contenedor inyectado de habilidades */
+.skills-inject {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   animation: fadeInUp 0.8s ease-out 0.2s both;
+  min-height: 1rem;
 }
 
-.skill-card {
+.cv-skill-chip {
+  display: inline-block;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  border-radius: 8px;
+  transition: all var(--transition-fast);
+}
+
+.cv-skill-chip:hover {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.55);
+  transform: translateY(-2px);
+}
+
+/* Proyectos inyectados */
+.cv-project-item {
   padding: var(--space-xl);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: rgba(18, 18, 18, 0.5);
-  text-align: center;
   transition: all var(--transition-normal);
-  cursor: default;
 }
 
-.skill-card:hover {
+.cv-project-item:hover {
   border-color: rgba(59, 130, 246, 0.3);
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(59, 130, 246, 0.06);
   transform: translateY(-4px);
 }
 
-.skill-emoji {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: var(--space-md);
+.cv-project-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
 }
 
-.skill-name {
-  font-size: 0.9rem;
+.cv-project-link {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.cv-project-link:hover { text-decoration: underline; }
+
+.cv-project-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.cv-project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.cv-project-tag {
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
-  line-height: 1.4;
+  padding: 0.2rem 0.65rem;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
 }
 
 /* ─────────────────────────────────────────────────────────────────────

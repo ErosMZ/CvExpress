@@ -15,25 +15,23 @@
 
     {{-- Tarjetas flotantes --}}
     <div class="auth-bg-cards" aria-hidden="true">
-        <div class="auth-float-card fc-1">
+        {{-- Superior izquierda --}}
+        <div class="auth-float-card fc-1 auth-float-card--bright">
+            <div class="auth-float-card__avatar"></div>
             <div class="auth-float-card__line auth-float-card__line--name"></div>
             <div class="auth-float-card__line auth-float-card__line--role"></div>
             <div class="auth-float-card__section"></div>
             <div class="auth-float-card__line auth-float-card__line--med"></div>
             <div class="auth-float-card__line auth-float-card__line--short"></div>
             <div class="auth-float-card__line"></div>
-        </div>
-        <div class="auth-float-card fc-2">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
             <div class="auth-float-card__tags">
                 <div class="auth-float-card__tag"></div>
                 <div class="auth-float-card__tag"></div>
                 <div class="auth-float-card__tag"></div>
             </div>
         </div>
-        <div class="auth-float-card fc-3 auth-float-card--bright">
+        {{-- Superior derecha --}}
+        <div class="auth-float-card fc-2 auth-float-card--bright">
             <div class="auth-float-card__line auth-float-card__line--name"></div>
             <div class="auth-float-card__line auth-float-card__line--role"></div>
             <div class="auth-float-card__section"></div>
@@ -43,40 +41,32 @@
             <div class="auth-float-card__line"></div>
             <div class="auth-float-card__line auth-float-card__line--short"></div>
         </div>
-        <div class="auth-float-card fc-4 auth-float-card--bright">
+        {{-- Inferior izquierda --}}
+        <div class="auth-float-card fc-3">
             <div class="auth-float-card__avatar"></div>
             <div class="auth-float-card__line auth-float-card__line--name"></div>
             <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__tags">
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
-            </div>
             <div class="auth-float-card__section"></div>
             <div class="auth-float-card__line auth-float-card__line--med"></div>
             <div class="auth-float-card__line auth-float-card__line--short"></div>
+            <div class="auth-float-card__tags">
+                <div class="auth-float-card__tag"></div>
+                <div class="auth-float-card__tag"></div>
+            </div>
         </div>
-        <div class="auth-float-card fc-5">
+        {{-- Inferior derecha --}}
+        <div class="auth-float-card fc-4">
             <div class="auth-float-card__line auth-float-card__line--name"></div>
             <div class="auth-float-card__line auth-float-card__line--role"></div>
             <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line"></div>
+            <div class="auth-float-card__line auth-float-card__line--med"></div>
             <div class="auth-float-card__line auth-float-card__line--short"></div>
-        </div>
-        <div class="auth-float-card fc-6">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
+            <div class="auth-float-card__line"></div>
             <div class="auth-float-card__tags">
                 <div class="auth-float-card__tag"></div>
                 <div class="auth-float-card__tag"></div>
                 <div class="auth-float-card__tag"></div>
             </div>
-        </div>
-        <div class="auth-float-card fc-7">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
         </div>
     </div>
 
