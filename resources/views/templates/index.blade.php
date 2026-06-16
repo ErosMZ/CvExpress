@@ -193,15 +193,20 @@
                     @endphp
 
                     <div class="tpl-card__footer">
-                        {{-- Plan info en lugar de precio individual --}}
+                        {{-- Plan info --}}
                         <div>
-                            @if($tierPlan)
+                            @if($canUse)
+                                <div style="font-size:.76rem;font-weight:700;color:#16a34a;display:flex;align-items:center;gap:4px;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Incluida en tu plan {{ $activePurchase->plan->name }}
+                                </div>
+                            @elseif($tierPlan)
                                 <div style="font-size:.78rem;font-weight:700;color:var(--color-text-primary,#0f172a);">
                                     Plan {{ $tierPlan->name }}
                                 </div>
                                 <div style="font-size:.72rem;color:#64748b;display:flex;align-items:center;gap:4px;margin-top:1px;">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                    {{ number_format($tierPlan->price, 2, ',', '.') }}€ · pago único
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    Desde {{ number_format($tierPlan->price, 2, ',', '.') }}€/año
                                 </div>
                             @else
                                 <div style="font-size:.78rem;color:#16a34a;font-weight:700;">Gratuita</div>
@@ -239,7 +244,7 @@
                                 @if($tierPlan)
                                     <a href="{{ auth()->check() ? route('checkout.show', $tierPlan->slug) : route('register') }}" class="tpl-btn tpl-btn--primary">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                        Comprar plan
+                                        Suscribirse
                                     </a>
                                 @endif
                             @endif

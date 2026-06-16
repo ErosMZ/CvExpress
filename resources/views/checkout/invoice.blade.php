@@ -255,7 +255,7 @@
                         <tr>
                             <td>
                                 <div class="desc-main">Plan {{ $plan->name }} — CVPortfolio</div>
-                                <div class="desc-sub">Acceso completo · Pago único · Sin renovaciones</div>
+                                <div class="desc-sub">Suscripción anual · Licencia 12 meses · Válido hasta {{ $purchase->expires_at?->format('d/m/Y') ?? now()->addYear()->format('d/m/Y') }}</div>
                             </td>
                             <td>1</td>
                             <td>{{ number_format($base, 2, ',', '.') }}€</td>

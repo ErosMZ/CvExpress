@@ -53,6 +53,7 @@ class CheckoutController extends Controller
             'buyer_address'     => $request->buyer_address,
             'hosting_type'      => 'none',
             'purchased_at'      => now(),
+            'expires_at'        => now()->addYear(),
         ]);
 
         return redirect()->route('checkout.invoice', $purchase->id);

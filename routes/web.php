@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CvPdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoice/{purchase}',    [CheckoutController::class, 'invoice'])->name('checkout.invoice');
     Route::get('/invoice/{purchase}/pdf',[CheckoutController::class, 'downloadPdf'])->name('checkout.pdf');
 });
+Route::middleware('auth')->group(function () {
+    Route::get('/cv-pdf/editor', [CvPdfController::class, 'editor'])->name('cv-pdf.editor');
+    Route::post('/cv-pdf/improve-profile', [CvPdfController::class, 'improveProfile'])->name('cv-pdf.improve-profile');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard',                              [DashboardController::class, 'index'])->name('dashboard');
     Route::put('/dashboard/profile',                     [DashboardController::class, 'updateProfile'])->name('dashboard.profile.update');

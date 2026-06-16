@@ -294,9 +294,8 @@
 <section class="section" id="precios" aria-labelledby="pricing-title">
     <div class="container">
         <div class="section__header">
-            <div class="label">Planes de pago único</div>
-            <h2 class="section__title" id="pricing-title">Sin suscripciones.<br><em>Pagas una vez, es tuyo.</em></h2>
-            <p class="section__subtitle">Elige el plan que mejor se adapte a ti. Pago único, sin renovaciones, sin sorpresas.</p>
+            <h2 class="section__title" id="pricing-title">Planes anuales.<br><em>Todo incluido, sin sorpresas.</em></h2>
+            <p class="section__subtitle">Elige el plan que mejor se adapte a ti. Facturación anual, cancela cuando quieras.</p>
         </div>
 
         <div class="pricing-grid">
@@ -331,12 +330,12 @@
                     </div>
                     <div>
                         <div class="pricing-card__name">{{ $plan->name }}</div>
-                        <div class="pricing-card__tagline">Pago único, sin renovaciones</div>
+                        <div class="pricing-card__tagline">Facturado anualmente</div>
                     </div>
                 </div>
                 <div class="pricing-card__price">
                     <span class="pricing-card__amount">{{ number_format($plan->price, 2, ',', '.') }}€</span>
-                    <span class="pricing-card__once">pago único</span>
+                    <span class="pricing-card__once">/año</span>
                 </div>
                 <ul class="pricing-card__features">
                     @foreach($plan->features as $feat)
@@ -348,11 +347,11 @@
                 </ul>
                 @auth
                     <a href="{{ route('checkout.show', $plan->slug) }}" class="pricing-card__cta pricing-card__cta--{{ $tc['cta'] }}">
-                        Empezar por {{ number_format($plan->price, 2, ',', '.') }}€
+                        Empezar por {{ number_format($plan->price, 2, ',', '.') }}€/año
                     </a>
                 @else
                     <a href="{{ route('login') }}?redirect={{ urlencode(route('checkout.show', $plan->slug)) }}" class="pricing-card__cta pricing-card__cta--{{ $tc['cta'] }}">
-                        Empezar por {{ number_format($plan->price, 2, ',', '.') }}€
+                        Empezar por {{ number_format($plan->price, 2, ',', '.') }}€/año
                     </a>
                 @endauth
             </div>
@@ -444,13 +443,13 @@
             <div class="no-pdf__content">
                 <div class="badge badge--feature" role="status">
                     <span class="badge__dot" aria-hidden="true"></span>
-                    Próximamente
+                    Disponible ahora
                 </div>
                 <h2 class="no-pdf__title" id="no-pdf-title">
-                    ¿Aún no tienes<br><em>tu CV en PDF?</em>
+                    Crea tu CV<br><em>en PDF gratis</em>
                 </h2>
                 <p class="no-pdf__desc">
-                    No te preocupes. Pronto podrás crear tu currículum profesional directamente en CvExpress, con plantillas guiadas paso a paso y exportación instantánea a PDF.
+                    Rellena tus datos, ve los cambios en tiempo real y descarga tu currículum profesional en PDF con un solo clic.
                 </p>
                 <ul class="no-pdf__feats" role="list">
                     <li>
@@ -466,10 +465,22 @@
                         Integrado con tu portfolio web
                     </li>
                 </ul>
-                <a href="{{ route('register') }}" class="btn btn--primary btn--lg">
-                    Crear mi cuenta
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
+                <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+                    @auth
+                        <a href="{{ route('cv-pdf.editor') }}" class="btn btn--primary btn--lg">
+                            Crear CV PDF
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    @else
+                        <a href="{{ route('cv-pdf.editor') }}" class="btn btn--primary btn--lg">
+                            Crear CV PDF
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="{{ route('register') }}" class="btn btn--ghost btn--lg">
+                            Crear cuenta gratis
+                        </a>
+                    @endauth
+                </div>
             </div>
 
         </div>

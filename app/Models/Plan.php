@@ -10,6 +10,7 @@ class Plan extends Model
         'slug',
         'name',
         'price',
+        'billing_cycle',
         'color',
         'badge_label',
         'features',

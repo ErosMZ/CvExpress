@@ -21,10 +21,12 @@ class UserPurchase extends Model
         'hosting_type',
         'subdomain',
         'purchased_at',
+        'expires_at',
     ];
 
     protected $casts = [
         'purchased_at' => 'datetime',
+        'expires_at'   => 'datetime',
         'amount_paid'  => 'decimal:2',
     ];
 

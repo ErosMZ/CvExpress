@@ -321,12 +321,12 @@
 
                     <button type="submit" class="checkout-btn" id="payBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        Confirmar y pagar {{ number_format($plan->price, 2, ',', '.') }}€
+                        Suscribirse · {{ number_format($plan->price, 2, ',', '.') }}€/año
                     </button>
 
                     <p class="checkout-disclaimer">
                         Este es un entorno de demostración. No se realizará ningún cargo real.<br>
-                        Recibirás una factura legal descargable en PDF.
+                        Facturación anual · Recibirás una factura legal descargable en PDF.
                     </p>
                 </form>
             </div>
@@ -353,7 +353,7 @@
                 </span>
 
                 <div class="checkout-summary__name">{{ $plan->name }}</div>
-                <div class="checkout-summary__desc">Acceso completo · Pago único sin renovaciones</div>
+                <div class="checkout-summary__desc">Suscripción anual · Acceso completo 12 meses</div>
 
                 <ul class="checkout-summary__features">
                     @foreach($plan->features ?? [] as $feature)
