@@ -504,7 +504,9 @@ body {
     Volver
   </a>
   <div class="topbar__sep"></div>
-  <img src="{{ asset('images/logo2Web.png') }}" alt="CVX" height="36" class="topbar__logo" style="display:block;">
+  <div class="topbar__logo" style="width:160px;height:44px;overflow:hidden;flex-shrink:0;">
+    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:364px;height:auto;margin-left:-98px;margin-top:-99px;display:block;max-width:none;">
+  </div>
   <span class="topbar__title">Editor de CV PDF</span>
   <div class="topbar__sep"></div>
 

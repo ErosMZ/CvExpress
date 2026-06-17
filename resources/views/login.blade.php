@@ -81,7 +81,9 @@
     <div class="auth-wrapper">
 
         <a href="/" class="auth-logo">
-            <img src="/images/logo2Web.png" alt="CVX" height="36" style="display:block;">
+            <div style="width:200px;height:56px;overflow:hidden;">
+                <img src="/images/logo2Web.webp" alt="CVX" style="width:455px;height:auto;margin-left:-123px;margin-top:-124px;display:block;max-width:none;">
+            </div>
         </a>
 
         <div class="auth-card">

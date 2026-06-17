@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout — ' . $plan->name . ' · CVPortfolio')
+@section('title', 'Checkout — ' . $plan->name . ' · CvXpress')
 
 @push('styles')
 <style>

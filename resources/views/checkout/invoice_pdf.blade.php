@@ -119,7 +119,7 @@
     <tbody>
       <tr>
         <td>
-          <div class="item-name">Plan {{ $plan->name }} — CVPortfolio</div>
+          <div class="item-name">Plan {{ $plan->name }} — CvXpress</div>
           <div class="item-desc">Suscripción anual · Licencia 12 meses · Válido hasta {{ $purchase->expires_at?->format('d/m/Y') ?? now()->addYear()->format('d/m/Y') }}</div>
         </td>
         <td>1</td>

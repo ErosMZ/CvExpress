@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'CVtoPortfolio') — Tu CV, Tu Web</title>
+    <title>@yield('title', 'CvXpress') — Tu CV, Tu Web</title>
     <meta name="description" content="@yield('meta_description', 'Convierte tu CV en un portfolio web profesional en minutos. Automatización inteligente para destacar en el mercado laboral.')">
 
     <!-- Preconnect -->
@@ -25,7 +25,9 @@
     <nav class="nav" id="main-nav">
         <div class="nav__container container">
             <a href="{{ route('home') }}" class="nav__logo">
-                <img src="{{ asset('images/logo2Web.png') }}" alt="CVX" height="36" style="display:block;">
+                <div style="width:160px;height:44px;overflow:hidden;flex-shrink:0;">
+                    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:364px;height:auto;margin-left:-98px;margin-top:-99px;display:block;max-width:none;">
+                </div>
             </a>
 
             <button class="nav__toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
@@ -93,7 +95,9 @@
             <div class="footer__grid">
                 <div class="footer__brand">
                     <a href="{{ route('home') }}" class="nav__logo" style="margin-bottom: 1rem; display: inline-flex;">
-                        <img src="{{ asset('images/logo2Web.png') }}" alt="CVX" height="36" style="display:block;">
+                        <div style="width:140px;height:38px;overflow:hidden;flex-shrink:0;">
+                            <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:318px;height:auto;margin-left:-86px;margin-top:-87px;display:block;max-width:none;">
+                        </div>
                     </a>
                     <p class="footer__tagline">Tu currículum merece brillar en la web. Automatizamos el proceso para que tú te centres en lo que importa.</p>
                 </div>
@@ -133,7 +137,7 @@
             </div>
 
             <div class="footer__bottom">
-                <p>&copy; {{ date('Y') }} CVPortfolio. Todos los derechos reservados.</p>
+                <p>&copy; {{ date('Y') }} CvXpress. Todos los derechos reservados.</p>
                 <p>Hecho con <span aria-label="amor">♥</span> en España</p>
             </div>
         </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Factura ' . $purchase->invoice_number . ' · CVPortfolio')
+@section('title', 'Factura ' . $purchase->invoice_number . ' · CvXpress')
 
 @push('styles')
 <style>
@@ -254,7 +254,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <div class="desc-main">Plan {{ $plan->name }} — CVPortfolio</div>
+                                <div class="desc-main">Plan {{ $plan->name }} — CvXpress</div>
                                 <div class="desc-sub">Suscripción anual · Licencia 12 meses · Válido hasta {{ $purchase->expires_at?->format('d/m/Y') ?? now()->addYear()->format('d/m/Y') }}</div>
                             </td>
                             <td>1</td>

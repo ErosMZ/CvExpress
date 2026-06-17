@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Plantilla — Admin CVPortfolio</title>
+    <title>Nueva Plantilla — Admin CvXpress</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -222,7 +222,7 @@
                 <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 7h8M8 11h5M8 15h6"/>
             </svg>
         </div>
-        <span class="admin-topbar__logo-text">CVPortfolio Admin</span>
+        <span class="admin-topbar__logo-text">CvXpress Admin</span>
     </a>
     <button class="admin-hamburger" id="hamburger" aria-label="Menú">
         <span></span><span></span><span></span>

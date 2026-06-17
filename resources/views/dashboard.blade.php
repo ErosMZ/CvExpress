@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mi Panel — CVPortfolio')
+@section('title', 'Mi Panel — CvXpress')
 @section('meta_description', 'Gestiona tu portfolio, edita tu perfil y sube tu CV desde tu panel personal.')
 
 @push('styles')
@@ -73,7 +73,7 @@
 
                 @if(auth()->user()->is_admin)
                     <div class="sidebar__section-label" style="margin-top: var(--space-4);">Administración</div>
-                    <a href="{{ url('/admin/dashboard') }}" class="sidebar__link sidebar__link--admin">
+                    <a href="{{ url('/admin') }}" class="sidebar__link sidebar__link--admin">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         Panel de administración
                     </a>
@@ -116,7 +116,7 @@
 
                 <div class="welcome-banner">
                     <div class="welcome-banner__title">¡Hola, {{ explode(' ', auth()->user()->name)[0] }}! 👋</div>
-                    <div class="welcome-banner__sub">Bienvenido a tu panel de control de CVPortfolio.</div>
+                    <div class="welcome-banner__sub">Bienvenido a tu panel de control de CvXpress.</div>
                 </div>
 
                 <div class="panel__stats">
