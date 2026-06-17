@@ -5,9 +5,10 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     libpq-dev \
+    libzip-dev \
     nodejs \
     npm \
-    && docker-php-ext-install pdo pdo_pgsql
+    && docker-php-ext-install pdo pdo_pgsql zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
