@@ -17,6 +17,8 @@ COPY . .
 
 RUN composer install
 
+RUN php artisan migrate --force
+
 RUN npm install && npm run build
 
 EXPOSE 10000
