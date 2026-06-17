@@ -44,15 +44,9 @@ body {
   z-index: 20;
 }
 .topbar__logo {
-  font-size: .95rem;
-  font-weight: 700;
-  color: #111827;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: .5rem;
+  display: block;
+  flex-shrink: 0;
 }
-.topbar__logo span { color: #1D4ED8; }
 .topbar__title {
   font-size: .85rem;
   color: #6B7280;
@@ -510,7 +504,7 @@ body {
     Volver
   </a>
   <div class="topbar__sep"></div>
-  <span class="topbar__logo">Cv<span>X</span>press</span>
+  <img src="{{ asset('images/logo2Web.png') }}" alt="CVX" height="36" class="topbar__logo" style="display:block;">
   <span class="topbar__title">Editor de CV PDF</span>
   <div class="topbar__sep"></div>
 

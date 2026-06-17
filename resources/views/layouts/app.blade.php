@@ -25,12 +25,7 @@
     <nav class="nav" id="main-nav">
         <div class="nav__container container">
             <a href="{{ route('home') }}" class="nav__logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect width="32" height="32" rx="8" fill="#1A56DB"/>
-                    <path d="M8 10h10M8 16h16M8 22h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="24" cy="10" r="3" fill="#60A5FA"/>
-                </svg>
-                <span class="nav__logo-text">Cv<strong>Xpress</strong></span>
+                <img src="{{ asset('images/logo2Web.png') }}" alt="CVX" height="36" style="display:block;">
             </a>
 
             <button class="nav__toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-menu">
@@ -98,12 +93,7 @@
             <div class="footer__grid">
                 <div class="footer__brand">
                     <a href="{{ route('home') }}" class="nav__logo" style="margin-bottom: 1rem; display: inline-flex;">
-                        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                            <rect width="32" height="32" rx="8" fill="#1A56DB"/>
-                            <path d="M8 10h10M8 16h16M8 22h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                            <circle cx="24" cy="10" r="3" fill="#60A5FA"/>
-                        </svg>
-                        <span class="nav__logo-text">CV<strong>Portfolio</strong></span>
+                        <img src="{{ asset('images/logo2Web.png') }}" alt="CVX" height="36" style="display:block;">
                     </a>
                     <p class="footer__tagline">Tu currículum merece brillar en la web. Automatizamos el proceso para que tú te centres en lo que importa.</p>
                 </div>

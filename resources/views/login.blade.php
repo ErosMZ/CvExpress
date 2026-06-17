@@ -81,13 +81,7 @@
     <div class="auth-wrapper">
 
         <a href="/" class="auth-logo">
-            <div class="auth-logo__mark">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="3"/>
-                    <path d="M8 7h8M8 11h5M8 15h6"/>
-                </svg>
-            </div>
-            <span class="auth-logo__text"><strong>Cv</strong>Xpress</span>
+            <img src="/images/logo2Web.png" alt="CVX" height="36" style="display:block;">
         </a>
 
         <div class="auth-card">
