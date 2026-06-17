@@ -40,18 +40,26 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-            $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email', 'password');
 
-            if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
 
-                if (!Auth::user()->hasVerifiedEmail()) {
-                    Auth::logout();
-                    return back()->with('error', 'Debes verificar tu email primero');
-                }
-
-                return redirect('/');
+            if (!Auth::user()->hasVerifiedEmail()) {
+                Auth::logout();
+                return back()->with('error', 'Debes verificar tu email primero');
             }
 
+            return redirect('/');
+        }
+
         return back()->with('error', 'Credenciales incorrectas');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
     }
 }
