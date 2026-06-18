@@ -693,14 +693,26 @@
 .hero-flow__browser-line--short { width: 70%; }
 
 /* Responsive fixes */
-@media (max-width: 420px) {
-    .hero-flow__cv   { width: 96px; }
-    .hero-flow__browser { width: 136px; }
-    .hero-flow__top  { gap: .5rem; padding: 1rem .75rem; }
-    .hero-flow__steps { padding: .75rem .875rem 1rem; }
-    .hero-flow__step { gap: .625rem; padding: .75rem .5rem; }
+@media (max-width: 640px) {
+    /* El visual no añade padding extra — el .container ya lo da */
+    .hero__visual { padding: 0; }
+
+    /* Top: permitir que las tarjetas encojan en pantallas pequeñas */
+    .hero-flow__top  { gap: .375rem; padding: .875rem .625rem; }
+    .hero-flow__cv   { flex-shrink: 1; width: clamp(76px, 24vw, 110px); }
+    .hero-flow__browser { flex-shrink: 1; width: clamp(108px, 34vw, 160px); }
+    .hero-flow__arrow { flex-shrink: 1; min-width: 0; }
+    .hero-flow__arrow-badge { font-size: .55rem; padding: .15rem .4rem; }
+
+    /* Steps: ancho completo, padding simétrico */
+    .hero-flow__steps { padding: .75rem 1rem 1rem; align-items: stretch; }
+    .hero-flow__step  { gap: .625rem; padding: .625rem .5rem; width: 100%; justify-content: flex-start; }
+    .hero-flow__step-body { flex: 1; min-width: 0; }
     .hero-flow__step-body strong { font-size: .8rem; }
-    .hero-flow__step-body span   { font-size: .7rem; }
+    .hero-flow__step-body span   { font-size: .7rem; line-height: 1.4; }
+
+    /* Separador */
+    .hero-flow__sep { white-space: normal; text-align: center; }
 }
 
 /* Separador */

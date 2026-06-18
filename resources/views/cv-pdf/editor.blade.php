@@ -40,20 +40,25 @@ body {
   display: flex;
   align-items: center;
   padding: 0 1.25rem;
-  gap: 1rem;
   flex-shrink: 0;
   z-index: 20;
+  position: relative;
 }
-.topbar__logo {
-  display: block;
-  flex-shrink: 0;
+.topbar__left {
+  display: flex; align-items: center;
+  flex: 1;
 }
-.topbar__title {
-  font-size: .85rem;
-  color: #6B7280;
-  font-weight: 400;
+.topbar__center {
+  position: absolute;
+  left: calc(50% - 60px); transform: translateX(-50%);
+  pointer-events: none;
 }
-.topbar__sep { width: 1px; height: 20px; background: #E5E7EB; }
+.topbar__center a { pointer-events: auto; display: block; }
+.topbar__right {
+  display: flex; align-items: center; gap: .5rem;
+  flex: 1; justify-content: flex-end;
+}
+.topbar__sep { width: 1px; height: 20px; background: #E5E7EB; flex-shrink: 0; }
 .topbar__colors {
   display: flex;
   align-items: center;
@@ -66,16 +71,41 @@ body {
   font-weight: 500;
   white-space: nowrap;
 }
-.color-swatch {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 140ms, border-color 140ms;
-  flex-shrink: 0;
+.color-picker { position: relative; display: inline-flex; align-items: center; }
+.color-picker__btn {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .28rem .45rem;
+  border: 1px solid #E5E7EB; border-radius: 7px;
+  background: #F9FAFB; cursor: pointer; outline: none;
+  transition: border-color 150ms;
 }
-.color-swatch:hover { transform: scale(1.15); }
-.color-swatch.active { border-color: #111827; transform: scale(1.15); }
+.color-picker__btn:hover, .color-picker__btn:focus { border-color: #93C5FD; }
+.color-picker__dot {
+  width: 15px; height: 15px; border-radius: 50%;
+  display: block; flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+}
+.color-picker__arrow { color: #9CA3AF; flex-shrink: 0; transition: transform 150ms; }
+.color-picker.is-open .color-picker__arrow { transform: rotate(180deg); }
+.color-picker__panel {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  background: #fff; border: 1px solid #E5E7EB; border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.10);
+  padding: 8px; display: none; gap: 7px; z-index: 300;
+  flex-wrap: wrap; width: 96px;
+}
+.color-picker.is-open .color-picker__panel { display: flex; }
+.color-picker__option {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid transparent; cursor: pointer;
+  transition: transform 120ms;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+  outline: none; flex-shrink: 0;
+}
+.color-picker__option:hover { transform: scale(1.18); }
+.color-picker__option.is-active {
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.75), 0 0 0 2.5px rgba(0,0,0,.35);
+}
 .topbar__spacer { flex: 1; }
 .topbar__actions { display: flex; gap: .5rem; align-items: center; }
 .btn-download {
@@ -494,45 +524,92 @@ body {
   font-family: 'DM Sans', sans-serif; font-size: 8.5px;
   color: #D1D5DB; font-style: italic;
 }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  body { overflow: auto; height: auto; min-height: 100dvh; }
+
+  .topbar { padding: .5rem .75rem; }
+  .topbar__center div { width: 90px !important; height: 34px !important; }
+  .topbar__center div img { width: 157px !important; margin-left: -35px !important; margin-top: -37px !important; }
+  .topbar__sep { display: none; }
+  .topbar__colors-label { display: none; }
+  .btn-edit-toggle .btn-label { display: none; }
+  .btn-download .btn-label { display: none; }
+
+  .editor-body { flex-direction: column; overflow: visible; height: auto; }
+
+  .form-panel {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    border-right: none;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  .preview-panel {
+    overflow: visible;
+    padding: 1rem .5rem 2rem;
+    height: auto;
+  }
+}
 </style>
 </head>
 <body>
 
 <!-- ── TOP BAR ── -->
 <header class="topbar">
-  <a href="{{ route('dashboard') }}" class="btn-back">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    Volver
-  </a>
-  <div class="topbar__sep"></div>
-  <div class="topbar__logo" style="width:140px;height:53px;overflow:hidden;flex-shrink:0;">
-    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:244px;height:auto;margin-left:-54px;margin-top:-56px;display:block;max-width:none;">
-  </div>
-  <span class="topbar__title">Editor de CV PDF</span>
-  <div class="topbar__sep"></div>
 
-  <!-- Color swatches -->
-  <div class="topbar__colors">
-    <span class="topbar__colors-label">Color:</span>
-    <button class="color-swatch active" data-color="#2D5F52" style="background:#2D5F52;" title="Verde bosque"></button>
-    <button class="color-swatch" data-color="#1E3A5F" style="background:#1E3A5F;" title="Azul marino"></button>
-    <button class="color-swatch" data-color="#7C3AED" style="background:#7C3AED;" title="Morado"></button>
-    <button class="color-swatch" data-color="#B91C1C" style="background:#B91C1C;" title="Rojo burdeos"></button>
-    <button class="color-swatch" data-color="#374151" style="background:#374151;" title="Carbón"></button>
-    <button class="color-swatch" data-color="#0F766E" style="background:#0F766E;" title="Teal"></button>
+  <!-- Izquierda -->
+  <div class="topbar__left">
+    <a href="{{ route('dashboard') }}" class="btn-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Volver
+    </a>
   </div>
 
-  <div class="topbar__spacer"></div>
-  <div class="topbar__actions">
+  <!-- Centro: logo -->
+  <div class="topbar__center">
+    <a href="{{ route('dashboard') }}">
+      <div style="width:120px;height:45px;overflow:hidden;">
+        <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:208px;height:auto;margin-left:-46px;margin-top:-48px;display:block;max-width:none;">
+      </div>
+    </a>
+  </div>
+
+  <!-- Derecha: color + acciones -->
+  <div class="topbar__right">
+    <div class="topbar__colors">
+      <span class="topbar__colors-label">Color:</span>
+      <div class="color-picker" id="color-picker">
+        <button type="button" class="color-picker__btn" id="color-picker-btn" aria-haspopup="true" aria-expanded="false">
+          <span class="color-picker__dot" id="color-picker-dot" style="background:#2D5F52;"></span>
+          <svg class="color-picker__arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="color-picker__panel" id="color-picker-panel" role="listbox">
+          <button type="button" class="color-picker__option is-active" data-color="#2D5F52" style="background:#2D5F52;" title="Verde bosque" role="option" aria-selected="true"></button>
+          <button type="button" class="color-picker__option" data-color="#1E3A5F" style="background:#1E3A5F;" title="Azul marino" role="option" aria-selected="false"></button>
+          <button type="button" class="color-picker__option" data-color="#7C3AED" style="background:#7C3AED;" title="Morado" role="option" aria-selected="false"></button>
+          <button type="button" class="color-picker__option" data-color="#B91C1C" style="background:#B91C1C;" title="Rojo burdeos" role="option" aria-selected="false"></button>
+          <button type="button" class="color-picker__option" data-color="#374151" style="background:#374151;" title="Carbón" role="option" aria-selected="false"></button>
+          <button type="button" class="color-picker__option" data-color="#0F766E" style="background:#0F766E;" title="Teal" role="option" aria-selected="false"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar__sep"></div>
+
     <button class="btn-edit-toggle" onclick="clearAll()" title="Borrar todos los datos del formulario">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-      Limpiar datos
+      <span class="btn-label">Limpiar datos</span>
     </button>
     <button class="btn-download" onclick="window.print()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
-      Descargar PDF
+      <span class="btn-label">Descargar PDF</span>
     </button>
   </div>
+
 </header>
 
 <!-- ── EDITOR BODY ── -->
@@ -939,13 +1016,13 @@ function saveToStorage() {
     var el = document.getElementById(id);
     if (el) fields[id] = el.value;
   });
-  var activeSwatch = document.querySelector('.color-swatch.active');
+  var activeOpt = document.querySelector('.color-picker__option.is-active');
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       fields: fields,
       entries: { exp: state.exp, edu: state.edu, lang: state.lang, ref: state.ref, cert: state.cert, proj: state.proj },
       photo: state.photo,
-      color: activeSwatch ? activeSwatch.dataset.color : null
+      color: activeOpt ? activeOpt.dataset.color : null
     }));
   } catch(e) {}
 }
@@ -964,9 +1041,13 @@ function loadFromStorage() {
     }
     // Color
     if (saved.color) {
-      document.querySelectorAll('.color-swatch').forEach(function(sw) {
-        sw.classList.toggle('active', sw.dataset.color === saved.color);
+      document.querySelectorAll('.color-picker__option').forEach(function(o) {
+        var active = o.dataset.color === saved.color;
+        o.classList.toggle('is-active', active);
+        o.setAttribute('aria-selected', String(active));
       });
+      var dot = document.getElementById('color-picker-dot');
+      if (dot) dot.style.background = saved.color;
       document.documentElement.style.setProperty('--sidebar-bg', saved.color);
       document.documentElement.style.setProperty('--accent', saved.color);
     }
@@ -999,17 +1080,50 @@ function toggleSection(head) {
 }
 
 /* ══════════════════════════════════════════════
-   COLOR SWATCHES
+   COLOR PICKER
 ══════════════════════════════════════════════ */
-document.querySelectorAll('.color-swatch').forEach(function(sw) {
-  sw.addEventListener('click', function() {
-    document.querySelectorAll('.color-swatch').forEach(function(s){ s.classList.remove('active'); });
-    sw.classList.add('active');
-    var color = sw.dataset.color;
+(function() {
+  var picker = document.getElementById('color-picker');
+  var btn    = document.getElementById('color-picker-btn');
+  var dot    = document.getElementById('color-picker-dot');
+  var panel  = document.getElementById('color-picker-panel');
+  if (!picker || !btn) return;
+
+  function applyColor(color) {
     document.documentElement.style.setProperty('--sidebar-bg', color);
     document.documentElement.style.setProperty('--accent', color);
+    dot.style.background = color;
+  }
+
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var open = picker.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', String(open));
   });
-});
+
+  panel.querySelectorAll('.color-picker__option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      panel.querySelectorAll('.color-picker__option').forEach(function(o) {
+        o.classList.remove('is-active');
+        o.setAttribute('aria-selected', 'false');
+      });
+      opt.classList.add('is-active');
+      opt.setAttribute('aria-selected', 'true');
+      applyColor(opt.dataset.color);
+      picker.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', function() {
+    picker.classList.remove('is-open');
+    btn.setAttribute('aria-expanded', 'false');
+  });
+  picker.addEventListener('click', function(e) { e.stopPropagation(); });
+
+  var active = panel.querySelector('.color-picker__option.is-active');
+  if (active) applyColor(active.dataset.color);
+})();
 
 /* ══════════════════════════════════════════════
    PHOTO
