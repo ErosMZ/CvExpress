@@ -79,7 +79,6 @@
     <p>Te hemos enviado un enlace de verificación. Haz clic en él para activar tu cuenta.</p>
 
     <div class="status">
-        <div class="spinner" id="spinner"></div>
         <span id="status-text">Esperando verificación…</span>
     </div>
 
@@ -100,7 +99,6 @@
                 .then(data => {
                     if (data.verified) {
                         document.getElementById('status-text').textContent = '¡Cuenta verificada! Redirigiendo…';
-                        document.getElementById('spinner').style.borderTopColor = '#22c55e';
                         setTimeout(() => { window.location.href = '/dashboard'; }, 1000);
                     } else {
                         attempts++;
