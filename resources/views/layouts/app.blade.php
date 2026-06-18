@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'CvXpress') — Tu CV, Tu Web</title>
+    <link rel="icon" href="/images/logo2Web.png" type="image/png">
     <meta name="description" content="@yield('meta_description', 'Convierte tu CV en un portfolio web profesional en minutos. Automatización inteligente para destacar en el mercado laboral.')">
 
     <!-- Preconnect -->
@@ -25,8 +26,8 @@
     <nav class="nav" id="main-nav">
         <div class="nav__container container">
             <a href="{{ route('home') }}" class="nav__logo">
-                <div style="width:140px;height:38px;overflow:hidden;flex-shrink:0;">
-                    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:244px;height:auto;margin-left:-54px;margin-top:-48px;display:block;max-width:none;">
+                <div style="width:140px;height:53px;overflow:hidden;flex-shrink:0;">
+                    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:244px;height:auto;margin-left:-54px;margin-top:-52px;display:block;max-width:none;">
                 </div>
             </a>
 
@@ -95,8 +96,8 @@
             <div class="footer__grid">
                 <div class="footer__brand">
                     <a href="{{ route('home') }}" class="nav__logo" style="margin-bottom: 1rem; display: inline-flex;">
-                        <div style="width:110px;height:30px;overflow:hidden;flex-shrink:0;">
-                            <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:210px;height:auto;margin-left:-46px;margin-top:-55px;display:block;max-width:none;">
+                        <div style="width:110px;height:42px;overflow:hidden;flex-shrink:0;">
+                            <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:190px;height:auto;margin-left:-42px;margin-top:-44px;display:block;max-width:none;">
                         </div>
                     </a>
                     <p class="footer__tagline">Tu currículum merece brillar en la web. Automatizamos el proceso para que tú te centres en lo que importa.</p>

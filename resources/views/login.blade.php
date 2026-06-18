@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión — CvXpress</title>
+    <link rel="icon" href="/images/logo2Web.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
@@ -80,9 +81,9 @@
 
     <div class="auth-wrapper">
 
-        <a href="/" class="auth-logo">
-            <div style="width:200px;height:56px;overflow:hidden;">
-                <img src="/images/logo2Web.webp" alt="CVX" style="width:455px;height:auto;margin-left:-123px;margin-top:-124px;display:block;max-width:none;">
+        <a href="/" class="auth-logo" style="position:relative;z-index:30;display:flex;justify-content:center;">
+            <div style="width:200px;height:75px;overflow:hidden;flex-shrink:0;">
+                <img src="/images/logo2Web.webp" alt="CVX" style="width:340px;height:auto;margin-left:-75px;margin-top:-78px;display:block;max-width:none;">
             </div>
         </a>
 

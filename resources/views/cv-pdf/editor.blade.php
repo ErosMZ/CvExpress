@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>Crear CV PDF — CvXpress</title>
+<link rel="icon" href="/images/logo2Web.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -504,8 +505,8 @@ body {
     Volver
   </a>
   <div class="topbar__sep"></div>
-  <div class="topbar__logo" style="width:140px;height:38px;overflow:hidden;flex-shrink:0;">
-    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:244px;height:auto;margin-left:-54px;margin-top:-48px;display:block;max-width:none;">
+  <div class="topbar__logo" style="width:140px;height:53px;overflow:hidden;flex-shrink:0;">
+    <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:244px;height:auto;margin-left:-54px;margin-top:-56px;display:block;max-width:none;">
   </div>
   <span class="topbar__title">Editor de CV PDF</span>
   <div class="topbar__sep"></div>
