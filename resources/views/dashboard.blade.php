@@ -6,6 +6,18 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/panel.css') }}">
+    <style>
+        @media (max-width: 767px) {
+            .cv-editor-cols {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .cv-editor-preview { position: static !important; }
+            #cv-preview-wrap   { height: 260px !important; }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -629,13 +641,13 @@
                         </div>
 
                         {{-- ─── EDITOR DOS COLUMNAS ─── --}}
-                        <div style="display:grid;grid-template-columns:360px minmax(0,1fr);gap:1.25rem;align-items:start;">
+                        <div class="cv-editor-cols">
 
                             {{-- COLUMNA IZQUIERDA ─── --}}
                             <div style="display:flex;flex-direction:column;gap:.875rem;">
 
                                 {{-- Tabs de sección --}}
-                                <div style="display:flex;flex-wrap:wrap;gap:.3rem;background:var(--color-bg-secondary);border:1px solid var(--color-border);padding:.4rem;border-radius:10px;">
+                                <div style="display:flex;flex-wrap:nowrap;gap:.3rem;background:var(--color-bg-secondary);border:1px solid var(--color-border);padding:.4rem;border-radius:10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;">
                                     @foreach([
                                         'presentacion' => 'Presentación',
                                         'contacto'     => 'Contacto',
@@ -906,7 +918,7 @@
                             </div>{{-- / columna izquierda --}}
 
                             {{-- COLUMNA DERECHA: PREVIEW ─── --}}
-                            <div style="position:sticky;top:1.5rem;">
+                            <div class="cv-editor-preview" style="position:sticky;top:1.5rem;">
                                 <div style="border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.1);border:1.5px solid var(--color-border);">
                                     {{-- Fake browser chrome --}}
                                     <div style="background:#f1f5f9;padding:.45rem .875rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--color-border);">
@@ -1540,9 +1552,10 @@
         if (!wrap || !iframe) return;
         var scale = wrap.offsetWidth / 1280;
         if (!scale) return;
+        var wrapH = wrap.offsetHeight || 580;
         iframe.style.transform = 'scale(' + scale + ')';
         iframe.style.width     = '1280px';
-        iframe.style.height    = Math.round(580 / scale) + 'px';
+        iframe.style.height    = Math.round(wrapH / scale) + 'px';
     }
     window.addEventListener('resize', scaleCvPreview);
 

@@ -236,6 +236,12 @@
         }
         /* Mobile: dropdown en fila */
         @media (max-width: 768px) {
+            .nav__dropdown-wrap {
+                align-self: stretch;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
             .nav__dropdown {
                 position: static;
                 transform: none;
@@ -243,12 +249,13 @@
                 border: none;
                 background: #F8FAFF;
                 border-radius: 8px;
-                margin: 3px 0 0;
+                margin: 3px auto 0;
                 padding: 3px;
                 animation: none;
                 flex-direction: row;
                 align-items: center;
-                justify-content: flex-start;
+                justify-content: center;
+                width: max-content;
             }
             .nav__dropdown::before { display: none; }
             .nav__dropdown-item--soon { pointer-events: auto; opacity: .65; }

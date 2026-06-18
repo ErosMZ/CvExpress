@@ -19,7 +19,13 @@ class VerifyEmailNotification extends VerifyEmail implements ShouldQueue
         $verificationUrl = $this->verificationUrl($notifiable);
 
         return (new MailMessage)
-            ->subject('Confirma tu cuenta en CvXpress')
+            ->subject('Activa tu cuenta en CvXpress')
+            ->replyTo(config('mail.from.address'), config('mail.from.name'))
+            ->withSymfonyMessage(function ($message) use ($notifiable) {
+                $message->getHeaders()
+                    ->addTextHeader('X-Entity-Ref-ID', sha1($notifiable->email . now()->timestamp))
+                    ->addTextHeader('List-Unsubscribe', '<mailto:' . config('mail.from.address') . '?subject=unsubscribe>');
+            })
             ->view('emails.verify', [
                 'url'  => $verificationUrl,
                 'name' => $notifiable->name,

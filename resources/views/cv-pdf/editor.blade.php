@@ -378,18 +378,21 @@ body {
   margin-bottom: 4px;
 }
 .cv-photo {
-  width: 140px; height: 140px;
+  width: min(104px, 50%);
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  object-fit: cover; object-position: center top;
-  border: 4px solid rgba(255,255,255,.4);
+  object-fit: cover; object-position: center 20%;
+  border: 3px solid rgba(255,255,255,.4);
   background: rgba(255,255,255,.15);
 }
 .cv-photo-placeholder {
-  width: 140px; height: 140px; border-radius: 50%;
+  width: min(104px, 50%);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
   background: rgba(255,255,255,.15);
-  border: 4px solid rgba(255,255,255,.4);
+  border: 3px solid rgba(255,255,255,.4);
   display: flex; align-items: center; justify-content: center;
-  font-size: 40px; color: rgba(255,255,255,.5);
+  font-size: 34px; color: rgba(255,255,255,.5);
 }
 
 /* Sidebar sections */
