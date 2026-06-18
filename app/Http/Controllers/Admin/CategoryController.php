@@ -64,6 +64,6 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('categories.index')
-            ->with('success', "Categoría «$name» eliminada.");
+            ->with('success', "Categoría «{$name}» eliminada.");
     }
 }

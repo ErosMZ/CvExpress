@@ -68,7 +68,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', "Usuario «$name» eliminado.");
+            ->with('success', "Usuario «{$name}» eliminado.");
     }
 
     public function toggleAdmin(User $user)
@@ -81,7 +81,7 @@ class UserController extends Controller
 
         $accion = $user->is_admin ? 'promovido a administrador' : 'removido de administrador';
 
-        return back()->with('success', "«{$user->name}» $accion.");
+        return back()->with('success', "«{$user->name}» {$accion}.");
     }
 
     public function verify(User $user)

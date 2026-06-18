@@ -81,6 +81,6 @@ class PlanController extends Controller
         $plan->delete();
 
         return redirect()->route('admin.plans.index')
-            ->with('success', "Plan «$name» eliminado.");
+            ->with('success', "Plan «{$name}» eliminado.");
     }
 }
