@@ -4,18 +4,95 @@
 @section('meta_description', 'Gestiona tu portfolio, edita tu perfil y sube tu CV desde tu panel personal.')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/panel.css') }}">
     <style>
-        @media (max-width: 767px) {
+        /* ── TABS SCROLL HINT ── */
+        .cv-tabs-wrap {
+            position: relative;
+        }
+        /* Degradado derecho: indica que hay más tabs al deslizar */
+        .cv-tabs-wrap::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 36px;
+            background: linear-gradient(to right, transparent, var(--color-bg-secondary, #f3f4f6));
+            pointer-events: none;
+            border-radius: 0 10px 10px 0;
+        }
+        /* Scrollbar fino y visible */
+        .cv-tabs-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: var(--gray-300, #d1d5db) transparent;
+        }
+        .cv-tabs-scroll::-webkit-scrollbar { height: 4px; }
+        .cv-tabs-scroll::-webkit-scrollbar-track { background: transparent; }
+        .cv-tabs-scroll::-webkit-scrollbar-thumb {
+            background: var(--gray-300, #d1d5db);
+            border-radius: 99px;
+        }
+        /* Ocultar degradado cuando ya se llegó al final (JS lo gestiona) */
+        .cv-tabs-wrap.scrolled-end::after { display: none; }
+
+        /* ── RESPONSIVE PANEL (mobile) ── */
+        @media (max-width: 900px) {
+            html, body { overflow-x: hidden !important; max-width: 100vw; }
+
+            /* Todos los contenedores del panel no desbordan */
+            .panel, .panel__body, .panel__main,
+            .panel__section, .panel__section--active {
+                overflow-x: hidden !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Grid editor: columna única + grid items contraíbles */
             .cv-editor-cols {
                 display: grid !important;
                 grid-template-columns: 1fr !important;
                 width: 100% !important;
                 max-width: 100% !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
             }
-            .cv-editor-preview { position: static !important; }
-            #cv-preview-wrap   { height: 260px !important; }
+            /* ↓ CLAVE: grid items por defecto tienen min-width:auto
+               lo que les impide contraerse. Forzar 0 los contiene. */
+            .cv-editor-cols > * {
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
+
+            /* Hub view: columna 300px → colapsa en móvil */
+            .cv-hub-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Preview debajo del formulario */
+            .cv-editor-preview {
+                position: static !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+            }
+            #cv-preview-wrap { height: 260px !important; }
+
+            /* Cards e inputs no desbordan */
+            .panel-card {
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                overflow-x: hidden !important;
+                padding: var(--space-6) !important;
+            }
+            .form-group, .form-input, .form-textarea, .form-select {
+                max-width: 100% !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
         }
     </style>
 @endpush
@@ -39,6 +116,11 @@
 
         {{-- ── SIDEBAR ── --}}
         <aside class="sidebar" id="sidebar" aria-label="Navegación del panel">
+            {{-- Botón cerrar (solo móvil) --}}
+            <button class="sidebar__close" id="sidebarClose" aria-label="Cerrar menú">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
             {{-- User info --}}
             <div class="sidebar__user">
                 <div class="sidebar__avatar">
@@ -505,7 +587,7 @@
                             <p style="font-size:.9rem;color:var(--color-text-secondary);margin:0;">Elige un método para rellenar tu plantilla <strong style="color:var(--color-text-primary);">{{ $selected?->name }}</strong>.</p>
                         </div>
 
-                        <div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;">
+                        <div class="cv-hub-grid">
 
                             {{-- IZQUIERDA: dos CTAs grandes --}}
                             <div style="display:flex;flex-direction:column;gap:.875rem;">
@@ -647,7 +729,8 @@
                             <div style="display:flex;flex-direction:column;gap:.875rem;">
 
                                 {{-- Tabs de sección --}}
-                                <div style="display:flex;flex-wrap:nowrap;gap:.3rem;background:var(--color-bg-secondary);border:1px solid var(--color-border);padding:.4rem;border-radius:10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;">
+                                <div class="cv-tabs-wrap">
+                                <div class="cv-tabs-scroll" style="display:flex;flex-wrap:nowrap;gap:.3rem;background:var(--color-bg-secondary);border:1px solid var(--color-border);padding:.4rem;border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;">
                                     @foreach([
                                         'presentacion' => 'Presentación',
                                         'contacto'     => 'Contacto',
@@ -659,11 +742,12 @@
                                     ] as $key => $label)
                                     <button type="button" onclick="showCvSection('{{ $key }}')"
                                             id="cvtab-{{ $key }}"
-                                            style="font-size:.75rem;padding:.3rem .65rem;border-radius:7px;border:none;cursor:pointer;font-weight:600;white-space:nowrap;transition:all .15s;{{ $loop->first ? 'background:var(--color-primary);color:#fff;' : 'background:transparent;color:var(--color-text-secondary);' }}">
+                                            style="font-size:.75rem;padding:.3rem .65rem;border-radius:7px;border:none;cursor:pointer;font-weight:600;white-space:nowrap;transition:all .15s;{{ $loop->first ? 'background:var(--color-brand);color:#fff;' : 'background:transparent;color:var(--color-text-secondary);' }}">
                                         {{ $label }}
                                     </button>
                                     @endforeach
-                                </div>
+                                </div>{{-- /cv-tabs-scroll --}}
+                                </div>{{-- /cv-tabs-wrap --}}
 
                                 {{-- PANEL: Presentación --}}
                                 <div id="cvpanel-presentacion" class="panel-card" style="margin:0;">
@@ -1454,6 +1538,7 @@
 
     // ── Mobile sidebar ──
     const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarClose  = document.getElementById('sidebarClose');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
 
@@ -1463,6 +1548,7 @@
     });
 
     overlay.addEventListener('click', closeSidebar);
+    if (sidebarClose) sidebarClose.addEventListener('click', closeSidebar);
 
     function closeSidebar() {
         sidebar.classList.remove('sidebar--open');
@@ -1521,6 +1607,8 @@
 
     // ── CV Section tabs ──
     function showCvSection(section) {
+        var savedY = window.scrollY || window.pageYOffset;
+
         document.querySelectorAll('[id^="cvpanel-"]').forEach(function(p) { p.style.display = 'none'; });
         document.querySelectorAll('[id^="cvtab-"]').forEach(function(t) {
             t.style.background = 'transparent';
@@ -1529,7 +1617,15 @@
         var panel = document.getElementById('cvpanel-' + section);
         var tab   = document.getElementById('cvtab-' + section);
         if (panel) panel.style.display = '';
-        if (tab) { tab.style.background = 'var(--color-primary)'; tab.style.color = '#fff'; }
+        if (tab) {
+            tab.style.background = 'var(--color-brand)';
+            tab.style.color = '#fff';
+            tab.blur();
+        }
+
+        // Restaurar scroll: el foco del botón y scrollIntoView del iframe
+        // pueden desplazar la página — lo evitamos
+        requestAnimationFrame(function() { window.scrollTo(0, savedY); });
 
         var iframe = document.getElementById('cv-preview-iframe');
         if (!iframe) return;
@@ -1558,6 +1654,19 @@
         iframe.style.height    = Math.round(wrapH / scale) + 'px';
     }
     window.addEventListener('resize', scaleCvPreview);
+
+    // ── Tabs scroll: ocultar degradado al llegar al final ──
+    (function() {
+        var tabsEl = document.querySelector('.cv-tabs-scroll');
+        var wrapEl = document.querySelector('.cv-tabs-wrap');
+        if (!tabsEl || !wrapEl) return;
+        function updateFade() {
+            var atEnd = tabsEl.scrollLeft + tabsEl.clientWidth >= tabsEl.scrollWidth - 4;
+            wrapEl.classList.toggle('scrolled-end', atEnd);
+        }
+        tabsEl.addEventListener('scroll', updateFade, { passive: true });
+        updateFade();
+    })();
 
     // ── HTML escape helper ──
     function _esc(str) {

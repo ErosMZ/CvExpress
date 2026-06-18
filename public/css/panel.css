@@ -39,6 +39,34 @@
   overflow-y: auto;
 }
 
+/* Botón X: oculto en desktop, visible en móvil cuando sidebar abierto */
+.sidebar__close {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .sidebar__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-bg-white);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    z-index: 1;
+    transition: background .15s, color .15s;
+  }
+  .sidebar__close:hover {
+    background: var(--gray-100);
+    color: var(--color-text-primary);
+  }
+}
+
 @media (max-width: 1023px) {
   .sidebar {
     display: none;
@@ -480,16 +508,25 @@
   display: none;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-4);
+  padding: var(--space-3) var(--space-4);
   background: var(--color-bg-white);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
+  /* fixed: overflow:hidden en .panel rompía sticky */
+  position: fixed;
   top: var(--nav-height);
-  z-index: 50;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  height: 49px;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1023px) {
   .panel__mobile-bar { display: flex; }
+  /* Compensar la barra fija para que el contenido no quede tapado */
+  .panel__body {
+    padding-top: 49px;
+  }
 }
 
 .panel__mobile-toggle {
@@ -648,17 +685,38 @@
   align-items: start;
 }
 
+/* Los grid items necesitan min-width:0 para contraerse correctamente */
+.cv-editor-cols > * {
+  min-width: 0;
+}
+
+/* Hub view: 1fr 300px → colapsa en móvil */
+.cv-hub-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
 @media (max-width: 767px) {
   .cv-editor-cols {
     grid-template-columns: 1fr !important;
     width: 100%;
     max-width: 100%;
+    overflow: hidden;
+  }
+  .cv-editor-cols > * {
+    min-width: 0 !important;
+    overflow-x: hidden;
   }
   .cv-editor-preview {
     position: static !important;
   }
   #cv-preview-wrap {
     height: 260px !important;
+  }
+  .cv-hub-grid {
+    grid-template-columns: 1fr !important;
   }
 }
 
