@@ -42,6 +42,10 @@
   /* ─── HEADER SCROLL ──────────────────────────── */
   const header = document.getElementById('site-header');
 
+  // Declaradas aquí para que updateActiveNav() pueda usarlas desde onScroll()
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+
   function onScroll() {
     if (window.scrollY > 40) {
       header.classList.add('scrolled');
@@ -90,9 +94,6 @@
   }
 
   /* ─── ACTIVE NAV LINK ────────────────────────── */
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
-
   function updateActiveNav() {
     let current = '';
     const scrollY = window.scrollY + 120;
