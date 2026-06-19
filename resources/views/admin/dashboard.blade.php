@@ -196,6 +196,29 @@
                 $newUsersThisMonth = \App\Models\User::whereMonth('created_at', now()->month)->count();
                 $templatesByTier = \App\Models\Template::selectRaw('plan_tier, count(*) as total')
                     ->groupBy('plan_tier')->pluck('total', 'plan_tier');
+
+                /* ── Ingresos reales de UserPurchase ── */
+                $revenueThisMonth = \App\Models\UserPurchase::whereYear('purchased_at', now()->year)
+                    ->whereMonth('purchased_at', now()->month)
+                    ->sum('amount_paid');
+
+                $revenueTotal = \App\Models\UserPurchase::sum('amount_paid');
+
+                /* Últimos 7 meses para la gráfica */
+                $chartMonths = collect(range(6, 0))->map(function($offset) {
+                    $date = now()->subMonths($offset);
+                    $val  = \App\Models\UserPurchase::whereYear('purchased_at', $date->year)
+                                ->whereMonth('purchased_at', $date->month)
+                                ->sum('amount_paid');
+                    return [
+                        'mes' => $date->locale('es')->isoFormat('MMM'),
+                        'val' => (float) $val,
+                    ];
+                });
+                $chartMax = $chartMonths->max('val');
+
+                /* Total de compras (para conteo) */
+                $totalPurchases = \App\Models\UserPurchase::count();
             @endphp
 
             <div class="admin-stats">
@@ -265,10 +288,11 @@
                                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                             </svg>
                         </div>
-                        <span class="stat-card__trend stat-card__trend--up">↑ simulado</span>
+                        <span class="stat-card__trend stat-card__trend--neu">{{ $totalPurchases }} cobros</span>
                     </div>
-                    <div class="stat-card__value">€1.240</div>
+                    <div class="stat-card__value">€{{ number_format($revenueThisMonth, 2, ',', '.') }}</div>
                     <div class="stat-card__label">Ingresos este mes</div>
+                    <div style="font-size:.72rem;color:var(--admin-text-muted);margin-top:.35rem;">Total acumulado: <strong>€{{ number_format($revenueTotal, 2, ',', '.') }}</strong></div>
                 </div>
 
             </div>{{-- /stats --}}
@@ -276,7 +300,7 @@
             {{-- ── FILA 1: Gráfica + Acciones rápidas ── --}}
             <div class="admin-grid" style="margin-bottom:1.5rem;">
 
-                {{-- Gráfica de ingresos (simulada) --}}
+                {{-- Gráfica de ingresos (datos reales de UserPurchase) --}}
                 <div class="admin-panel">
                     <div class="admin-panel__head">
                         <span class="admin-panel__title">
@@ -285,12 +309,12 @@
                             </svg>
                             Ingresos mensuales
                         </span>
-                        <span style="font-size:.75rem;background:var(--amber-100);color:var(--amber-600);padding:3px 10px;border-radius:99px;font-weight:600;">Datos simulados</span>
+                        <span style="font-size:.75rem;background:var(--green-100);color:var(--green-600);padding:3px 10px;border-radius:99px;font-weight:600;">Datos reales</span>
                     </div>
                     <div class="admin-panel__body">
                         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:1.25rem;">
-                            <span style="font-size:2rem;font-weight:700;letter-spacing:-0.04em;color:var(--admin-text);">€7.840</span>
-                            <span style="font-size:.82rem;font-weight:600;color:var(--green-600);background:var(--green-100);padding:2px 8px;border-radius:99px;">↑ +18.3%</span>
+                            <span style="font-size:2rem;font-weight:700;letter-spacing:-0.04em;color:var(--admin-text);">€{{ number_format($revenueTotal, 2, ',', '.') }}</span>
+                            <span style="font-size:.82rem;color:var(--admin-text-muted);">total acumulado</span>
                         </div>
                         <div class="chart-container">
                             <div class="chart-grid">
@@ -300,28 +324,23 @@
                                 <div class="chart-grid-line"></div>
                             </div>
                             <div class="chart-bars">
-                                @php
-                                $chartData = [
-                                    ['mes'=>'Nov','val'=>620,'h'=>'52%'],
-                                    ['mes'=>'Dic','val'=>890,'h'=>'75%'],
-                                    ['mes'=>'Ene','val'=>740,'h'=>'62%'],
-                                    ['mes'=>'Feb','val'=>1050,'h'=>'88%'],
-                                    ['mes'=>'Mar','val'=>820,'h'=>'69%'],
-                                    ['mes'=>'Abr','val'=>960,'h'=>'80%'],
-                                    ['mes'=>'May','val'=>1240,'h'=>'100%','highlight'=>true],
-                                ];
-                                @endphp
-                                @foreach($chartData as $d)
+                                @foreach($chartMonths as $d)
+                                @php $h = $chartMax > 0 ? round($d['val'] / $chartMax * 100) : 0; @endphp
                                 <div class="chart-bar-wrap">
-                                    <div class="chart-bar {{ isset($d['highlight']) ? 'chart-bar--highlight' : '' }}"
-                                         style="height:{{ $d['h'] }}"
-                                         data-val="€{{ $d['val'] }}">
+                                    <div class="chart-bar {{ $loop->last ? 'chart-bar--highlight' : '' }}"
+                                         style="height:{{ max($h, $d['val'] > 0 ? 4 : 0) }}%"
+                                         data-val="€{{ number_format($d['val'], 2, ',', '.') }}">
                                     </div>
-                                    <span class="chart-label">{{ $d['mes'] }}</span>
+                                    <span class="chart-label">{{ ucfirst($d['mes']) }}</span>
                                 </div>
                                 @endforeach
                             </div>
                         </div>
+                        @if($revenueTotal == 0)
+                        <p style="text-align:center;font-size:.8rem;color:var(--admin-text-muted);margin-top:.75rem;">
+                            Aún no hay compras registradas.
+                        </p>
+                        @endif
                     </div>
                 </div>
 

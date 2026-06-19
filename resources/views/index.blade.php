@@ -43,7 +43,7 @@
                     <span class="avatar">AL</span>
                     <span class="avatar">PG</span>
                 </div>
-                <p><strong>+500 profesionales</strong> ya tienen su portfolio web</p>
+                <p><strong>+500 Estudiantes y profesionales</strong> ya tienen su portfolio web</p>
             </div>
         </div>
 
