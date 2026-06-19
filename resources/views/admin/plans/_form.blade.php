@@ -66,6 +66,22 @@
               style="resize:vertical;font-family:var(--font-mono);font-size:.82rem;">{{ $plan ? implode("\n", $plan->features ?? []) : '' }}</textarea>
 </div>
 
+<div class="form-group" style="margin-top:.85rem;">
+    <label class="form-label" for="{{ $prefix }}_template_tier">
+        Tier de plantillas
+        <span style="font-weight:400;color:var(--admin-text-muted);">(deja vacío si este plan no está relacionado con plantillas)</span>
+    </label>
+    <select id="{{ $prefix }}_template_tier" name="template_tier" class="form-input">
+        <option value="">— Sin tier de plantillas —</option>
+        <option value="basic"     {{ ($plan->template_tier ?? '') === 'basic'     ? 'selected' : '' }}>Básico</option>
+        <option value="pro"       {{ ($plan->template_tier ?? '') === 'pro'       ? 'selected' : '' }}>Pro</option>
+        <option value="super_pro" {{ ($plan->template_tier ?? '') === 'super_pro' ? 'selected' : '' }}>Super Pro</option>
+    </select>
+    <p style="font-size:.75rem;color:var(--admin-text-muted);margin-top:.3rem;">
+        Solo los planes con tier asignado aparecen en el selector de "Plan requerido" de las plantillas.
+    </p>
+</div>
+
 <div class="form-group" style="margin-top:.75rem;">
     <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;user-select:none;">
         <input type="checkbox" name="is_active" value="1"

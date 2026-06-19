@@ -30,12 +30,8 @@ class UserPurchase extends Model
         'amount_paid'  => 'decimal:2',
     ];
 
-    // Tiers accesibles por slug del plan
-    const TIER_ACCESS = [
-        'plan-basico' => ['basic'],
-        'pro'         => ['basic', 'pro'],
-        'super_pro'   => ['basic', 'pro', 'super_pro'],
-    ];
+    // Jerarquía de tiers (orden ascendente)
+    const TIER_HIERARCHY = ['basic', 'pro', 'super_pro'];
 
     public function user()
     {
@@ -54,8 +50,10 @@ class UserPurchase extends Model
 
     public function accessibleTiers(): array
     {
-        $slug = $this->plan->slug ?? 'plan-basico';
-        return self::TIER_ACCESS[$slug] ?? ['basic'];
+        $tier = $this->plan->template_tier ?? 'basic';
+        $index = array_search($tier, self::TIER_HIERARCHY);
+        if ($index === false) return ['basic'];
+        return array_slice(self::TIER_HIERARCHY, 0, $index + 1);
     }
 
     public static function generateInvoiceNumber(): string

@@ -47,111 +47,105 @@
             </div>
         </div>
 
-        <div class="hero__visual" aria-hidden="true">
-            <div class="hero-flow">
+        {{-- ── CARRUSEL VERTICAL DE PLANTILLAS ── --}}
+        <div class="hero__visual hero-tpl-section">
+            @if($featuredTemplates->isNotEmpty())
+            @php
+                /* concat() añade al final (merge() reemplaza por clave → loop infinito) */
+                $pool = collect();
+                $base = $featuredTemplates->values();
+                while ($pool->count() < 8) { $pool = $pool->concat($base); }
+                $col1 = $pool->filter(fn($t, $i) => $i % 2 === 0)->values();
+                $col2 = $pool->filter(fn($t, $i) => $i % 2 === 1)->values();
+            @endphp
 
-                <!-- ── Transformación visual: PDF → Portfolio ── -->
-                <div class="hero-flow__top">
-                    <div class="hero-flow__cv">
-                        <div class="hero-flow__cv-header">
-                            <div class="hero-flow__cv-line hero-flow__cv-line--name"></div>
-                            <div class="hero-flow__cv-line hero-flow__cv-line--role"></div>
-                        </div>
-                        <div class="hero-flow__cv-body">
-                            <div class="hero-flow__cv-section"></div>
-                            <div class="hero-flow__cv-line"></div>
-                            <div class="hero-flow__cv-line hero-flow__cv-line--short"></div>
-                            <div class="hero-flow__cv-section"></div>
-                            <div class="hero-flow__cv-line"></div>
-                            <div class="hero-flow__cv-line hero-flow__cv-line--short"></div>
-                        </div>
-                        <div class="hero-flow__cv-footer">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            curriculum.pdf
-                        </div>
-                    </div>
+            <div class="hero-tpl-carousel">
 
-                    <div class="hero-flow__arrow">
-                        <div class="hero-flow__arrow-track">
-                            <div class="hero-flow__arrow-dot"></div>
-                            <div class="hero-flow__arrow-dot"></div>
-                            <div class="hero-flow__arrow-dot"></div>
-                        </div>
-                        <div class="hero-flow__arrow-badge">Automático</div>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </div>
+                {{-- Macro reutilizable: renderiza una tarjeta de plantilla --}}
+                @php
+                    $renderCard = function($tpl) {
+                        return $tpl; // se usa inline abajo
+                    };
+                @endphp
 
-                    <div class="hero-flow__browser">
-                        <div class="hero-flow__browser-bar">
-                            <div class="hero-flow__browser-dots">
-                                <span></span><span></span><span></span>
+                {{-- Columna 1 --}}
+                <div class="hero-tpl-col">
+                    <div class="hero-tpl-track">
+                        @foreach([...$col1, ...$col1] as $tpl)
+                        <a href="{{ route('templates.preview', $tpl->slug) }}" class="hero-tpl-card">
+                            <div class="hero-tpl-card__thumb">
+                                @if($tpl->preview_html_url)
+                                    <div class="hero-tpl-iframe-wrap">
+                                        <iframe src="{{ $tpl->preview_html_url }}"
+                                                scrolling="no"
+                                                sandbox="allow-same-origin allow-scripts"
+                                                title="{{ $tpl->name }}"></iframe>
+                                    </div>
+                                @elseif($tpl->preview_image)
+                                    <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}">
+                                @else
+                                    <div class="hero-tpl-card__placeholder">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c7d2e7" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                    </div>
+                                @endif
+                                <div class="hero-tpl-card__overlay">
+                                    <span>Ver plantilla →</span>
+                                </div>
+                                @if($tpl->is_premium ?? false)
+                                    <div class="hero-tpl-card__badge">Premium</div>
+                                @endif
                             </div>
-                            <div class="hero-flow__browser-url">miportfolio.cvexpress.es</div>
-                        </div>
-                        <div class="hero-flow__browser-body">
-                            <div class="hero-flow__browser-avatar"></div>
-                            <div class="hero-flow__browser-name"></div>
-                            <div class="hero-flow__browser-role"></div>
-                            <div class="hero-flow__browser-tags">
-                                <span></span><span></span><span></span>
+                            <div class="hero-tpl-card__info">
+                                @if($tpl->category)
+                                    <span class="hero-tpl-card__cat">{{ $tpl->category->name }}</span>
+                                @endif
+                                <span class="hero-tpl-card__name">{{ $tpl->name }}</span>
                             </div>
-                            <div class="hero-flow__browser-line"></div>
-                            <div class="hero-flow__browser-line hero-flow__browser-line--short"></div>
-                        </div>
+                        </a>
+                        @endforeach
                     </div>
                 </div>
 
-                <!-- ── Separador ── -->
-                <div class="hero-flow__sep">
-                    <span>En 3 pasos, sin conocimientos técnicos</span>
+                {{-- Columna 2 (offset + velocidad distinta) --}}
+                <div class="hero-tpl-col hero-tpl-col--offset">
+                    <div class="hero-tpl-track hero-tpl-track--slow">
+                        @foreach([...$col2, ...$col2] as $tpl)
+                        <a href="{{ route('templates.preview', $tpl->slug) }}" class="hero-tpl-card">
+                            <div class="hero-tpl-card__thumb">
+                                @if($tpl->preview_html_url)
+                                    <div class="hero-tpl-iframe-wrap">
+                                        <iframe src="{{ $tpl->preview_html_url }}"
+                                                scrolling="no"
+                                                sandbox="allow-same-origin allow-scripts"
+                                                title="{{ $tpl->name }}"></iframe>
+                                    </div>
+                                @elseif($tpl->preview_image)
+                                    <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}">
+                                @else
+                                    <div class="hero-tpl-card__placeholder">
+                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c7d2e7" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                                    </div>
+                                @endif
+                                <div class="hero-tpl-card__overlay">
+                                    <span>Ver plantilla →</span>
+                                </div>
+                                @if($tpl->is_premium ?? false)
+                                    <div class="hero-tpl-card__badge">Premium</div>
+                                @endif
+                            </div>
+                            <div class="hero-tpl-card__info">
+                                @if($tpl->category)
+                                    <span class="hero-tpl-card__cat">{{ $tpl->category->name }}</span>
+                                @endif
+                                <span class="hero-tpl-card__name">{{ $tpl->name }}</span>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
                 </div>
 
-                <!-- ── Pasos ── -->
-                <div class="hero-flow__steps">
-
-                    <div class="hero-flow__step">
-                        <div class="hero-flow__step-num">01</div>
-                        <div class="hero-flow__step-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
-                        </div>
-                        <div class="hero-flow__step-body">
-                            <strong>Sube tu CV en PDF</strong>
-                            <span>Extraemos toda tu información automáticamente.</span>
-                        </div>
-                    </div>
-
-                    <div class="hero-flow__connector">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-                    </div>
-
-                    <div class="hero-flow__step">
-                        <div class="hero-flow__step-num">02</div>
-                        <div class="hero-flow__step-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                        </div>
-                        <div class="hero-flow__step-body">
-                            <strong>Tu portfolio se genera solo</strong>
-                            <span>Web profesional con tu dominio, lista en segundos.</span>
-                        </div>
-                    </div>
-
-                    <div class="hero-flow__connector">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-                    </div>
-
-                    <div class="hero-flow__step">
-                        <div class="hero-flow__step-num">03</div>
-                        <div class="hero-flow__step-icon">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                        </div>
-                        <div class="hero-flow__step-body">
-                            <strong>Edita cuando quieras</strong>
-                            <span>Panel de control para mantenerlo siempre al día.</span>
-                        </div>
-                    </div>
-
-                </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
@@ -779,6 +773,209 @@
     display: flex; align-items: center; justify-content: center;
     color: #93C5FD;
 }
+
+/* ════════════════════════════════════════
+   CARRUSEL VERTICAL DE PLANTILLAS (hero)
+   ════════════════════════════════════════ */
+.hero-tpl-section {
+    overflow: hidden;
+    /* alinear verticalmente con el texto del hero */
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+}
+
+.hero-tpl-carousel {
+    position: relative;
+    width: 100%;
+    height: 560px;
+    display: flex;
+    gap: 14px;
+    overflow: hidden;
+    /* degradado top/bottom para fundir las tarjetas */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+
+/* Pausa TODA la animación al pasar el ratón por el carrusel */
+.hero-tpl-carousel:hover .hero-tpl-track {
+    animation-play-state: paused;
+}
+
+.hero-tpl-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Segunda columna: empieza más abajo para crear escalonado */
+.hero-tpl-col--offset {
+    margin-top: -90px;
+}
+
+.hero-tpl-track {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: hero-scroll 20s linear infinite;
+    will-change: transform;
+}
+
+.hero-tpl-track--slow {
+    animation-duration: 28s;
+}
+
+@keyframes hero-scroll {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-50%); }
+}
+
+/* ── Tarjeta de plantilla ── */
+.hero-tpl-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 14px;
+    overflow: visible; /* para que el scale no se corte */
+    flex-shrink: 0;
+    transition: transform .35s cubic-bezier(.34,1.4,.64,1), box-shadow .3s ease;
+    position: relative;
+    z-index: 0;
+}
+
+.hero-tpl-card:hover {
+    transform: scale(1.06) translateY(-5px);
+    z-index: 10;
+    box-shadow: 0 24px 56px rgba(30,58,138,.22), 0 6px 20px rgba(0,0,0,.12);
+}
+
+.hero-tpl-card__thumb {
+    aspect-ratio: 3 / 4;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
+    position: relative;
+}
+
+.hero-tpl-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .4s ease;
+}
+
+.hero-tpl-card:hover .hero-tpl-card__thumb img {
+    transform: scale(1.04);
+}
+
+/* iframe preview — mismo patrón que /plantillas */
+.hero-tpl-iframe-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #f8fafc;
+}
+
+.hero-tpl-iframe-wrap iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1280px;
+    height: 800px;
+    border: none;
+    transform-origin: top left;
+    display: block;
+}
+
+.hero-tpl-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Overlay "Ver plantilla" que aparece al hover */
+.hero-tpl-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(15,30,80,.82) 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity .25s ease;
+    border-radius: 14px 14px 0 0;
+}
+
+.hero-tpl-card:hover .hero-tpl-card__overlay {
+    opacity: 1;
+}
+
+.hero-tpl-card__overlay span {
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.35);
+    padding: .38rem .9rem;
+    border-radius: 99px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    white-space: nowrap;
+}
+
+.hero-tpl-card__badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: .25rem .65rem;
+    border-radius: 99px;
+    box-shadow: 0 2px 8px rgba(217,119,6,.4);
+}
+
+.hero-tpl-card__info {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: .6rem .875rem .7rem;
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+}
+
+.hero-tpl-card__cat {
+    font-size: .62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #1A56DB;
+}
+
+.hero-tpl-card__name {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive: en móvil el carrusel se oculta (ya hay marquee abajo) */
+@media (max-width: 1023px) {
+    .hero-tpl-section { display: none; }
+}
 </style>
 @endpush
 
@@ -808,6 +1005,24 @@
 @if($featuredTemplates->isNotEmpty())
 <script>
 (function () {
+    /* ── Escalar iframes del hero carousel ── */
+    function scaleHeroIframes() {
+        document.querySelectorAll('.hero-tpl-iframe-wrap').forEach(function (wrap) {
+            var iframe = wrap.querySelector('iframe');
+            if (!iframe) return;
+            var w = wrap.offsetWidth;
+            var h = wrap.offsetHeight;
+            if (!w || !h) return;
+            var scale = w / 1280;
+            iframe.style.transform = 'scale(' + scale + ')';
+            /* Hacer que el iframe sea tan alto como para rellenar el contenedor */
+            iframe.style.height = Math.ceil(h / scale) + 'px';
+        });
+    }
+    scaleHeroIframes();
+    window.addEventListener('resize', scaleHeroIframes);
+
+    /* ── Escalar iframes del marquee ── */
     function scaleMarqueeIframes() {
         document.querySelectorAll('.mq-card__iframe-wrap').forEach(function (wrap) {
             var iframe = wrap.querySelector('iframe');

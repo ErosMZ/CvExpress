@@ -62,19 +62,10 @@ class TemplatesController extends Controller
 
     private function plansByTier(): array
     {
-        // tier_key → plan (el plan más barato que incluye ese tier)
-        $slugMap = array_flip(array_map(fn($tiers) => $tiers[count($tiers) - 1], \App\Models\UserPurchase::TIER_ACCESS));
-        $plans   = \App\Models\Plan::where('is_active', true)->get()->keyBy('slug');
-        $result  = [];
-        foreach (\App\Models\Template::PLAN_TIERS as $tierKey => $_) {
-            // buscar el plan cuyo slug tiene este tier como el último (más alto) accesible
-            foreach (\App\Models\UserPurchase::TIER_ACCESS as $planSlug => $tiers) {
-                if (end($tiers) === $tierKey && isset($plans[$planSlug])) {
-                    $result[$tierKey] = $plans[$planSlug];
-                    break;
-                }
-            }
-        }
-        return $result;
+        return \App\Models\Plan::where('is_active', true)
+            ->whereNotNull('template_tier')
+            ->get()
+            ->keyBy('template_tier')
+            ->all();
     }
 }

@@ -31,14 +31,15 @@ class PlanController extends Controller
         ));
 
         Plan::create([
-            'slug'        => Str::slug($request->name),
-            'name'        => $request->name,
-            'price'       => $request->price,
-            'color'       => $request->color,
-            'badge_label' => $request->badge_label ?: null,
-            'features'    => $features,
-            'is_active'   => $request->has('is_active'),
-            'sort_order'  => $request->sort_order ?? 0,
+            'slug'          => Str::slug($request->name),
+            'name'          => $request->name,
+            'price'         => $request->price,
+            'color'         => $request->color,
+            'badge_label'   => $request->badge_label ?: null,
+            'features'      => $features,
+            'is_active'     => $request->has('is_active'),
+            'sort_order'    => $request->sort_order ?? 0,
+            'template_tier' => $request->template_tier ?: null,
         ]);
 
         return redirect()->route('admin.plans.index')
@@ -61,14 +62,15 @@ class PlanController extends Controller
         ));
 
         $plan->update([
-            'slug'        => Str::slug($request->name),
-            'name'        => $request->name,
-            'price'       => $request->price,
-            'color'       => $request->color,
-            'badge_label' => $request->badge_label ?: null,
-            'features'    => $features,
-            'is_active'   => $request->has('is_active'),
-            'sort_order'  => $request->sort_order ?? $plan->sort_order,
+            'slug'          => Str::slug($request->name),
+            'name'          => $request->name,
+            'price'         => $request->price,
+            'color'         => $request->color,
+            'badge_label'   => $request->badge_label ?: null,
+            'features'      => $features,
+            'is_active'     => $request->has('is_active'),
+            'sort_order'    => $request->sort_order ?? $plan->sort_order,
+            'template_tier' => $request->template_tier ?: null,
         ]);
 
         return redirect()->route('admin.plans.index')

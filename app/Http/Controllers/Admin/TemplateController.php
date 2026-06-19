@@ -291,16 +291,10 @@ class TemplateController extends Controller
 
     private function plansByTier(): array
     {
-        $plans  = \App\Models\Plan::where('is_active', true)->get()->keyBy('slug');
-        $result = [];
-        foreach (Template::PLAN_TIERS as $tierKey => $_) {
-            foreach (\App\Models\UserPurchase::TIER_ACCESS as $planSlug => $tiers) {
-                if (end($tiers) === $tierKey && isset($plans[$planSlug])) {
-                    $result[$tierKey] = $plans[$planSlug];
-                    break;
-                }
-            }
-        }
-        return $result;
+        return \App\Models\Plan::where('is_active', true)
+            ->whereNotNull('template_tier')
+            ->get()
+            ->keyBy('template_tier')
+            ->all();
     }
 }
