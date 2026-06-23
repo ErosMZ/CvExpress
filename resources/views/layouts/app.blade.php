@@ -36,11 +36,12 @@
             </button>
 
             <ul class="nav__menu" id="nav-menu" role="list">
-                <li><a href="{{ route('home') }}#caracteristicas" class="nav__link {{ request()->routeIs('home') ? 'nav__link--active' : '' }}">¿Que ofrecemos?</a></li>
+                <li><a href="{{ route('home') }}" id="nav-inicio" class="nav__link">Inicio</a></li>
+                <li><a href="{{ route('home') }}#caracteristicas" id="nav-ofrecemos" class="nav__link">¿Que ofrecemos?</a></li>
                 <li><a href="{{ route('templates.list') }}" class="nav__link {{ request()->routeIs('templates.list','templates.preview') ? 'nav__link--active' : '' }}">Plantillas</a></li>
                 <li><a href="{{ auth()->check() ? route('cv-web.editor') : route('register') }}" class="nav__link {{ request()->routeIs('cv-web.*') ? 'nav__link--active' : '' }}">CV Web</a></li>
                 <li><a href="{{ route('cv-pdf.editor') }}" class="nav__link {{ request()->routeIs('cv-pdf.*') ? 'nav__link--active' : '' }}">CV PDF</a></li>
-                <li><a href="{{ route('home') }}#precios" class="nav__link">Precios</a></li>
+                <li><a href="{{ route('home') }}#precios" id="nav-precios" class="nav__link">Precios</a></li>
                 @guest
                     <li><a href="{{ route('login') }}" class="nav__link">Iniciar sesión</a></li>
                     <li><a href="{{ route('register') }}" class="btn btn--primary btn--sm">Empezar gratis</a></li>
@@ -164,7 +165,7 @@
 
         // Mobile toggle
         const toggle = document.getElementById('nav-toggle');
-        const menu = document.getElementById('nav-menu');
+        const menu   = document.getElementById('nav-menu');
         toggle.addEventListener('click', () => {
             const open = toggle.getAttribute('aria-expanded') === 'true';
             toggle.setAttribute('aria-expanded', String(!open));
@@ -181,6 +182,54 @@
             });
         });
 
+        // ── Scroll-based active for home sections ──
+        (function () {
+            const secInicio    = document.getElementById('nav-inicio');
+            const secOfrecemos = document.getElementById('nav-ofrecemos');
+            const secPrecios   = document.getElementById('nav-precios');
+
+            if (!secInicio && !secOfrecemos && !secPrecios) return; // not in layout
+
+            const sectionMap = [
+                { sectionId: 'caracteristicas', link: secOfrecemos },
+                { sectionId: 'precios',         link: secPrecios   },
+            ];
+
+            // Only activate scroll logic on home page (sections exist)
+            const hasHomeSections = sectionMap.some(m => document.getElementById(m.sectionId));
+            if (!hasHomeSections) return;
+
+            const visible = new Set();
+
+            function updateActive() {
+                // Deactivate all three
+                [secInicio, secOfrecemos, secPrecios].forEach(l => l && l.classList.remove('nav__link--active'));
+
+                if (visible.has('precios')) {
+                    secPrecios && secPrecios.classList.add('nav__link--active');
+                } else if (visible.has('caracteristicas')) {
+                    secOfrecemos && secOfrecemos.classList.add('nav__link--active');
+                } else {
+                    secInicio && secInicio.classList.add('nav__link--active');
+                }
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) visible.add(e.target.id);
+                    else                  visible.delete(e.target.id);
+                });
+                updateActive();
+            }, { threshold: 0.25 });
+
+            sectionMap.forEach(m => {
+                const el = document.getElementById(m.sectionId);
+                if (el) observer.observe(el);
+            });
+
+            // Set initial state
+            updateActive();
+        })();
     </script>
 </body>
 </html>
