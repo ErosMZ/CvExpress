@@ -40,6 +40,49 @@ class DashboardController extends Controller
         return view('dashboard', compact('plans', 'activePurchase', 'allPurchases', 'availableTemplates', 'cvData', 'photoUrl', 'photoOrientation'));
     }
 
+    public function cvWeb()
+    {
+        $user           = Auth::user();
+        $activePurchase = $user->activePurchase;
+        $plans          = Plan::where('is_active', true)->orderBy('sort_order')->get();
+
+        $availableTemplates = collect();
+        if ($activePurchase) {
+            $tiers = $activePurchase->accessibleTiers();
+            $availableTemplates = Template::whereIn('plan_tier', $tiers)
+                ->where('is_active', true)
+                ->with('category')
+                ->latest()
+                ->get();
+        }
+
+        $cvData           = $this->cleanCvData($user->cv_data ?? []);
+        $photoUrl         = $user->profile_photo ? '/storage/' . $user->profile_photo : null;
+        $photoOrientation = $activePurchase?->selectedTemplate?->photo_orientation;
+        $selected         = $activePurchase?->selectedTemplate;
+        $tiers            = Template::PLAN_TIERS;
+        $u                = $user;
+
+        return view('cv-web', compact(
+            'activePurchase', 'availableTemplates', 'cvData',
+            'photoUrl', 'photoOrientation', 'selected', 'tiers', 'plans', 'u'
+        ));
+    }
+
+    public function cvWebSelectTemplate(UserPurchase $purchase, Template $template)
+    {
+        abort_if($purchase->user_id !== Auth::id(), 403);
+        abort_if($purchase->status !== 'active', 403);
+
+        $tiers = $purchase->accessibleTiers();
+        abort_if(! in_array($template->plan_tier, $tiers), 403);
+
+        $purchase->update(['selected_template_id' => $template->id]);
+
+        return redirect()->route('cv-web.editor')
+            ->with('success', 'Plantilla «' . $template->name . '» seleccionada. ¡Empieza a editar tu CV!');
+    }
+
     public function selectTemplate(UserPurchase $purchase, Template $template)
     {
         abort_if($purchase->user_id !== Auth::id(), 403);

@@ -8,9 +8,23 @@
         ['value' => '#0891b2', 'bg' => '#cffafe', 'label' => 'Cyan'],
         ['value' => '#475569', 'bg' => '#f1f5f9', 'label' => 'Gris'],
     ];
-    $selectedColor = $plan->color ?? '#16a34a';
+    $selectedColor    = $plan->color    ?? '#16a34a';
+    $selectedCategory = $plan->category ?? 'template';
     $prefix = isset($edit) && $edit ? 'edit' : 'create';
 @endphp
+
+{{-- ── Categoría / Pertenece a ── --}}
+<div class="form-group" style="margin-bottom:1rem;">
+    <label class="form-label" for="{{ $prefix }}_category">
+        Pertenece a
+        <span style="font-weight:400;color:var(--admin-text-muted);">(define el propósito del plan)</span>
+    </label>
+    <select id="{{ $prefix }}_category" name="category" class="form-input"
+            onchange="toggleTierField_{{ $prefix }}(this.value)">
+        <option value="template"     {{ $selectedCategory === 'template'     ? 'selected' : '' }}>Plantillas CV Web</option>
+        <option value="pdf_download" {{ $selectedCategory === 'pdf_download' ? 'selected' : '' }}>Descarga PDF</option>
+    </select>
+</div>
 
 <div class="pm-form-grid">
     <div class="form-group" style="grid-column:1/-1;">
@@ -61,25 +75,28 @@
         <span style="font-weight:400;color:var(--admin-text-muted);">(una por línea)</span>
     </label>
     <textarea id="{{ $prefix }}_features" name="features" class="form-input"
-              rows="7"
-              placeholder="CV PDF convertido a web profesional&#10;1 plantilla moderna&#10;Subdominio propio&#10;Edición básica del contenido&#10;Enlace para compartir"
+              rows="6"
+              placeholder="CV PDF de alta calidad&#10;Sin marca de agua&#10;Acceso ilimitado&#10;Descarga inmediata"
               style="resize:vertical;font-family:var(--font-mono);font-size:.82rem;">{{ $plan ? implode("\n", $plan->features ?? []) : '' }}</textarea>
 </div>
 
-<div class="form-group" style="margin-top:.85rem;">
-    <label class="form-label" for="{{ $prefix }}_template_tier">
-        Tier de plantillas
-        <span style="font-weight:400;color:var(--admin-text-muted);">(deja vacío si este plan no está relacionado con plantillas)</span>
-    </label>
-    <select id="{{ $prefix }}_template_tier" name="template_tier" class="form-input">
-        <option value="">— Sin tier de plantillas —</option>
-        <option value="basic"     {{ ($plan->template_tier ?? '') === 'basic'     ? 'selected' : '' }}>Básico</option>
-        <option value="pro"       {{ ($plan->template_tier ?? '') === 'pro'       ? 'selected' : '' }}>Pro</option>
-        <option value="super_pro" {{ ($plan->template_tier ?? '') === 'super_pro' ? 'selected' : '' }}>Super Pro</option>
-    </select>
-    <p style="font-size:.75rem;color:var(--admin-text-muted);margin-top:.3rem;">
-        Solo los planes con tier asignado aparecen en el selector de "Plan requerido" de las plantillas.
-    </p>
+{{-- Solo visible cuando categoria = template --}}
+<div id="{{ $prefix }}_tier_wrap" style="margin-top:.85rem;{{ $selectedCategory !== 'template' ? 'display:none;' : '' }}">
+    <div class="form-group">
+        <label class="form-label" for="{{ $prefix }}_template_tier">
+            Nivel de acceso a plantillas
+            <span style="font-weight:400;color:var(--admin-text-muted);">(solo aplica a planes de Plantillas CV Web)</span>
+        </label>
+        <select id="{{ $prefix }}_template_tier" name="template_tier" class="form-input">
+            <option value="">— Sin nivel asignado —</option>
+            <option value="basic"     {{ ($plan->template_tier ?? '') === 'basic'     ? 'selected' : '' }}>Básico</option>
+            <option value="pro"       {{ ($plan->template_tier ?? '') === 'pro'       ? 'selected' : '' }}>Pro</option>
+            <option value="super_pro" {{ ($plan->template_tier ?? '') === 'super_pro' ? 'selected' : '' }}>Super Pro</option>
+        </select>
+        <p style="font-size:.75rem;color:var(--admin-text-muted);margin-top:.3rem;">
+            Solo los planes con nivel asignado aparecen en el selector de "Plan requerido" de las plantillas.
+        </p>
+    </div>
 </div>
 
 <div class="form-group" style="margin-top:.75rem;">
@@ -90,3 +107,10 @@
         <span style="font-size:.875rem;font-weight:500;color:var(--admin-text);">Plan activo (visible para usuarios)</span>
     </label>
 </div>
+
+<script>
+function toggleTierField_{{ $prefix }}(category) {
+    var wrap = document.getElementById('{{ $prefix }}_tier_wrap');
+    wrap.style.display = category === 'template' ? '' : 'none';
+}
+</script>

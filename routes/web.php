@@ -24,19 +24,12 @@ use App\Http\Controllers\CvPdfController;
 */
 
 Route::get('/', function () {
-
     $featuredTemplates = \App\Models\Template::with('category')
         ->where('is_active', true)
-        ->where('is_featured', true)
         ->latest()
         ->get();
-
-    $plans = \App\Models\Plan::where('is_active', true)
-        ->orderBy('sort_order')
-        ->get();
-
+    $plans = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
     return view('index', compact('featuredTemplates', 'plans'));
-
 })->name('home');
 
 /*
@@ -63,6 +56,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/cv-pdf/editor', [CvPdfController::class, 'editor'])->name('cv-pdf.editor');
     Route::post('/cv-pdf/improve-profile', [CvPdfController::class, 'improveProfile'])->name('cv-pdf.improve-profile');
+    Route::post('/cv-pdf/buy/{plan}', [CvPdfController::class, 'buyPdfAccess'])->name('cv-pdf.buy');
 });
 
 Route::middleware('auth')->group(function () {
@@ -267,6 +261,30 @@ Route::get('/test-mail', function () {
 
     return 'Correo enviado';
 
+});
+
+/*
+|--------------------------------------------------------------------------
+| /app → panel de producto (app-landing)
+|--------------------------------------------------------------------------
+*/
+Route::get('/app', function () {
+    $templates  = \App\Models\Template::with('category')->where('is_active', true)->latest()->get();
+    $categories = \App\Models\Category::where('is_active', true)->orderBy('name')->get();
+    $plans      = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
+    $featured   = $templates->where('is_featured', true)->first() ?? $templates->first();
+    return view('app-landing', compact('templates', 'categories', 'plans', 'featured'));
+})->name('app-landing');
+
+/*
+|--------------------------------------------------------------------------
+| CV WEB — editor dedicado
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/cv-web', [DashboardController::class, 'cvWeb'])->name('cv-web.editor');
+    Route::post('/cv-web/template/{purchase}/{template}', [DashboardController::class, 'cvWebSelectTemplate'])
+         ->name('cv-web.template.select');
 });
 
 /*

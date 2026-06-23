@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Crear CV PDF — CvXpress</title>
-<link rel="icon" href="/images/logo2Web.png" type="image/png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+@extends('layouts.app')
+
+@section('title', 'Crear CV PDF — CvXpress')
+
+@push('styles')
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════
    EDITOR SHELL
 ═══════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { overflow: hidden; }
+.footer { display: none !important; }
 
 :root {
   --sidebar-bg: #2D5F52;
@@ -23,10 +20,11 @@
   --topbar-h: 56px;
 }
 
-body {
+.cv-editor-root {
   font-family: 'DM Sans', sans-serif;
   background: var(--ui-bg);
-  height: 100dvh;
+  margin-top: 72px;
+  height: calc(100vh - 72px);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -48,12 +46,6 @@ body {
   display: flex; align-items: center;
   flex: 1;
 }
-.topbar__center {
-  position: absolute;
-  left: calc(50% - 60px); transform: translateX(-50%);
-  pointer-events: none;
-}
-.topbar__center a { pointer-events: auto; display: block; }
 .topbar__right {
   display: flex; align-items: center; gap: .5rem;
   flex: 1; justify-content: flex-end;
@@ -530,11 +522,9 @@ body {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  body { overflow: auto; height: auto; min-height: 100dvh; }
+  .cv-editor-root { overflow: auto; height: auto; min-height: calc(100vh - 72px); }
 
-  .topbar { padding: .5rem .75rem; }
-  .topbar__center div { width: 90px !important; height: 34px !important; }
-  .topbar__center div img { width: 157px !important; margin-left: -35px !important; margin-top: -37px !important; }
+  .topbar { padding: .5rem .75rem; flex-wrap: wrap; height: auto; min-height: var(--topbar-h); }
   .topbar__sep { display: none; }
   .topbar__colors-label { display: none; }
   .btn-edit-toggle .btn-label { display: none; }
@@ -557,31 +547,176 @@ body {
     height: auto;
   }
 }
+
+/* ── MODAL PDF ── */
+#pdf-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+#pdf-modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  width: 360px;
+  max-width: calc(100vw - 2rem);
+  box-shadow: 0 20px 60px rgba(0,0,0,.18);
+  display: flex; flex-direction: column; gap: 1rem;
+}
+#pdf-modal-title {
+  font-size: 1.05rem; font-weight: 600; color: #111827; margin: 0;
+}
+#pdf-modal-desc {
+  font-size: .82rem; color: #6B7280; margin: -.5rem 0 0;
+}
+#pdf-modal-field {
+  display: flex; align-items: center;
+  border: 1.5px solid #D1D5DB; border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 150ms;
+}
+#pdf-modal-field:focus-within { border-color: #3B82F6; }
+#pdf-filename-input {
+  flex: 1; border: none; outline: none;
+  padding: .55rem .75rem;
+  font-size: .9rem; color: #111827; background: transparent;
+  font-family: inherit;
+}
+#pdf-ext {
+  padding: 0 .65rem 0 0;
+  font-size: .85rem; color: #9CA3AF; white-space: nowrap; pointer-events: none;
+}
+#pdf-modal-actions {
+  display: flex; gap: .6rem; justify-content: flex-end;
+}
+.pdf-modal-btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .5rem 1.1rem; border-radius: 8px;
+  font-size: .875rem; font-weight: 500; cursor: pointer;
+  border: none; transition: background 150ms, color 150ms;
+}
+.pdf-modal-btn--cancel {
+  background: #F3F4F6; color: #374151;
+}
+.pdf-modal-btn--cancel:hover { background: #E5E7EB; }
+.pdf-modal-btn--confirm {
+  background: #2563EB; color: #fff;
+}
+.pdf-modal-btn--confirm:hover { background: #1D4ED8; }
+.pdf-modal-btn--confirm:disabled { background: #93C5FD; cursor: not-allowed; }
+
+/* ── MODAL PAGO ── */
+#pay-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.50);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+#pay-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  width: 580px;
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,.22);
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+#pay-modal-header {
+  display: flex; align-items: flex-start; gap: .85rem;
+}
+#pay-modal-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: #EFF6FF; color: #2563EB;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#pay-modal-title {
+  font-size: 1.1rem; font-weight: 700; color: #111827; margin: 0 0 .2rem;
+}
+#pay-modal-desc {
+  font-size: .82rem; color: #6B7280; margin: 0;
+}
+/* Plans grid */
+.pay-plans-multi  { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .85rem; }
+.pay-plans-single { display: flex; justify-content: center; }
+.pay-plans-single .pay-plan-card { width: 260px; }
+
+.pay-plan-card {
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 1.15rem 1.1rem 1rem;
+  display: flex; flex-direction: column; gap: .65rem;
+  position: relative;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+.pay-plan-card:hover { border-color: #93C5FD; box-shadow: 0 4px 16px rgba(37,99,235,.1); }
+.pay-plan-card--featured {
+  border-color: #2563EB;
+  box-shadow: 0 4px 20px rgba(37,99,235,.12);
+}
+.pay-plan-badge {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: #2563EB; color: #fff;
+  font-size: .7rem; font-weight: 600; letter-spacing: .03em;
+  padding: .2rem .65rem; border-radius: 20px;
+  white-space: nowrap;
+}
+.pay-plan-name  { font-size: .9rem; font-weight: 600; color: #111827; }
+.pay-plan-price { display: flex; align-items: baseline; gap: .2rem; }
+.pay-plan-amount  { font-size: 2rem; font-weight: 700; color: #111827; line-height: 1; }
+.pay-plan-currency { font-size: 1rem; font-weight: 600; color: #374151; }
+.pay-plan-once    { font-size: .72rem; color: #9CA3AF; margin-left: .15rem; }
+.pay-plan-features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .35rem; }
+.pay-plan-features li {
+  display: flex; align-items: flex-start; gap: .45rem;
+  font-size: .8rem; color: #374151;
+}
+.pay-plan-features li svg { color: #16a34a; flex-shrink: 0; margin-top: 1px; }
+.pay-plan-btn {
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+  width: 100%; padding: .6rem .75rem; border-radius: 8px;
+  background: var(--plan-color, #2563EB); color: #fff;
+  font-size: .85rem; font-weight: 600; cursor: pointer; border: none;
+  transition: filter 150ms; margin-top: auto;
+}
+.pay-plan-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.pay-plan-btn:disabled { opacity: .6; cursor: not-allowed; }
+#pay-modal-footer { display: flex; justify-content: flex-end; padding-top: .25rem; }
+
+/* Success state */
+#pay-success-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #DCFCE7; color: #16a34a;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto .75rem;
+}
+#pay-success-title { font-size: 1.1rem; font-weight: 700; color: #111827; margin: 0 0 .35rem; }
+#pay-success-desc  { font-size: .85rem; color: #6B7280; margin: 0; }
+
+/* Spinner */
+.pay-spinner {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 3px solid #E5E7EB; border-top-color: #2563EB;
+  animation: pay-spin .7s linear infinite;
+  margin: 0 auto;
+}
+@keyframes pay-spin { to { transform: rotate(360deg); } }
 </style>
-</head>
-<body>
+@endpush
+
+@section('content')
+<div class="cv-editor-root">
 
 <!-- ── TOP BAR ── -->
 <header class="topbar">
 
-  <!-- Izquierda -->
-  <div class="topbar__left">
-    <a href="{{ route('dashboard') }}" class="btn-back">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Volver
-    </a>
-  </div>
-
-  <!-- Centro: logo -->
-  <div class="topbar__center">
-    <a href="{{ route('dashboard') }}">
-      <div style="width:120px;height:45px;overflow:hidden;">
-        <img src="{{ asset('images/logo2Web.webp') }}" alt="CVX" style="width:208px;height:auto;margin-left:-46px;margin-top:-48px;display:block;max-width:none;">
-      </div>
-    </a>
-  </div>
-
-  <!-- Derecha: color + acciones -->
+  <!-- Acciones -->
   <div class="topbar__right">
     <div class="topbar__colors">
       <span class="topbar__colors-label">Color:</span>
@@ -607,7 +742,7 @@ body {
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       <span class="btn-label">Limpiar datos</span>
     </button>
-    <button class="btn-download" onclick="window.print()">
+    <button class="btn-download" onclick="downloadPdf()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
       <span class="btn-label">Descargar PDF</span>
     </button>
@@ -997,6 +1132,109 @@ body {
 }
 </style>
 
+</div>{{-- /cv-editor-root --}}
+
+<!-- ── MODAL DESCARGAR PDF ── -->
+<div id="pdf-modal-overlay" style="display:none;" onclick="if(event.target===this)closePdfModal()">
+  <div id="pdf-modal">
+    <h3 id="pdf-modal-title">Nombre del archivo</h3>
+    <p id="pdf-modal-desc">Elige cómo se guardará tu CV en el ordenador.</p>
+    <div id="pdf-modal-field">
+      <input type="text" id="pdf-filename-input" placeholder="mi_cv" autocomplete="off" spellcheck="false"
+             onkeydown="if(event.key==='Enter')confirmDownload();if(event.key==='Escape')closePdfModal()">
+      <span id="pdf-ext">.pdf</span>
+    </div>
+    <div id="pdf-modal-actions">
+      <button type="button" class="pdf-modal-btn pdf-modal-btn--cancel" onclick="closePdfModal()">Cancelar</button>
+      <button type="button" class="pdf-modal-btn pdf-modal-btn--confirm" id="pdf-confirm-btn" onclick="confirmDownload()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
+        Descargar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL PAGO PDF ── -->
+<div id="pay-modal-overlay" style="display:none;" onclick="if(event.target===this)closePayModal()">
+  <div id="pay-modal">
+
+    <div id="pay-modal-header">
+      <div id="pay-modal-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
+      </div>
+      <div>
+        <h3 id="pay-modal-title">Descarga tu CV en PDF</h3>
+        <p id="pay-modal-desc">Elige el acceso para descargar tu CV sin límites.</p>
+      </div>
+    </div>
+
+    {{-- Estado: cargando --}}
+    <div id="pay-state-loading" style="text-align:center;padding:1.5rem 0;">
+      <div class="pay-spinner"></div>
+      <p style="font-size:.85rem;color:#6B7280;margin-top:.75rem;">Procesando pago…</p>
+    </div>
+
+    {{-- Estado: planes --}}
+    <div id="pay-state-plans">
+      @if(count($pdfPlans) === 0)
+        <p style="text-align:center;font-size:.875rem;color:#6B7280;padding:1rem 0;">
+          Próximamente disponible.
+        </p>
+      @else
+        <div id="pay-plans-grid" class="{{ count($pdfPlans) === 1 ? 'pay-plans-single' : 'pay-plans-multi' }}">
+          @foreach($pdfPlans as $plan)
+          <div class="pay-plan-card {{ $plan->badge_label ? 'pay-plan-card--featured' : '' }}">
+            @if($plan->badge_label)
+              <div class="pay-plan-badge">{{ $plan->badge_label }}</div>
+            @endif
+            <div class="pay-plan-name">{{ $plan->name }}</div>
+            <div class="pay-plan-price">
+              <span class="pay-plan-amount">{{ number_format($plan->price, 2, ',', '.') }}</span>
+              <span class="pay-plan-currency">€</span>
+              <span class="pay-plan-once">pago único</span>
+            </div>
+            @if(count($plan->features ?? []))
+            <ul class="pay-plan-features">
+              @foreach($plan->features as $feature)
+              <li>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                {{ $feature }}
+              </li>
+              @endforeach
+            </ul>
+            @endif
+            <button class="pay-plan-btn" onclick="buyPlan({{ $plan->id }}, this)"
+                    style="--plan-color:{{ $plan->color }}">
+              Obtener por {{ number_format($plan->price, 2, ',', '.') }}€
+            </button>
+          </div>
+          @endforeach
+        </div>
+      @endif
+
+      <div id="pay-modal-footer">
+        <button type="button" class="pdf-modal-btn pdf-modal-btn--cancel" onclick="closePayModal()">Cancelar</button>
+      </div>
+    </div>
+
+    {{-- Estado: éxito --}}
+    <div id="pay-state-success" style="display:none;text-align:center;padding:1rem 0 .5rem;">
+      <div id="pay-success-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+      </div>
+      <h4 id="pay-success-title">¡Acceso desbloqueado!</h4>
+      <p id="pay-success-desc">Ya puedes descargar tu CV en PDF cuando quieras.</p>
+      <button class="pay-plan-btn" style="--plan-color:#2563EB;margin-top:1rem;" onclick="_downloadAfterPay()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>
+        Descargar ahora
+      </button>
+    </div>
+
+  </div>
+</div>
+@endsection
+
+@push('scripts')
 <script>
 /* ══════════════════════════════════════════════
    STATE
@@ -1748,5 +1986,117 @@ var _liInput = document.getElementById('f-linkedin');
 if (_liInput && _liInput.value) validateLinkedin(_liInput);
 </script>
 
-</body>
-</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+var hasPdfAccess = {{ json_encode($hasPdfAccess) }};
+
+/* ── MODAL NOMBRE ── */
+function downloadPdf() {
+  var nombre    = (document.getElementById('f-nombre')?.value || '').trim();
+  var apellidos = (document.getElementById('f-apellidos')?.value || '').trim();
+  var suggested = [nombre, apellidos].filter(Boolean).join('_').replace(/\s+/g, '_') || 'mi_cv';
+
+  var input = document.getElementById('pdf-filename-input');
+  input.value = suggested;
+
+  document.getElementById('pdf-modal-overlay').style.display = 'flex';
+  setTimeout(function() { input.select(); }, 50);
+}
+
+function closePdfModal() {
+  document.getElementById('pdf-modal-overlay').style.display = 'none';
+}
+
+function confirmDownload() {
+  closePdfModal();
+  openPayModal();
+}
+
+function _doDownload() {
+  var input    = document.getElementById('pdf-filename-input');
+  var filename = (input.value.trim() || 'mi_cv').replace(/\.pdf$/i, '') + '.pdf';
+
+  var confirmBtn = document.getElementById('pdf-confirm-btn');
+  confirmBtn.disabled = true;
+  confirmBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/></svg> Generando…';
+
+  var wrap = document.getElementById('preview-scale-wrap');
+  var prevTransform    = wrap.style.transform;
+  var prevMarginBottom = wrap.style.marginBottom;
+  wrap.style.transform    = 'none';
+  wrap.style.marginBottom = '0';
+
+  html2pdf().set({
+    margin:      0,
+    filename:    filename,
+    image:       { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak:   { mode: ['css', 'legacy'] }
+  }).from(wrap).save().then(function() {
+    wrap.style.transform    = prevTransform;
+    wrap.style.marginBottom = prevMarginBottom;
+    hasPdfAccess = false;
+    closePdfModal();
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg> Descargar';
+  });
+}
+
+/* ── MODAL PAGO ── */
+function openPayModal() {
+  document.getElementById('pay-state-loading').style.display = 'none';
+  document.getElementById('pay-state-plans').style.display   = '';
+  document.getElementById('pay-state-success').style.display = 'none';
+  document.getElementById('pay-modal-overlay').style.display = 'flex';
+}
+
+function closePayModal() {
+  document.getElementById('pay-modal-overlay').style.display = 'none';
+}
+
+function _downloadAfterPay() {
+  var nombre    = (document.getElementById('f-nombre')?.value || '').trim();
+  var apellidos = (document.getElementById('f-apellidos')?.value || '').trim();
+  var suggested = [nombre, apellidos].filter(Boolean).join('_').replace(/\s+/g, '_') || 'mi_cv';
+  document.getElementById('pdf-filename-input').value = suggested;
+  closePayModal();
+  _doDownload();
+}
+
+function buyPlan(planId, btn) {
+  // Show loading state
+  document.getElementById('pay-state-plans').style.display   = 'none';
+  document.getElementById('pay-state-success').style.display = 'none';
+  document.getElementById('pay-state-loading').style.display = '';
+
+  var csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+  fetch('/cv-pdf/buy/' + planId, {
+    method: 'POST',
+    headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+  })
+  .then(function(res) {
+    if (res.status === 401) { window.location.href = '/login'; return null; }
+    return res.json();
+  })
+  .then(function(data) {
+    if (!data) return;
+    if (data.success) {
+      hasPdfAccess = true;
+      document.getElementById('pay-state-loading').style.display = 'none';
+      document.getElementById('pay-state-success').style.display = '';
+    } else {
+      document.getElementById('pay-state-loading').style.display = 'none';
+      document.getElementById('pay-state-plans').style.display   = '';
+      alert(data.error || 'Error al procesar el pago.');
+    }
+  })
+  .catch(function() {
+    document.getElementById('pay-state-loading').style.display = 'none';
+    document.getElementById('pay-state-plans').style.display   = '';
+    alert('Error de conexión. Inténtalo de nuevo.');
+  });
+}
+</script>
+@endpush

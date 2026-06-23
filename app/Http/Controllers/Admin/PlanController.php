@@ -40,6 +40,7 @@ class PlanController extends Controller
             'is_active'     => $request->has('is_active'),
             'sort_order'    => $request->sort_order ?? 0,
             'template_tier' => $request->template_tier ?: null,
+            'category'      => $request->category ?: 'template',
         ]);
 
         return redirect()->route('admin.plans.index')
@@ -71,6 +72,7 @@ class PlanController extends Controller
             'is_active'     => $request->has('is_active'),
             'sort_order'    => $request->sort_order ?? $plan->sort_order,
             'template_tier' => $request->template_tier ?: null,
+            'category'      => $request->category ?: 'template',
         ]);
 
         return redirect()->route('admin.plans.index')

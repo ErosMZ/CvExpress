@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'CvXpress — Convierte tu CV en un portfolio web profesional')
-@section('meta_description', 'Sube tu CV en PDF y en minutos tendrás un portfolio web profesional alojado, editable y listo para compartir. Próximamente: publicación automática en LinkedIn.')
+@section('title', 'CvXpress — Convierte tu Currículum en un portfolio web profesional')
+@section('meta_description', 'Sube tu Currículum en PDF y en minutos tendrás un portfolio web profesional alojado, editable y listo para compartir. Próximamente: publicación automática en LinkedIn.')
 
 @section('content')
 

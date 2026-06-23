@@ -2,14 +2,52 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
+use App\Models\UserPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class CvPdfController extends Controller
 {
     public function editor()
     {
-        return view('cv-pdf.editor');
+        $pdfPlans = Plan::where('category', 'pdf_download')
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        $hasPdfAccess = false;
+        if (auth()->check()) {
+            $hasPdfAccess = UserPurchase::where('user_id', auth()->id())
+                ->where('status', 'active')
+                ->whereHas('plan', fn($q) => $q->where('category', 'pdf_download'))
+                ->exists();
+        }
+
+        return view('cv-pdf.editor', compact('pdfPlans', 'hasPdfAccess'));
+    }
+
+    public function buyPdfAccess(Plan $plan): JsonResponse
+    {
+        if ($plan->category !== 'pdf_download' || !$plan->is_active) {
+            return response()->json(['error' => 'Plan no válido.'], 400);
+        }
+
+        UserPurchase::create([
+            'user_id'           => auth()->id(),
+            'plan_id'           => $plan->id,
+            'status'            => 'active',
+            'amount_paid'       => $plan->price,
+            'payment_reference' => 'SIM-PDF-' . strtoupper(Str::random(8)),
+            'invoice_number'    => UserPurchase::generateInvoiceNumber(),
+            'buyer_name'        => auth()->user()->name,
+            'buyer_email'       => auth()->user()->email,
+            'purchased_at'      => now(),
+            'expires_at'        => null,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function improveProfile(Request $request): JsonResponse

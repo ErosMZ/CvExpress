@@ -155,10 +155,10 @@
                     Mi Perfil
                 </button>
 
-                <button class="sidebar__link" data-section="templates" onclick="switchSection('templates', 'Mi CV Web')">
+                <a href="{{ route('cv-web.editor') }}" class="sidebar__link" style="text-decoration:none;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                     Mi CV Web
-                </button>
+                </a>
 
                 <button class="sidebar__link" data-section="orders" onclick="switchSection('orders', 'Mi Plan')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -242,10 +242,10 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             Ver mi perfil
                         </button>
-                        <button class="btn btn--ghost" onclick="switchSection('templates', 'Mi CV Web')">
+                        <a href="{{ route('cv-web.editor') }}" class="btn btn--ghost" style="text-decoration:none;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
                             Mi CV Web
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -482,10 +482,8 @@
 
             </div>
 
-            {{-- ════════════════════════════════
-                 SECCIÓN: MI CV WEB — EDITOR
-            ════════════════════════════════ --}}
-            <div class="panel__section" id="section-templates">
+            {{-- section-templates removida; usar /cv-web --}}
+            <div class="panel__section" id="section-templates" style="display:none!important">
 
                 @if(! $activePurchase)
                     <div class="panel__header">
@@ -2197,16 +2195,16 @@
 
     // ── Open section from URL hash ──
     const hash = window.location.hash.replace('#', '');
-    const validSections = ['overview', 'profile', 'templates', 'orders'];
+    const validSections = ['overview', 'profile', 'orders'];
     if (hash && validSections.includes(hash)) {
-        const labels = { overview: 'Inicio', profile: 'Mi Perfil', templates: 'Mi CV Web', orders: 'Mi Plan' };
+        const labels = { overview: 'Inicio', profile: 'Mi Perfil', orders: 'Mi Plan' };
         switchSection(hash, labels[hash]);
     }
 
     // ── Open section from session (after form submit redirects) ──
     @if(session('open_section'))
     @php
-        $sectionLabels = ['overview' => 'Inicio', 'profile' => 'Mi Perfil', 'templates' => 'Mi CV Web', 'orders' => 'Mi Plan'];
+        $sectionLabels = ['overview' => 'Inicio', 'profile' => 'Mi Perfil', 'templates' => 'Inicio', 'orders' => 'Mi Plan'];
         $openSection   = session('open_section');
     @endphp
         switchSection('{{ $openSection }}', '{{ $sectionLabels[$openSection] ?? 'Inicio' }}');
@@ -2390,8 +2388,7 @@
     }
 
     function _applyAiData(cvData) {
-        // 1. Asegurar que el editor esté visible
-        switchSection('templates', 'Mi CV Web');
+        // 1. (CV editor moved to /cv-web)
         showCvView('editor');
 
         // 2. Rellenar campos simples

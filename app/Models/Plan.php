@@ -17,6 +17,7 @@ class Plan extends Model
         'is_active',
         'sort_order',
         'template_tier',
+        'category',
     ];
 
     protected $casts = [
