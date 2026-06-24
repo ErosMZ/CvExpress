@@ -2056,10 +2056,6 @@ function closePayModal() {
 }
 
 function _downloadAfterPay() {
-  var nombre    = (document.getElementById('f-nombre')?.value || '').trim();
-  var apellidos = (document.getElementById('f-apellidos')?.value || '').trim();
-  var suggested = [nombre, apellidos].filter(Boolean).join('_').replace(/\s+/g, '_') || 'mi_cv';
-  document.getElementById('pdf-filename-input').value = suggested;
   closePayModal();
   _doDownload();
 }
