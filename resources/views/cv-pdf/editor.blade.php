@@ -1203,10 +1203,11 @@ body { overflow: hidden; }
               @endforeach
             </ul>
             @endif
-            <button class="pay-plan-btn" onclick="buyPlan({{ $plan->id }}, this)"
-                    style="--plan-color:{{ $plan->color }}">
+            <a class="pay-plan-btn" href="{{ route('checkout.show', $plan->slug) }}?back=cv-pdf"
+               style="--plan-color:{{ $plan->color }};text-decoration:none;"
+               onclick="savePendingDownload()">
               Obtener por {{ number_format($plan->price, 2, ',', '.') }}€
-            </button>
+            </a>
           </div>
           @endforeach
         </div>
@@ -1986,9 +1987,16 @@ var _liInput = document.getElementById('f-linkedin');
 if (_liInput && _liInput.value) validateLinkedin(_liInput);
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+{{-- Formulario oculto para enviar datos al servidor y descargar PDF --}}
+<form id="cvpdf-dl-form" method="POST" action="{{ route('cv-pdf.download') }}" style="display:none;">
+  @csrf
+  <input type="hidden" name="filename" id="cvpdf-dl-filename">
+  <input type="hidden" name="payload"  id="cvpdf-dl-payload">
+</form>
+
 <script>
 var hasPdfAccess = {{ json_encode($hasPdfAccess) }};
+var justPaid     = {{ json_encode($justPaid) }};
 
 /* ── MODAL NOMBRE ── */
 function downloadPdf() {
@@ -2012,35 +2020,57 @@ function confirmDownload() {
   openPayModal();
 }
 
+function val(id) {
+  var el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
 function _doDownload() {
   var input    = document.getElementById('pdf-filename-input');
-  var filename = (input.value.trim() || 'mi_cv').replace(/\.pdf$/i, '') + '.pdf';
+  var filename = (input ? input.value.trim() : '') || 'mi_cv';
+  filename = filename.replace(/\.pdf$/i, '');
 
   var confirmBtn = document.getElementById('pdf-confirm-btn');
-  confirmBtn.disabled = true;
-  confirmBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/></svg> Generando…';
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/></svg> Generando…';
+  }
 
-  var wrap = document.getElementById('preview-scale-wrap');
-  var prevTransform    = wrap.style.transform;
-  var prevMarginBottom = wrap.style.marginBottom;
-  wrap.style.transform    = 'none';
-  wrap.style.marginBottom = '0';
+  var activeOpt = document.querySelector('.color-picker__option.is-active');
 
-  html2pdf().set({
-    margin:      0,
-    filename:    filename,
-    image:       { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak:   { mode: ['css', 'legacy'] }
-  }).from(wrap).save().then(function() {
-    wrap.style.transform    = prevTransform;
-    wrap.style.marginBottom = prevMarginBottom;
+  var payload = {
+    nombre:      val('f-nombre'),
+    apellidos:   val('f-apellidos'),
+    profesion:   val('f-profesion'),
+    telefono:    val('f-telefono'),
+    email:       val('f-email'),
+    ubicacion:   val('f-ubicacion'),
+    linkedin:    val('f-linkedin'),
+    portfolio:   val('f-portfolio'),
+    perfil:      val('f-perfil'),
+    habilidades: val('f-habilidades'),
+    color:       activeOpt ? activeOpt.dataset.color : '#2D5F52',
+    photo:       state.photo || '',
+    exp:  state.exp,
+    edu:  state.edu,
+    lang: state.lang,
+    ref:  state.ref,
+    cert: state.cert,
+    proj: state.proj
+  };
+
+  document.getElementById('cvpdf-dl-filename').value = filename;
+  document.getElementById('cvpdf-dl-payload').value  = JSON.stringify(payload);
+  document.getElementById('cvpdf-dl-form').submit();
+
+  setTimeout(function() {
     hasPdfAccess = false;
     closePdfModal();
-    confirmBtn.disabled = false;
-    confirmBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg> Descargar';
-  });
+    if (confirmBtn) {
+      confirmBtn.disabled = false;
+      confirmBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg> Descargar';
+    }
+  }, 1500);
 }
 
 /* ── MODAL PAGO ── */
@@ -2059,6 +2089,35 @@ function _downloadAfterPay() {
   closePayModal();
   _doDownload();
 }
+
+/* ── GUARDAR FILENAME ANTES DE IR AL CHECKOUT ── */
+function savePendingDownload() {
+  var input = document.getElementById('pdf-filename-input');
+  try {
+    localStorage.setItem('cvxpress_pdf_pending', JSON.stringify({
+      filename: input ? input.value.trim() : '',
+      ts: Date.now()
+    }));
+  } catch(e) {}
+}
+
+/* ── AUTO-DESCARGA TRAS VOLVER DEL CHECKOUT ── */
+document.addEventListener('DOMContentLoaded', function() {
+  if (justPaid && hasPdfAccess) {
+    try {
+      var raw = localStorage.getItem('cvxpress_pdf_pending');
+      if (raw) {
+        var pending = JSON.parse(raw);
+        if (pending && (Date.now() - (pending.ts || 0)) < 3600000) {
+          var input = document.getElementById('pdf-filename-input');
+          if (input && pending.filename) input.value = pending.filename;
+          localStorage.removeItem('cvxpress_pdf_pending');
+          _doDownload();
+        }
+      }
+    } catch(e) {}
+  }
+});
 
 function buyPlan(planId, btn) {
   // Show loading state

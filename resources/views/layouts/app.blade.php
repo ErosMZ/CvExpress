@@ -46,7 +46,7 @@
                     <li><a href="{{ route('login') }}" class="nav__link">Iniciar sesión</a></li>
                     <li><a href="{{ route('register') }}" class="btn btn--primary btn--sm">Empezar gratis</a></li>
                 @else
-                    <li><a href="{{ route('dashboard') }}" class="btn btn--primary btn--sm {{ request()->routeIs('dashboard') ? 'btn--active-panel' : '' }}">Mi panel</a></li>
+                    <li><a href="{{ route('dashboard') }}" class="btn btn--primary btn--sm {{ request()->routeIs('dashboard') ? 'btn--active-panel' : '' }}">Perfil</a></li>
                 @endguest
             </ul>
         </div>

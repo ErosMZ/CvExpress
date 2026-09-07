@@ -5,48 +5,81 @@
 @push('styles')
 <style>
 /* ══ PAGE WRAPPER ══ */
-.cvweb-page { background:#f5f7fb; min-height:calc(100vh - 60px); }
+.cvweb-page { background:#f5f7fb; min-height:calc(100vh - 72px); }
 
 /* ══ HERO INTRO ══ */
 .cvweb-hero {
-    background:#fff;
-    border-bottom:1px solid #e5e7eb;
-    padding:2.25rem 1.5rem 2rem;
+    background: linear-gradient(140deg, #eef4ff 0%, #e8f0fe 55%, #f0f7ff 100%);
+    border-bottom: 1px solid #c7d7f9;
+    padding: 3.5rem 1.5rem 2.75rem;
 }
 .cvweb-hero__inner {
-    max-width:900px; margin:0 auto;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:2rem; flex-wrap:wrap;
+    max-width: 920px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 2.25rem;
+}
+.cvweb-hero__top {
+    display: flex; flex-direction: column; gap: .625rem;
 }
 .cvweb-hero__badge {
-    display:inline-flex; align-items:center; gap:.4rem;
-    background:#eff6ff; border:1px solid #bfdbfe;
-    color:#1d4ed8; border-radius:99px;
-    font-size:.72rem; font-weight:700; letter-spacing:.04em;
-    padding:.28rem .875rem; margin-bottom:.625rem;
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: #dbeafe; border: 1px solid #93c5fd;
+    color: #1d4ed8; border-radius: 99px;
+    font-size: .72rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    padding: .28rem .875rem; width: fit-content;
 }
 .cvweb-hero__title {
-    font-size:1.625rem; font-weight:800; color:#0f172a;
-    letter-spacing:-.035em; line-height:1.2; margin:0 0 .5rem;
+    font-size: 1.875rem; font-weight: 800; color: #0f172a;
+    letter-spacing: -.04em; line-height: 1.15; margin: 0;
 }
 .cvweb-hero__subtitle {
-    font-size:.9rem; color:#6b7280; line-height:1.6; margin:0;
-    max-width:480px;
+    font-size: .9375rem; color: #4b5563; line-height: 1.65; margin: 0;
+    max-width: 520px;
 }
+
+/* Steps row */
 .cvweb-hero__steps {
-    display:flex; gap:1rem; flex-wrap:wrap;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0; align-items: center;
 }
 .cvweb-hero__step {
-    display:flex; align-items:center; gap:.5rem;
-    background:#f8fafc; border:1px solid #e5e7eb;
-    border-radius:10px; padding:.5rem .875rem;
-    font-size:.78rem; font-weight:600; color:#374151;
+    background: #fff;
+    border: 1.5px solid #dbeafe;
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem 1rem;
+    display: flex; align-items: flex-start; gap: .875rem;
+    box-shadow: 0 2px 8px rgba(37,99,235,.07);
+    transition: box-shadow .18s, transform .18s;
 }
+.cvweb-hero__step:hover {
+    box-shadow: 0 6px 20px rgba(37,99,235,.13);
+    transform: translateY(-2px);
+}
+.cvweb-hero__step-icon {
+    width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.cvweb-hero__step-icon--1 { background: #eff6ff; color: #2563eb; }
+.cvweb-hero__step-icon--2 { background: #f5f3ff; color: #7c3aed; }
+.cvweb-hero__step-icon--3 { background: #f0fdf4; color: #16a34a; }
+.cvweb-hero__step-body { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
 .cvweb-hero__step-num {
-    width:20px; height:20px; border-radius:50%;
-    background:#2563eb; color:#fff;
-    display:flex; align-items:center; justify-content:center;
-    font-size:.65rem; font-weight:800; flex-shrink:0;
+    font-size: .62rem; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: #94a3b8;
+}
+.cvweb-hero__step-label {
+    font-size: .875rem; font-weight: 700; color: #0f172a; white-space: nowrap;
+}
+.cvweb-hero__step-arrow {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 .625rem; color: #93c5fd;
+}
+
+@media (max-width: 680px) {
+    .cvweb-hero { padding: 2.75rem 1rem 2rem; }
+    .cvweb-hero__title { font-size: 1.5rem; }
+    .cvweb-hero__steps { grid-template-columns: 1fr; gap: .625rem; }
+    .cvweb-hero__step-arrow { display: none; }
 }
 
 /* ══ CONTENT AREA ══ */
@@ -57,11 +90,23 @@
 
 /* ══ FLASH ══ */
 .cvweb-flash {
-    display:flex; align-items:center; gap:.625rem;
-    background:#f0fdf4; border:1px solid #86efac;
-    border-radius:10px; padding:.75rem 1rem;
-    margin-bottom:1.25rem;
-    font-size:.875rem; color:#15803d;
+    display:flex; align-items:center; gap:.5rem;
+    background:#f8fafc; border:1px solid #e2e8f0;
+    border-radius:8px; padding:.55rem .875rem;
+    margin-bottom:1rem;
+    font-size:.8rem; color:#64748b;
+    transition: opacity .5s ease, margin .5s ease, padding .5s ease, border .5s ease;
+    opacity: 1;
+}
+.cvweb-flash__close {
+    margin-left:auto; background:none; border:none; cursor:pointer;
+    color:#94a3b8; padding:0; line-height:1; flex-shrink:0;
+    display:flex; align-items:center;
+}
+.cvweb-flash__close:hover { color:#475569; }
+.cvweb-flash.is-hiding {
+    opacity: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0;
+    border-top-width: 0; border-bottom-width: 0;
 }
 
 /* ══ UPSELL ══ */
@@ -368,18 +413,60 @@
     {{-- ══ HERO INTRO ══ --}}
     <div class="cvweb-hero">
         <div class="cvweb-hero__inner">
-            <div>
+
+            <div class="cvweb-hero__top">
                 <div class="cvweb-hero__badge">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                    CV Web
+                   
                 </div>
                 <h1 class="cvweb-hero__title">Tu portfolio web profesional</h1>
                 <p class="cvweb-hero__subtitle">Elige una plantilla, rellena tu información con IA o a mano, y publica tu CV como una web propia en minutos.</p>
             </div>
+
             <div class="cvweb-hero__steps">
-                <div class="cvweb-hero__step"><span class="cvweb-hero__step-num">1</span> Elige plantilla</div>
-                <div class="cvweb-hero__step"><span class="cvweb-hero__step-num">2</span> Rellena con IA</div>
-                <div class="cvweb-hero__step"><span class="cvweb-hero__step-num">3</span> Publica tu web</div>
+
+                {{-- Paso 1 --}}
+                <div class="cvweb-hero__step">
+                    <div class="cvweb-hero__step-icon cvweb-hero__step-icon--1">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                    </div>
+                    <div class="cvweb-hero__step-body">
+                        <span class="cvweb-hero__step-num">Paso 01</span>
+                        <span class="cvweb-hero__step-label">Elige plantilla</span>
+                    </div>
+                </div>
+
+                {{-- Flecha --}}
+                <div class="cvweb-hero__step-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+
+                {{-- Paso 2 --}}
+                <div class="cvweb-hero__step">
+                    <div class="cvweb-hero__step-icon cvweb-hero__step-icon--2">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 15l-5 3.4 1.9-5.8L4 9h6.1z"/></svg>
+                    </div>
+                    <div class="cvweb-hero__step-body">
+                        <span class="cvweb-hero__step-num">Paso 02</span>
+                        <span class="cvweb-hero__step-label">Rellena con IA</span>
+                    </div>
+                </div>
+
+                {{-- Flecha --}}
+                <div class="cvweb-hero__step-arrow">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+
+                {{-- Paso 3 --}}
+                <div class="cvweb-hero__step">
+                    <div class="cvweb-hero__step-icon cvweb-hero__step-icon--3">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="cvweb-hero__step-body">
+                        <span class="cvweb-hero__step-num">Paso 03</span>
+                        <span class="cvweb-hero__step-label">Publica tu web</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -387,10 +474,22 @@
     <div class="cvweb-inner">
 
         @if(session('success'))
-        <div class="cvweb-flash">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="cvweb-flash" id="cvweb-flash">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:#10b981;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
             {{ session('success') }}
+            <button class="cvweb-flash__close" onclick="dismissFlash()" aria-label="Cerrar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
         </div>
+        <script>
+        function dismissFlash() {
+            var el = document.getElementById('cvweb-flash');
+            if (!el) return;
+            el.classList.add('is-hiding');
+            setTimeout(function(){ el.remove(); }, 500);
+        }
+        setTimeout(dismissFlash, 3000);
+        </script>
         @endif
 
         {{-- ══ ESTADO 1: SIN PLAN ══ --}}
@@ -965,7 +1064,7 @@ function _buildExperienciaHTML(e){ if(!e.length) return '<p style="color:#999;fo
 function _buildFormacionHTML(e){ if(!e.length) return ''; return e.map(function(x){ return '<div class="education-item"><div class="education-icon">🎓</div><div class="education-content"><h3>'+_esc(x.titulo)+'</h3><h4>'+_esc(x.institucion)+'</h4><p class="education-date">'+_esc(x.periodo)+'</p><p class="education-description">'+_esc(x.descripcion||'')+'</p></div></div>'; }).join(''); }
 function _buildProyectosHTML(e){ return e.map(function(x){ if(!x.nombre&&!x.descripcion) return ''; var nm=(x.url&&x.url.trim())?'<a href="'+_esc(x.url)+'" class="cv-project-link" target="_blank" rel="noopener">'+_esc(x.nombre)+'</a>':_esc(x.nombre); var tags=(x.tecnologias||'').split(',').map(function(t){return t.trim();}).filter(Boolean); var th=tags.length?'<div class="cv-project-tags">'+tags.map(function(t){return '<span class="cv-project-tag">'+_esc(t)+'</span>';}).join('')+'</div>':''; var desc=x.descripcion?'<p class="cv-project-desc">'+_esc(x.descripcion).replace(/\n/g,'<br>')+'</p>':''; return '<div class="cv-project-item"><div class="cv-project-name">'+nm+'</div>'+desc+th+'</div>'; }).filter(Boolean).join(''); }
 function _buildIdiomasHTML(e){ return e.map(function(x){ if(!x.idioma) return ''; return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.08);"><span style="font-weight:600;">'+_esc(x.idioma)+'</span><span style="opacity:.75;">'+_esc(x.nivel||'')+'</span></div>'; }).join(''); }
-function _buildHabilidadesHTML(s){ if(!s.length) return ''; return '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;">'+s.map(function(x){ return '<span class="cv-skill-chip">'+_esc(x)+'</span>'; }).join('')+'</div>'; }
+function _buildHabilidadesHTML(s){ if(!s.length) return ''; return s.map(function(x){ return '<span class="cv-skill-chip">'+_esc(x)+'</span>'; }).join(''); }
 
 function _getSkills(){ var s=[]; document.querySelectorAll('#skills-chips .skill-chip-item').forEach(function(c){ var v=c.dataset.skill||c.textContent.replace('×','').trim(); if(v) s.push(v); }); return s; }
 

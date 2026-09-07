@@ -93,9 +93,8 @@ class DashboardController extends Controller
 
         $purchase->update(['selected_template_id' => $template->id]);
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Plantilla «' . $template->name . '» seleccionada correctamente.')
-            ->with('open_section', 'templates')
+        return redirect()->route('cv-web.editor')
+            ->with('success', 'Plantilla «' . $template->name . '» seleccionada. ¡Empieza a editar tu CV!')
             ->with('show_hub', true);
     }
 

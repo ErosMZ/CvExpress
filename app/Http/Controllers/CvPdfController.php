@@ -6,6 +6,7 @@ use App\Models\Plan;
 use App\Models\UserPurchase;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class CvPdfController extends Controller
@@ -25,7 +26,66 @@ class CvPdfController extends Controller
                 ->exists();
         }
 
-        return view('cv-pdf.editor', compact('pdfPlans', 'hasPdfAccess'));
+        $justPaid = session()->has('success');
+
+        return view('cv-pdf.editor', compact('pdfPlans', 'hasPdfAccess', 'justPaid'));
+    }
+
+    public function download(Request $request)
+    {
+        $raw  = $request->input('payload', '{}');
+        $data = json_decode($raw, true) ?: [];
+
+        $validator = Validator::make($data, [
+            'nombre'        => 'nullable|string|max:100',
+            'apellidos'     => 'nullable|string|max:100',
+            'profesion'     => 'nullable|string|max:120',
+            'telefono'      => 'nullable|string|max:40',
+            'email'         => 'nullable|string|max:120',
+            'ubicacion'     => 'nullable|string|max:120',
+            'linkedin'      => 'nullable|string|max:200',
+            'portfolio'     => 'nullable|string|max:200',
+            'perfil'        => 'nullable|string|max:3000',
+            'habilidades'   => 'nullable|string|max:2000',
+            'color'         => 'nullable|string|max:9',
+            'photo'         => 'nullable|string',
+            'exp'           => 'nullable|array|max:20',
+            'edu'           => 'nullable|array|max:20',
+            'lang'          => 'nullable|array|max:20',
+            'ref'           => 'nullable|array|max:20',
+            'cert'          => 'nullable|array|max:20',
+            'proj'          => 'nullable|array|max:20',
+        ]);
+
+        $d = $validator->validate();
+
+        $filename = trim($request->input('filename', 'mi_cv') ?: 'mi_cv');
+        $filename = preg_replace('/\.pdf$/i', '', $filename) . '.pdf';
+
+        $pdf = app('dompdf.wrapper')->loadView('cv-pdf.pdf-template', [
+            'nombre'      => $d['nombre']      ?? '',
+            'apellidos'   => $d['apellidos']   ?? '',
+            'profesion'   => $d['profesion']   ?? '',
+            'telefono'    => $d['telefono']    ?? '',
+            'email'       => $d['email']       ?? '',
+            'ubicacion'   => $d['ubicacion']   ?? '',
+            'linkedin'    => $d['linkedin']    ?? '',
+            'portfolio'   => $d['portfolio']   ?? '',
+            'perfil'      => $d['perfil']      ?? '',
+            'habilidades' => $d['habilidades'] ?? '',
+            'color'       => $d['color']       ?: '#2D5F52',
+            'photo'       => $d['photo']       ?? null,
+            'exp'         => $d['exp']         ?? [],
+            'edu'         => $d['edu']         ?? [],
+            'lang'        => $d['lang']        ?? [],
+            'ref'         => $d['ref']         ?? [],
+            'cert'        => $d['cert']        ?? [],
+            'proj'        => $d['proj']        ?? [],
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->download($filename);
     }
 
     public function buyPdfAccess(Plan $plan): JsonResponse

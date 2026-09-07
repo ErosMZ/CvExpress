@@ -9,13 +9,16 @@ use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
-    const SELLER = [
-        'name'    => 'Eros Muñoz Zanón',
-        'nif'     => '48698858L',
-        'address' => 'Av. Rambleta, Nº 60, Catarroja, Valencia, España',
-        'email'   => 'erosmunozzanon@gmail.com',
-        'iban'    => 'ES08 2100 4328 5601 0032 6251',
-    ];
+    private static function seller(): array
+    {
+        return [
+            'name'    => config('legal.owner'),
+            'nif'     => config('legal.nif'),
+            'address' => config('legal.address'),
+            'email'   => config('legal.email'),
+            'iban'    => config('legal.iban'),
+        ];
+    }
 
     public function show(Plan $plan)
     {
@@ -56,6 +59,11 @@ class CheckoutController extends Controller
             'expires_at'        => now()->addYear(),
         ]);
 
+        if ($request->input('back') === 'cv-pdf') {
+            return redirect()->route('cv-pdf.editor')
+                ->with('success', '¡Pago realizado! Ya puedes descargar tu CV en PDF.');
+        }
+
         return redirect()->route('checkout.invoice', $purchase->id);
     }
 
@@ -69,7 +77,7 @@ class CheckoutController extends Controller
         return view('checkout.invoice', [
             'purchase' => $purchase,
             'plan'     => $purchase->plan,
-            'seller'   => self::SELLER,
+            'seller'   => self::seller(),
             'base'     => $base,
             'iva'      => $iva,
         ]);
@@ -85,7 +93,7 @@ class CheckoutController extends Controller
         $pdf = app('dompdf.wrapper')->loadView('checkout.invoice_pdf', [
             'purchase' => $purchase,
             'plan'     => $purchase->plan,
-            'seller'   => self::SELLER,
+            'seller'   => self::seller(),
             'base'     => $base,
             'iva'      => $iva,
         ]);

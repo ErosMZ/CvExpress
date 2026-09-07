@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/cv-pdf/editor', [CvPdfController::class, 'editor'])->name('cv-pdf.editor');
     Route::post('/cv-pdf/improve-profile', [CvPdfController::class, 'improveProfile'])->name('cv-pdf.improve-profile');
     Route::post('/cv-pdf/buy/{plan}', [CvPdfController::class, 'buyPdfAccess'])->name('cv-pdf.buy');
+    Route::post('/cv-pdf/download', [CvPdfController::class, 'download'])->name('cv-pdf.download');
 });
 
 Route::middleware('auth')->group(function () {
