@@ -1065,9 +1065,11 @@
                 {{-- ── PLAN ACTIVO ── --}}
                 @if($activePurchase)
                     @php
-                        $ap   = $activePurchase;
-                        $slug = $ap->plan->slug ?? 'basic';
-                        $tc   = $tierColors[$slug] ?? $tierColors['basic'];
+                        $ap          = $activePurchase;
+                        // Nivel real del plan (no el slug, que no coincide con
+                        // basic/pro/super_pro en los datos reales).
+                        $currentTier = $ap->plan->template_tier ?? 'basic';
+                        $tc          = $tierColors[$currentTier] ?? $tierColors['basic'];
                     @endphp
 
                     <div class="panel-card" style="border-color: {{ $tc['border'] }};">
@@ -1112,8 +1114,18 @@
                         @endif
                     </div>
 
-                    {{-- ── HOSTING SETUP ── --}}
-                    @if($ap->hosting_type === 'none')
+                    {{-- ── HOSTING SETUP (solo planes con hosting) ── --}}
+                    @if(!$ap->canHost())
+                    <div class="panel-card" style="border-color:#bae6fd;background:#f0f9ff;">
+                        <div class="panel-card__title" style="color:#0369a1;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Tu plan es solo de descarga
+                        </div>
+                        <p style="font-size:.875rem;color:var(--color-text-secondary);">
+                            Con tu plan actual puedes elegir cualquier plantilla y descargarla ya rellena desde el editor de CV Web. No incluye publicar con subdominio propio — para eso necesitas un plan con hosting.
+                        </p>
+                    </div>
+                    @elseif($ap->hosting_type === 'none')
                     <div class="panel-card" style="border-color:#fbbf24;background:#fffbeb;">
                         <div class="panel-card__title" style="color:#d97706;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -1145,7 +1157,7 @@
                                                    value="{{ Str::slug(auth()->user()->name) }}"
                                                    style="flex:1;padding:.5rem .75rem;border:none;background:transparent;font-size:.82rem;outline:none;font-family:monospace;"
                                                    placeholder="{{ Str::slug(auth()->user()->name) }}">
-                                            <span style="padding:.5rem .75rem;font-size:.78rem;color:var(--color-text-muted);white-space:nowrap;border-left:1px solid #e5e7eb;background:#f3f4f6;">.expresscv.es</span>
+                                            <span style="padding:.5rem .75rem;font-size:.78rem;color:var(--color-text-muted);white-space:nowrap;border-left:1px solid #e5e7eb;background:#f3f4f6;">.cvxpress.es</span>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn--primary" style="width:100%;justify-content:center;">
@@ -1198,7 +1210,7 @@
                                 @if($ap->hosting_type === 'subdomain')
                                     <div style="font-size:.95rem;font-weight:600;color:var(--color-text-primary);">
                                         <span style="color:#16a34a;">●</span>
-                                        {{ $ap->subdomain }}.expresscv.es
+                                        {{ $ap->subdomain }}.cvxpress.es
                                     </div>
                                     <div style="font-size:.8rem;color:var(--color-text-muted);margin-top:.2rem;">Subdominio gratuito</div>
                                 @else
@@ -1219,7 +1231,7 @@
                     @endif
 
                     {{-- ── UPGRADE si no tiene Super Pro ── --}}
-                    @if(($tierOrder[$slug] ?? 1) < 3)
+                    @if(($tierOrder[$currentTier] ?? 1) < 3 || !$ap->canHost())
                     <div class="panel-card">
                         <div class="panel-card__title">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
@@ -1228,12 +1240,13 @@
                         <p style="font-size:.875rem;color:var(--color-text-secondary);margin-bottom:1.25rem;">Actualiza tu plan para desbloquear más funcionalidades.</p>
                         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;">
                             @foreach($plans as $plan)
-                                @if(($tierOrder[$plan->slug] ?? 1) > ($tierOrder[$slug] ?? 1))
-                                @php $ptc = $tierColors[$plan->slug] ?? $tierColors['basic']; @endphp
+                                {{-- Solo planes de hosting con un nivel superior al actual (o cualquiera, si ahora solo tienes descarga) --}}
+                                @if($plan->category === 'template' && ($plan->id !== $ap->plan_id) && (!$ap->canHost() || ($tierOrder[$plan->template_tier] ?? 1) > ($tierOrder[$currentTier] ?? 1)))
+                                @php $ptc = $tierColors[$plan->template_tier] ?? $tierColors['basic']; @endphp
                                 <div style="border:1.5px solid {{ $ptc['border'] }};border-radius:12px;padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;">
                                     <div style="display:flex;align-items:center;justify-content:space-between;">
                                         <span style="font-size:.875rem;font-weight:700;color:{{ $ptc['fg'] }};">{{ $plan->name }}</span>
-                                        <span style="font-size:1.1rem;font-weight:800;color:var(--color-text-primary);">{{ number_format($plan->price, 2) }}€</span>
+                                        <span style="font-size:1.1rem;font-weight:800;color:var(--color-text-primary);">{{ number_format($plan->price, 2) }}€ <span style="font-size:.68rem;font-weight:500;color:var(--color-text-muted);">{{ $plan->billing_cycle === 'once' ? 'pago único' : '/año' }}</span></span>
                                     </div>
                                     <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.35rem;flex:1;">
                                         @foreach(array_slice($plan->features, 0, 4) as $feat)
@@ -1267,7 +1280,7 @@
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                             </div>
                             <div class="orders-empty__title">Aún no tienes ningún plan</div>
-                            <p class="orders-empty__desc">Elige el plan que mejor se adapte a ti. Pago único, sin renovaciones.</p>
+                            <p class="orders-empty__desc">Elige el plan que mejor se adapte a ti: solo descargar, o publicar con hosting propio.</p>
                         </div>
                     </div>
 
@@ -1291,7 +1304,7 @@
                                 </div>
                                 <div>
                                     <div style="font-size:.95rem;font-weight:700;color:var(--color-text-primary);">{{ $plan->name }}</div>
-                                    <div style="font-size:1.35rem;font-weight:800;color:{{ $ptc['fg'] }};">{{ number_format($plan->price, 2) }}€ <span style="font-size:.75rem;font-weight:500;color:var(--color-text-muted);">pago único</span></div>
+                                    <div style="font-size:1.35rem;font-weight:800;color:{{ $ptc['fg'] }};">{{ number_format($plan->price, 2) }}€ <span style="font-size:.75rem;font-weight:500;color:var(--color-text-muted);">{{ $plan->billing_cycle === 'once' ? 'pago único' : '/año' }}</span></div>
                                 </div>
                             </div>
 

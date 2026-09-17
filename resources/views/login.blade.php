@@ -1,4 +1,4 @@
-{{-- resources/views/auth/login.blade.php --}}
+{{-- resources/views/login.blade.php --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,136 +8,71 @@
     <link rel="icon" href="/images/logo2Web.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 </head>
-<body class="auth-page">
+<body class="authsplit-page">
 
-    {{-- Tarjetas flotantes --}}
-    <div class="auth-bg-cards" aria-hidden="true">
-        {{-- Superior izquierda --}}
-        <div class="auth-float-card fc-1 auth-float-card--bright">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--med"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-            <div class="auth-float-card__line"></div>
-            <div class="auth-float-card__tags">
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
+    <div class="authsplit-shell">
+
+        {{-- ── PANEL IZQUIERDO (azul) ── --}}
+        <aside class="authsplit-panel">
+            <div class="authsplit-panel__glow" aria-hidden="true"></div>
+
+            <a href="/" class="authsplit-panel__logo">
+                <img src="/images/logo2Web.webp" alt="CvXpress">
+            </a>
+
+            <div class="authsplit-panel__body">
+                <span class="authsplit-panel__eyebrow">Acceso seguro</span>
+                <h1 class="authsplit-panel__heading">Bienvenido de nuevo</h1>
+                <p class="authsplit-panel__text">Gestiona tu CV, elige tu plantilla y publica tu portfolio web desde un único sitio.</p>
             </div>
-        </div>
-        {{-- Superior derecha --}}
-        <div class="auth-float-card fc-2 auth-float-card--bright">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--med"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-        </div>
-        {{-- Inferior izquierda --}}
-        <div class="auth-float-card fc-3">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--med"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-            <div class="auth-float-card__tags">
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
-            </div>
-        </div>
-        {{-- Inferior derecha --}}
-        <div class="auth-float-card fc-4">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--med"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-            <div class="auth-float-card__line"></div>
-            <div class="auth-float-card__tags">
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
-            </div>
-        </div>
-    </div>
 
-    {{-- Botón volver --}}
-    <a href="/" class="auth-back">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 5l-7 7 7 7"/>
-        </svg>
-        Volver al inicio
-    </a>
+            <p class="authsplit-panel__footer">
+                &copy; {{ date('Y') }} CvXpress · <a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a>
+            </p>
+        </aside>
 
-    <div class="auth-wrapper">
+        {{-- ── LADO DEL FORMULARIO (blanco) ── --}}
+        <div class="authsplit-formside">
+            <div class="authsplit-form">
 
-        <a href="/" class="auth-logo" style="position:relative;z-index:30;display:flex;justify-content:center;">
-            <div style="width:200px;height:75px;overflow:hidden;flex-shrink:0;">
-                <img src="/images/logo2Web.webp" alt="CVX" style="width:340px;height:auto;margin-left:-75px;margin-top:-78px;display:block;max-width:none;">
-            </div>
-        </a>
-
-        <div class="auth-card">
-            <span class="auth-card__eyebrow">
-                <span class="auth-card__eyebrow-dot"></span>
-                Acceso seguro
-            </span>
-            <h1 class="auth-card__heading">Bienvenido de nuevo</h1>
-            <p class="auth-card__subheading">Inicia sesión para gestionar tu portfolio</p>
-
-            @if(session('error'))
-                <div class="auth-alert" role="alert">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    {{ session('error') }}
+                <div class="authsplit-form__top">
+                    <a href="/" class="authsplit-form__wordmark">CvXpress</a>
+                    <a href="/register" class="authsplit-form__toplink">¿No tienes cuenta? <strong>Crear una</strong></a>
                 </div>
-            @endif
 
-            <form method="POST" action="/login">
-                @csrf
-                <div class="auth-form-group">
-                    <label for="email" class="auth-label">Correo electrónico</label>
-                    <input type="email" id="email" name="email"
-                        class="auth-input" placeholder="tu@email.com"
-                        autocomplete="email" required>
-                </div>
-                <div class="auth-form-group">
-                    <label for="password" class="auth-label">Contraseña</label>
-                    <input type="password" id="password" name="password"
-                        class="auth-input" placeholder="••••••••"
-                        autocomplete="current-password" required>
-                </div>
-                <button type="submit" class="auth-btn">
-                    Iniciar sesión
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </form>
+                <h1 class="authsplit-form__heading">Bienvenido de nuevo</h1>
+                <p class="authsplit-form__sub">Inicia sesión para gestionar tu portfolio.</p>
 
-            <div class="auth-card__footer">
-                ¿No tienes cuenta? <a href="/register">Regístrate gratis</a>
+                @if(session('error'))
+                    <div class="authsplit-alert" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <form method="POST" action="/login">
+                    @csrf
+                    <div class="authsplit-field">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com" autocomplete="email" autofocus required>
+                    </div>
+                    <div class="authsplit-field" style="margin-bottom:.5rem;">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+                    </div>
+
+                    <button type="submit" class="authsplit-btn">
+                        Iniciar sesión
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+
+                <p class="authsplit-switch">¿No tienes cuenta? <a href="/register">Regístrate gratis</a></p>
             </div>
         </div>
-
-        <p class="auth-page-footer">
-            &copy; {{ date('Y') }} CvXpress &nbsp;·&nbsp;
-            <a href="/privacidad">Privacidad</a> &nbsp;·&nbsp;
-            <a href="/terminos">Términos</a>
-        </p>
 
     </div>
 

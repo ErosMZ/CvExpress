@@ -13,9 +13,31 @@ use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\SiteController as AdminSiteController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CvPdfController;
+use App\Http\Controllers\PublicSiteController;
+
+/*
+|--------------------------------------------------------------------------
+| WEBS PUBLICADAS POR SUBDOMINIO
+|--------------------------------------------------------------------------
+| Debe ir ANTES que las rutas sin dominio (p. ej. "/"), porque Laravel
+| resuelve por orden de registro y una ruta sin restricción de dominio
+| encajaría con cualquier host, incluidos los subdominios.
+|
+| Dominio base configurable vía PUBLIC_SITES_DOMAIN (ver config/services.php):
+| "localhost" en local (prueba con http://tunombre.localhost:8000),
+| "cvxpress.es" en producción una vez el dominio esté registrado y el DNS
+| comodín (*.cvxpress.es) apunte al servidor.
+*/
+
+Route::domain('{subdomain}.' . config('services.public_sites.domain'))->group(function () {
+    Route::get('/{path?}', [PublicSiteController::class, 'show'])
+        ->where('path', '.*')
+        ->name('public-site.show');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +50,9 @@ Route::get('/', function () {
         ->where('is_active', true)
         ->latest()
         ->get();
-    $plans = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
+    // "Planes anuales" del index es solo CV Web con hosting — nada de PDF
+    // ni del plan de solo-descarga (ese se ofrece dentro de cada plantilla).
+    $plans = \App\Models\Plan::where('is_active', true)->where('category', 'template')->orderBy('sort_order')->get();
     return view('index', compact('featuredTemplates', 'plans'));
 })->name('home');
 
@@ -48,6 +72,10 @@ Route::get('/plantillas/{template:slug}', [TemplatesController::class, 'show'])-
 */
 
 Route::middleware('auth')->group(function () {
+    // Antes que /checkout/{plan:slug} para que "descarga" no se confunda con un slug de plan.
+    Route::get('/checkout/descarga/{template:slug}',  [CheckoutController::class, 'showDownload'])->name('checkout.download.show');
+    Route::post('/checkout/descarga/{template:slug}', [CheckoutController::class, 'processDownload'])->name('checkout.download.process');
+
     Route::get('/checkout/{plan:slug}',  [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{plan:slug}', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/invoice/{purchase}',    [CheckoutController::class, 'invoice'])->name('checkout.invoice');
@@ -140,7 +168,15 @@ Route::get('/email/verification-status', function () {
 
 Route::post('/email/verification-notification', function (Request $request) {
 
-    $request->user()->sendEmailVerificationNotification();
+    try {
+        $request->user()->sendEmailVerificationNotification();
+    } catch (\Throwable $e) {
+        \Illuminate\Support\Facades\Log::error('Reenvío de verificación falló', [
+            'user_id' => $request->user()->id,
+            'error'   => $e->getMessage(),
+        ]);
+        return back()->with('error', 'Ahora mismo no podemos enviar el correo. Inténtalo de nuevo más tarde.');
+    }
 
     return back()->with('message', 'Email de verificación enviado');
 
@@ -231,6 +267,15 @@ Route::middleware([
     Route::put('/planes/{plan}',           [PlanController::class, 'update'])->name('admin.plans.update');
     Route::delete('/planes/{plan}',        [PlanController::class, 'destroy'])->name('admin.plans.destroy');
 
+    /*
+    |--------------------------------------------------------------------------
+    | WEBS PUBLICADAS (subdominios)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/sites', [AdminSiteController::class, 'index'])->name('admin.sites.index');
+    Route::delete('/sites/{purchase}', [AdminSiteController::class, 'destroy'])->name('admin.sites.destroy');
+
 });
 
     /*
@@ -251,16 +296,22 @@ Route::middleware([
 |--------------------------------------------------------------------------
 */
 
-Route::get('/test-mail', function () {
+Route::get('/test-mail', function (Request $request) {
 
-    Mail::raw('Correo de prueba desde Laravel + SendGrid', function ($message) {
+    abort_unless(app()->environment('local'), 404);
 
-        $message->to('TU_CORREO_REAL@gmail.com')
-                ->subject('Test SendGrid');
+    $to = $request->query('to');
+    abort_unless(filter_var($to, FILTER_VALIDATE_EMAIL), 422, 'Pasa ?to=correo@valido.com');
 
-    });
+    try {
+        Mail::raw('Correo de prueba desde Laravel', function ($message) use ($to) {
+            $message->to($to)->subject('Test mail CvXpress');
+        });
+    } catch (\Throwable $e) {
+        return response('Fallo al enviar: ' . $e->getMessage(), 500);
+    }
 
-    return 'Correo enviado';
+    return 'Correo enviado (revisa la bandeja o storage/logs/laravel.log si usas el mailer failover)';
 
 });
 
@@ -272,7 +323,8 @@ Route::get('/test-mail', function () {
 Route::get('/app', function () {
     $templates  = \App\Models\Template::with('category')->where('is_active', true)->latest()->get();
     $categories = \App\Models\Category::where('is_active', true)->orderBy('name')->get();
-    $plans      = \App\Models\Plan::where('is_active', true)->orderBy('sort_order')->get();
+    // CV Web (con hosting o solo descarga) — nunca los planes de PDF aquí.
+    $plans      = \App\Models\Plan::where('is_active', true)->whereIn('category', ['template', 'web_download'])->orderBy('sort_order')->get();
     $featured   = $templates->where('is_featured', true)->first() ?? $templates->first();
     return view('app-landing', compact('templates', 'categories', 'plans', 'featured'));
 })->name('app-landing');
@@ -286,6 +338,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/cv-web', [DashboardController::class, 'cvWeb'])->name('cv-web.editor');
     Route::post('/cv-web/template/{purchase}/{template}', [DashboardController::class, 'cvWebSelectTemplate'])
          ->name('cv-web.template.select');
+    Route::post('/cv-web/download-zip', [DashboardController::class, 'cvWebDownloadZip'])
+         ->name('cv-web.download-zip');
+    Route::post('/cv-web/publish', [DashboardController::class, 'cvWebPublish'])
+         ->name('cv-web.publish');
 });
 
 /*

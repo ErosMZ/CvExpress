@@ -286,6 +286,11 @@
                 Planes
                 <span class="admin-sidebar__link-badge">{{ \App\Models\Plan::count() }}</span>
             </a>
+            <a href="{{ route('admin.sites.index') }}" class="admin-sidebar__link">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Webs publicadas
+                <span class="admin-sidebar__link-badge">{{ \App\Models\UserPurchase::where('hosting_type','subdomain')->whereNotNull('subdomain')->count() }}</span>
+            </a>
             <div class="admin-sidebar__section-label">Crear</div>
             <a href="{{ route('templates.create') }}" class="admin-sidebar__link">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -422,8 +427,23 @@
                         </div>
                         <div style="text-align:right;flex-shrink:0;">
                             <div class="plan-card__price" style="color:{{ $tc['fg'] }};">{{ number_format($plan->price, 2) }}€</div>
-                            <div class="plan-card__price-sub">pago único</div>
+                            <div class="plan-card__price-sub">{{ $plan->billing_cycle === 'once' ? 'pago único' : '/ año' }}</div>
                         </div>
+                    </div>
+
+                    <div style="padding:0 1.25rem .75rem;display:flex;gap:.4rem;flex-wrap:wrap;">
+                        @php
+                            $catLabels = [
+                                'template'     => ['label' => 'CV Web · con hosting', 'bg' => '#dbeafe', 'fg' => '#1A56DB'],
+                                'web_download' => ['label' => 'CV Web · solo descarga', 'bg' => '#dcfce7', 'fg' => '#16a34a'],
+                                'pdf_download' => ['label' => 'Descarga PDF', 'bg' => '#fef3c7', 'fg' => '#b45309'],
+                            ];
+                            $catInfo = $catLabels[$plan->category] ?? ['label' => $plan->category, 'bg' => '#f1f5f9', 'fg' => '#475569'];
+                        @endphp
+                        <span style="font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;background:{{ $catInfo['bg'] }};color:{{ $catInfo['fg'] }};">{{ $catInfo['label'] }}</span>
+                        @if($plan->category === 'template' && $plan->template_tier)
+                            <span style="font-size:.68rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;background:#f1f5f9;color:#475569;">Nivel: {{ ucfirst(str_replace('_',' ',$plan->template_tier)) }}</span>
+                        @endif
                     </div>
 
                     <div class="plan-card__body">
@@ -453,7 +473,7 @@
                             @endif
                         </div>
                         <button class="btn-admin btn-admin--ghost btn-admin--sm"
-                                onclick="openEditModal({{ $plan->id }}, {{ json_encode($plan->name) }}, {{ $plan->price }}, {{ json_encode($plan->color) }}, {{ json_encode($plan->badge_label) }}, {{ json_encode(implode("\n", $plan->features ?? [])) }}, {{ $plan->is_active ? 'true' : 'false' }}, {{ $plan->sort_order }})">
+                                onclick="openEditModal({{ $plan->id }}, {{ json_encode($plan->name) }}, {{ $plan->price }}, {{ json_encode($plan->color) }}, {{ json_encode($plan->badge_label) }}, {{ json_encode(implode("\n", $plan->features ?? [])) }}, {{ $plan->is_active ? 'true' : 'false' }}, {{ $plan->sort_order }}, {{ json_encode($plan->category) }}, {{ json_encode($plan->template_tier) }})">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             Editar
                         </button>
@@ -538,7 +558,7 @@ function openCreateModal() {
     document.body.style.overflow = 'hidden';
 }
 
-function openEditModal(id, name, price, color, badgeLabel, features, isActive, sortOrder) {
+function openEditModal(id, name, price, color, badgeLabel, features, isActive, sortOrder, category, templateTier) {
     const form = document.getElementById('editForm');
     form.action = `/admin/planes/${id}`;
 
@@ -548,6 +568,12 @@ function openEditModal(id, name, price, color, badgeLabel, features, isActive, s
     form.querySelector('[name="features"]').value    = features || '';
     form.querySelector('[name="sort_order"]').value  = sortOrder || 0;
     form.querySelector('[name="is_active"]').checked = isActive;
+
+    var categorySelect = form.querySelector('[name="category"]');
+    categorySelect.value = category || 'template';
+    if (typeof toggleTierField_edit === 'function') toggleTierField_edit(categorySelect.value);
+    var tierSelect = form.querySelector('[name="template_tier"]');
+    if (tierSelect) tierSelect.value = templateTier || '';
 
     // Color swatches
     form.querySelectorAll('.color-swatch input[type="radio"]').forEach(radio => {

@@ -289,6 +289,7 @@
 /* ══ PREVIEW COLUMN ══ */
 .cvweb-preview { position:sticky; top:72px; }
 .cvweb-browser {
+    position:relative;
     background:#fff; border:1px solid #e5e7eb; border-radius:14px;
     overflow:hidden; box-shadow:0 6px 28px rgba(15,23,42,.09);
 }
@@ -297,7 +298,8 @@
     display:flex; align-items:center; gap:.625rem; padding:0 .875rem;
 }
 .cvweb-browser__dots { display:flex; gap:4px; }
-.cvweb-browser__dots span { width:10px; height:10px; border-radius:50%; }
+.cvweb-browser__dots span { width:10px; height:10px; border-radius:50%; transition:filter .12s,transform .12s; }
+.cvweb-browser__dots span[onclick]:hover { filter:brightness(1.15); transform:scale(1.15); }
 .cvweb-browser__url {
     flex:1; background:#f1f5f9; border-radius:5px;
     padding:.22rem .65rem; font-size:.7rem; color:#6b7280;
@@ -324,6 +326,23 @@
     background:none; border:none; cursor:pointer;
 }
 .cvweb-browser__foot button:hover { text-decoration:underline; }
+
+/* ── Modo pantalla completa de la vista previa (mismo iframe, sin recargar) ── */
+@keyframes cvfs-in { from{opacity:0;transform:scale(.985);} to{opacity:1;transform:scale(1);} }
+.cvweb-browser--fullscreen {
+    position:fixed !important; inset:0; z-index:5000;
+    max-width:none; width:100vw; height:100vh;
+    border-radius:0; box-shadow:none;
+    display:flex; flex-direction:column;
+    animation:cvfs-in .16s ease-out;
+}
+.cvweb-browser--fullscreen .cvweb-browser__screen {
+    height:auto; min-height:0; max-height:none; flex:1 1 auto;
+}
+/* Al entrar en pantalla completa, se oculta el header propio de la web
+   (el botón de salir vive dentro de la propia barra de la vista previa). */
+body.cvweb-fs-active { overflow:hidden; }
+body.cvweb-fs-active .nav { display:none !important; }
 
 /* ══ SELECTOR GRID ══ */
 .cvweb-sel-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
@@ -398,6 +417,106 @@
     .cvweb-plans { grid-template-columns:1fr; }
 }
 .cvweb-mobile-toggle { display:none; }
+
+/* ══ CONFIRM MODAL (propio, sin confirm() nativo) ══ */
+@keyframes cvconfirm-in { from{opacity:0;transform:translateY(8px) scale(.97);} to{opacity:1;transform:translateY(0) scale(1);} }
+.cvweb-confirm-overlay {
+    display:none; position:fixed; inset:0; background:rgba(15,23,42,.55);
+    backdrop-filter:blur(2px); z-index:10000;
+    align-items:center; justify-content:center; padding:1rem;
+}
+.cvweb-confirm-card {
+    background:#fff; border-radius:18px; padding:1.75rem 1.75rem 1.5rem;
+    max-width:380px; width:100%; text-align:center;
+    box-shadow:0 24px 60px rgba(15,23,42,.25);
+    animation:cvconfirm-in .18s ease-out;
+}
+.cvweb-confirm-icon {
+    width:52px; height:52px; border-radius:50%; margin:0 auto .875rem;
+    display:flex; align-items:center; justify-content:center;
+    background:#fee2e2; color:#dc2626;
+}
+.cvweb-confirm-icon--info { background:#eff6ff; color:#2563eb; }
+.cvweb-confirm-title { font-size:1.05rem; font-weight:800; color:#0f172a; margin:0 0 .4rem; }
+.cvweb-confirm-msg   { font-size:.83rem; color:#6b7280; line-height:1.55; margin:0 0 1.375rem; }
+.cvweb-confirm-actions { display:flex; gap:.625rem; }
+.cvweb-confirm-actions .cvweb-btn { flex:1; justify-content:center; }
+.cvweb-btn--danger-solid { background:#ef4444; color:#fff; }
+.cvweb-btn--danger-solid:hover { background:#dc2626; }
+
+/* ══ PUBLISH MODAL ══ */
+.cvweb-publish-overlay {
+    display:none; position:fixed; inset:0; background:rgba(15,23,42,.55);
+    z-index:10000; align-items:center; justify-content:center; padding:1rem;
+}
+.cvweb-publish-card {
+    background:#fff; border-radius:20px; padding:1.75rem;
+    max-width:620px; width:100%; max-height:90vh; overflow-y:auto;
+    box-shadow:0 24px 60px rgba(15,23,42,.25);
+    animation:cvconfirm-in .18s ease-out; position:relative;
+}
+.cvweb-publish-close {
+    position:absolute; top:1rem; right:1rem; background:none; border:none;
+    cursor:pointer; color:#9ca3af; padding:.25rem; display:flex;
+}
+.cvweb-publish-close:hover { color:#374151; }
+.cvweb-publish-head { display:flex; align-items:center; gap:.875rem; margin-bottom:1.375rem; padding-right:1.5rem; }
+.cvweb-publish-icon {
+    width:48px; height:48px; border-radius:14px; flex-shrink:0;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    display:flex; align-items:center; justify-content:center;
+}
+.cvweb-publish-title { font-size:1.05rem; font-weight:800; color:#0f172a; }
+.cvweb-publish-sub { font-size:.82rem; color:#6b7280; margin-top:.15rem; }
+
+.cvweb-publish-status {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:12px;
+    padding:.875rem 1.125rem; margin-bottom:1.25rem;
+}
+.cvweb-publish-status--pending { background:#eff6ff; border-color:#bfdbfe; }
+.cvweb-publish-status strong { color:#0f172a; }
+
+.cvweb-publish-opts { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem; }
+@media (max-width:560px) { .cvweb-publish-opts { grid-template-columns:1fr; } }
+.cvweb-publish-opt {
+    border:1.5px solid #e5e7eb; border-radius:14px; padding:1.125rem;
+    display:flex; flex-direction:column; gap:.75rem;
+}
+.cvweb-publish-opt__head { display:flex; align-items:center; gap:.6rem; }
+.cvweb-publish-opt__icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cvweb-publish-opt__name { font-size:.86rem; font-weight:700; color:#0f172a; }
+.cvweb-publish-opt__tag { font-size:.72rem; font-weight:700; }
+.cvweb-publish-domain-row {
+    display:flex; align-items:center; border:1.5px solid #d1d5db; border-radius:8px;
+    overflow:hidden; background:#f9fafb;
+}
+.cvweb-publish-domain-row input {
+    flex:1; min-width:0; padding:.5rem .625rem; border:none; background:transparent;
+    font-size:.8rem; font-family:monospace; outline:none; color:#0f172a;
+}
+.cvweb-publish-domain-row input:focus { background:#fff; }
+.cvweb-publish-domain-row span {
+    padding:.5rem .625rem; font-size:.75rem; color:#6b7280; white-space:nowrap;
+    border-left:1px solid #e5e7eb; background:#f3f4f6;
+}
+.cvweb-publish-opt__feats { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.35rem; flex:1; }
+.cvweb-publish-opt__feats li { display:flex; align-items:center; gap:.4rem; font-size:.76rem; color:#374151; }
+
+.cvweb-publish-divider { display:flex; align-items:center; gap:.75rem; margin:1.25rem 0; }
+.cvweb-publish-divider::before, .cvweb-publish-divider::after { content:''; flex:1; height:1px; background:#e5e7eb; }
+.cvweb-publish-divider span { font-size:.7rem; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.05em; }
+
+.cvweb-publish-zip {
+    display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    background:#f8fafc; border:1.5px solid #e5e7eb; border-radius:12px; padding:1rem 1.125rem;
+}
+.cvweb-publish-zip__text { font-size:.82rem; color:#374151; }
+.cvweb-publish-zip__text strong { display:block; color:#0f172a; font-size:.86rem; margin-bottom:.15rem; }
+
+.cvweb-publish-foot { text-align:center; margin-top:1.25rem; font-size:.78rem; color:#9ca3af; }
+.cvweb-publish-foot a { color:#2563eb; font-weight:600; text-decoration:none; }
+.cvweb-publish-foot a:hover { text-decoration:underline; }
 </style>
 @endpush
 
@@ -507,7 +626,7 @@
                 <div class="cvweb-plan {{ $plan->badge_label ? 'cvweb-plan--hi' : '' }}" style="--pc:{{ $pc }}">
                     @if($plan->badge_label)<div class="cvweb-plan__badge">{{ $plan->badge_label }}</div>@endif
                     <div class="cvweb-plan__name">{{ $plan->name }}</div>
-                    <div class="cvweb-plan__price">{{ number_format($plan->price,2,',','.') }}€<small>/{{ $plan->billing_cycle==='annual'?'año':'mes' }}</small></div>
+                    <div class="cvweb-plan__price">{{ number_format($plan->price,2,',','.') }}€<small>{{ $plan->billing_cycle==='once' ? ' pago único' : '/año' }}</small></div>
                     @if($plan->features)
                     <ul class="cvweb-plan__feats">
                         @foreach($plan->features as $feat)
@@ -857,9 +976,9 @@
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
                                 Limpiar datos
                             </button>
-                            <button type="button" id="btn-save-cv" onclick="saveCvData(event)" class="cvweb-btn cvweb-btn--primary">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13"/><polyline points="7 3 7 8 15 8"/></svg>
-                                Guardar
+                            <button type="button" id="btn-save-cv" onclick="saveAndDownloadCv(event)" class="cvweb-btn cvweb-btn--primary">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Guardar y descargar ZIP
                             </button>
                         </div>
                     </div>
@@ -875,12 +994,12 @@
                         <div class="cvweb-browser__dots">
                             <span style="background:#ef4444"></span>
                             <span style="background:#f59e0b"></span>
-                            <span style="background:#22c55e"></span>
+                            <span id="cvweb-fs-toggle" onclick="togglePreviewFullscreen()" title="Ver la plantilla a tamaño completo" style="background:#22c55e;cursor:pointer;"></span>
                         </div>
                         <div class="cvweb-browser__url">{{ $selected ? $selected->slug.'.cvxpress.es' : 'preview' }}</div>
                         @if($selected?->preview_html_url)
-                        <button onclick="openPreviewTab('{{ $selected->preview_html_url }}')" title="Abrir en nueva pestaña" style="background:none;border:none;cursor:pointer;color:#9ca3af;display:flex;padding:0;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        <button type="button" id="cvweb-fs-btn" onclick="togglePreviewFullscreen()" title="Ver a tamaño completo" style="background:none;border:none;cursor:pointer;color:#9ca3af;display:flex;padding:0;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
                         </button>
                         @endif
                     </div>
@@ -899,7 +1018,13 @@
                     @if($selected)
                     <div class="cvweb-browser__foot">
                         <span>Plantilla: <strong>{{ $selected->name }}</strong></span>
-                        <button onclick="showCvView('selector')">Cambiar →</button>
+                        <div style="display:flex;align-items:center;gap:1rem;">
+                            <button type="button" onclick="openPublishModal()" style="display:inline-flex;align-items:center;gap:.35rem;background:#2563eb;color:#fff;border:none;border-radius:7px;padding:.35rem .8rem;font-size:.75rem;font-weight:700;cursor:pointer;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                Publicar web
+                            </button>
+                            <button type="button" onclick="showCvView('selector')">Cambiar →</button>
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -983,6 +1108,152 @@
         </div>
     </div>
 </div>
+
+{{-- ══ CONFIRM MODAL (propio) ══ --}}
+<div id="confirm-modal-overlay" class="cvweb-confirm-overlay">
+    <div class="cvweb-confirm-card">
+        <div class="cvweb-confirm-icon" id="confirm-modal-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </div>
+        <h3 class="cvweb-confirm-title" id="confirm-modal-title">¿Seguro?</h3>
+        <p class="cvweb-confirm-msg" id="confirm-modal-msg"></p>
+        <div class="cvweb-confirm-actions">
+            <button type="button" id="confirm-modal-cancel" class="cvweb-btn cvweb-btn--ghost">Cancelar</button>
+            <button type="button" id="confirm-modal-ok" class="cvweb-btn cvweb-btn--danger-solid">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+{{-- ══ PUBLISH MODAL ══ --}}
+<div id="publish-modal-overlay" class="cvweb-publish-overlay">
+    <div class="cvweb-publish-card">
+        <button type="button" class="cvweb-publish-close" onclick="closePublishModal()" aria-label="Cerrar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        <div class="cvweb-publish-head">
+            <div class="cvweb-publish-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div>
+                <div class="cvweb-publish-title">Publica tu CV Web</div>
+                <div class="cvweb-publish-sub">Elige cómo quieres que tu portfolio sea visible para los demás.</div>
+            </div>
+        </div>
+
+        @if($activePurchase && $activePurchase->canHost())
+            @php $hostingType = $activePurchase->hosting_type; @endphp
+
+            <div id="publish-status-box" class="cvweb-publish-status {{ $hostingType === 'none' ? 'cvweb-publish-status--pending' : '' }}" style="{{ $hostingType === 'none' ? 'display:none;' : 'display:flex;' }}align-items:flex-start;">
+                <div id="publish-status-inner">
+                    @if($hostingType === 'subdomain')
+                        <span style="color:#16a34a;">●</span> <strong>{{ $activePurchase->subdomain }}.cvxpress.es</strong>
+                        <div style="font-size:.75rem;color:#6b7280;margin-top:.15rem;">Subdominio gratuito reservado</div>
+                    @elseif($hostingType === 'paid_hosting')
+                        <span style="color:#1A56DB;">●</span> <strong>Hosting + dominio propio</strong>
+                        <div style="font-size:.75rem;color:#6b7280;margin-top:.15rem;">Nos pondremos en contacto para configurarlo</div>
+                    @endif
+                    <div id="publish-live-row" style="margin-top:.5rem;font-size:.75rem;"></div>
+                </div>
+                <div style="display:flex;gap:.5rem;flex-shrink:0;">
+                    <button type="button" id="publish-republish-btn" onclick="republishSite(this)" class="cvweb-btn cvweb-btn--primary cvweb-btn--sm" style="{{ $hostingType !== 'subdomain' ? 'display:none;' : '' }}">Publicar ahora</button>
+                    <button type="button" onclick="resetHosting(this)" class="cvweb-btn cvweb-btn--ghost cvweb-btn--sm">Cambiar</button>
+                </div>
+            </div>
+
+            <div id="publish-opts" style="{{ $hostingType !== 'none' ? 'display:none;' : '' }}">
+                <div class="cvweb-publish-opts">
+
+                    {{-- Subdominio gratis --}}
+                    <div class="cvweb-publish-opt">
+                        <div class="cvweb-publish-opt__head">
+                            <div class="cvweb-publish-opt__icon" style="background:#dcfce7;color:#16a34a;">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            </div>
+                            <div>
+                                <div class="cvweb-publish-opt__name">Subdominio gratis</div>
+                                <div class="cvweb-publish-opt__tag" style="color:#16a34a;">Sin coste adicional</div>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:.75rem;font-weight:600;color:#374151;display:block;margin-bottom:.35rem;">Elige tu nombre</label>
+                            <div class="cvweb-publish-domain-row">
+                                <input type="text" id="publish-subdomain-input"
+                                       value="{{ Str::slug($u->name) }}" placeholder="{{ Str::slug($u->name) }}"
+                                       maxlength="50" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-')">
+                                <span>.cvxpress.es</span>
+                            </div>
+                        </div>
+                        <button type="button" id="publish-subdomain-btn"
+                                onclick="submitHosting('subdomain', document.getElementById('publish-subdomain-input').value, this)"
+                                class="cvweb-btn cvweb-btn--primary" style="justify-content:center;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Usar este subdominio
+                        </button>
+                    </div>
+
+                    {{-- Hosting + dominio propio --}}
+                    <div class="cvweb-publish-opt">
+                        <div class="cvweb-publish-opt__head">
+                            <div class="cvweb-publish-opt__icon" style="background:#dbeafe;color:#1A56DB;">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            </div>
+                            <div>
+                                <div class="cvweb-publish-opt__name">Hosting + dominio propio</div>
+                                <div class="cvweb-publish-opt__tag" style="color:#1A56DB;">2–3€/mes</div>
+                            </div>
+                        </div>
+                        <ul class="cvweb-publish-opt__feats">
+                            @foreach(['Tu dominio (.com, .es…)','SSL incluido','Backups automáticos'] as $f)
+                            <li><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1A56DB" stroke-width="3" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>{{ $f }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" id="publish-paid-btn"
+                                onclick="submitHosting('paid_hosting', null, this)"
+                                class="cvweb-btn cvweb-btn--ghost" style="justify-content:center;">
+                            Comprar dominio / contratar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        @elseif($activePurchase)
+            {{-- Tiene plan, pero es de solo descarga (categoría web_download) --}}
+            <div style="display:flex;gap:.75rem;align-items:flex-start;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:1rem 1.125rem;margin-bottom:.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <div style="font-size:.83rem;color:#1e3a8a;line-height:1.55;">
+                    Tu plan <strong>{{ $activePurchase->plan->name }}</strong> es solo de descarga: puedes usar cualquier plantilla y bajarte el ZIP abajo, pero no incluye publicar con subdominio propio.
+                    @if($upgradePlan)
+                        <a href="{{ route('checkout.show', $upgradePlan->slug) }}" style="color:#1d4ed8;font-weight:700;">Añadir hosting desde {{ number_format($upgradePlan->price,2,',','.') }}€/año →</a>
+                    @endif
+                </div>
+            </div>
+        @else
+            <div style="text-align:center;padding:1rem 0 1.5rem;color:#6b7280;font-size:.85rem;">
+                Necesitas un plan activo para publicar tu web.
+                <a href="{{ route('checkout.show', $plans->first()?->slug ?? '') }}" style="color:#2563eb;font-weight:600;">Ver planes →</a>
+            </div>
+        @endif
+
+        <div class="cvweb-publish-divider"><span>o si lo prefieres</span></div>
+
+        <div class="cvweb-publish-zip">
+            <div class="cvweb-publish-zip__text">
+                <strong>Alójala tú mismo/a</strong>
+                Descarga la plantilla con tus datos ya puestos, lista para subir a cualquier hosting.
+            </div>
+            <button type="button" id="publish-zip-btn" onclick="publishModalDownloadZip(this)" class="cvweb-btn cvweb-btn--ghost cvweb-btn--sm">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar ZIP
+            </button>
+        </div>
+
+        <div class="cvweb-publish-foot">
+            ¿Gestionar tu plan y facturación? <a href="{{ route('dashboard') }}#orders">Ir a Mi Plan →</a>
+        </div>
+    </div>
+</div>
+
 <style>@keyframes ai-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}</style>
 @endsection
 
@@ -990,6 +1261,7 @@
 <script>
 var _currentPhotoUrl = @json($photoUrl ?? null);
 var _CSRF = '{{ csrf_token() }}';
+var _hostingUrl = @json($activePurchase ? route('dashboard.purchase.hosting', $activePurchase) : null);
 
 /* ── Views ── */
 function showCvView(view) {
@@ -1039,6 +1311,133 @@ function scaleCvPreview() {
     iframe.style.height=Math.round((wrap.offsetHeight||580)/scale)+'px';
 }
 window.addEventListener('resize', scaleCvPreview);
+
+/* ── Pantalla completa de la vista previa ──
+   Agranda el mismo iframe (no lo recarga), así que conserva todos los
+   datos ya rellenados en el editor. */
+var _cvFsExpandIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+var _cvFsShrinkIcon='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3v3a2 2 0 0 1-2 2H4m16-5v3a2 2 0 0 0 2 2h3M3 16h3a2 2 0 0 1 2 2v3m10-5h3a2 2 0 0 0-2 2v3"/></svg>';
+function togglePreviewFullscreen(){
+    var browser=document.querySelector('.cvweb-browser');
+    if(!browser) return;
+    var active=browser.classList.toggle('cvweb-browser--fullscreen');
+    document.body.classList.toggle('cvweb-fs-active', active);
+    var dot=document.getElementById('cvweb-fs-toggle');
+    if(dot) dot.title=active?'Salir de pantalla completa':'Ver la plantilla a tamaño completo';
+    var btn=document.getElementById('cvweb-fs-btn');
+    if(btn){ btn.title=active?'Salir de pantalla completa':'Ver a tamaño completo'; btn.innerHTML=active?_cvFsShrinkIcon:_cvFsExpandIcon; }
+    setTimeout(scaleCvPreview,30);
+}
+document.addEventListener('keydown', function(e){
+    if(e.key!=='Escape') return;
+    var browser=document.querySelector('.cvweb-browser');
+    if(browser && browser.classList.contains('cvweb-browser--fullscreen')){ togglePreviewFullscreen(); return; }
+    var pubOv=document.getElementById('publish-modal-overlay');
+    if(pubOv && pubOv.style.display==='flex') closePublishModal();
+});
+
+/* ── Modal "Publicar web" ── */
+function openPublishModal(){
+    var ov=document.getElementById('publish-modal-overlay');
+    if(!ov) return;
+    ov.style.display='flex';
+    document.body.style.overflow='hidden';
+}
+function closePublishModal(){
+    var ov=document.getElementById('publish-modal-overlay');
+    if(!ov) return;
+    ov.style.display='none';
+    document.body.style.overflow='';
+}
+
+function _renderHostingStatus(hostingType, subdomain){
+    var statusBox=document.getElementById('publish-status-box');
+    var optsBox=document.getElementById('publish-opts');
+    var inner=document.getElementById('publish-status-inner');
+    var republishBtn=document.getElementById('publish-republish-btn');
+    if(hostingType==='none'){
+        if(statusBox) statusBox.style.display='none';
+        if(optsBox) optsBox.style.display='';
+        return;
+    }
+    if(optsBox) optsBox.style.display='none';
+    if(statusBox){ statusBox.style.display='flex'; statusBox.classList.remove('cvweb-publish-status--pending'); }
+    if(republishBtn) republishBtn.style.display=(hostingType==='subdomain')?'':'none';
+    if(inner){
+        var head = hostingType==='subdomain'
+            ? '<span style="color:#16a34a;">●</span> <strong>'+_esc(subdomain)+'.cvxpress.es</strong><div style="font-size:.75rem;color:#6b7280;margin-top:.15rem;">Subdominio gratuito reservado</div>'
+            : '<span style="color:#1A56DB;">●</span> <strong>Hosting + dominio propio</strong><div style="font-size:.75rem;color:#6b7280;margin-top:.15rem;">Nos pondremos en contacto para configurarlo</div>';
+        inner.innerHTML = head + '<div id="publish-live-row" style="margin-top:.5rem;font-size:.75rem;"></div>';
+    }
+}
+
+function _setPublishLiveRow(html){
+    var row=document.getElementById('publish-live-row');
+    if(row) row.innerHTML=html;
+}
+
+function submitHosting(hostingType, subdomainValue, btn){
+    if(!_hostingUrl){ alert('Necesitas un plan activo para publicar tu web.'); return; }
+    if(hostingType==='subdomain'){
+        subdomainValue=(subdomainValue||'').trim().toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'');
+        if(!subdomainValue){ alert('Escribe un nombre para tu subdominio.'); return; }
+    }
+    var orig=btn?btn.innerHTML:'';
+    if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Guardando…'; }
+
+    // OJO: nunca enviar FormData (multipart) con method PATCH — PHP no
+    // procesa el body multipart en peticiones que no son POST, así que el
+    // servidor recibía los campos vacíos y fallaba la validación. JSON sí
+    // funciona con cualquier método.
+    fetch(_hostingUrl,{
+        method:'PATCH',
+        headers:{ 'Content-Type':'application/json', 'X-CSRF-TOKEN':_CSRF, 'Accept':'application/json' },
+        body:JSON.stringify({ hosting_type:hostingType, subdomain:subdomainValue||null })
+    }).then(function(r){
+        if(!r.ok) return r.json().catch(function(){return{};}).then(function(j){ throw new Error(j.message||('Error '+r.status)); });
+        return r.json();
+    }).then(function(data){
+        _renderHostingStatus(data.hosting_type, data.subdomain);
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=orig; }
+        // Al reservar el subdominio, publicamos la web ya mismo con los datos actuales.
+        if(data.hosting_type==='subdomain') republishSite();
+    }).catch(function(err){
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=orig; }
+        alert(err.message||'No se pudo guardar la configuración.');
+    });
+}
+
+function resetHosting(btn){ submitHosting('none', null, btn); }
+
+/* Genera el sitio a partir de la vista previa actual y lo publica en el
+   subdominio ya reservado. Se llama sola tras reservar el subdominio, y
+   también desde el botón "Publicar ahora" para volcar cambios posteriores. */
+function republishSite(btn){
+    var origBtn=btn?btn.innerHTML:'';
+    if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Publicando…'; }
+    _setPublishLiveRow('<span style="color:#9ca3af;">Publicando tu web…</span>');
+
+    publishSitePromise().then(function(data){
+        _setPublishLiveRow('<span style="color:#16a34a;">●</span> Publicada · <a href="'+_esc(data.url)+'" target="_blank" rel="noopener" style="color:#2563eb;font-weight:600;text-decoration:none;">Ver mi web ↗</a>');
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=origBtn; }
+    }).catch(function(err){
+        _setPublishLiveRow('<span style="color:#dc2626;">No se pudo publicar: '+_esc(err.message||'inténtalo de nuevo')+'</span>');
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=origBtn; }
+    });
+}
+
+function publishModalDownloadZip(btn){
+    var orig=btn?btn.innerHTML:'';
+    if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Generando…'; }
+    downloadCvWebZipPromise().then(function(){
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=orig; }
+    }).catch(function(err){
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=orig; }
+        alert(err.message||'No se pudo generar el ZIP.');
+    });
+}
+
+document.getElementById('publish-modal-overlay')?.addEventListener('click',function(e){ if(e.target===this) closePublishModal(); });
 
 /* ── Tab scroll fade ── */
 (function(){
@@ -1098,12 +1497,155 @@ function updateSkillsPreview(){ clearTimeout(_skillsTimer); _skillsTimer=setTime
 function uploadProfilePhoto(input){ var file=input.files[0]; if(!file) return; if(file.size>3*1024*1024){alert('La imagen no puede superar 3 MB.');return;} var fd=new FormData(); fd.append('photo',file); fd.append('_token',_CSRF); fetch('{{ route("dashboard.photo.upload") }}',{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(data){ if(!data.url) return; _currentPhotoUrl=data.url; ['ai-photo-preview','editor-photo-preview'].forEach(function(id){ var wrap=document.getElementById(id); if(!wrap) return; var img=wrap.querySelector('img'); if(img) img.src=data.url; else wrap.innerHTML='<img src="'+data.url+'" style="width:100%;height:100%;object-fit:cover;">'; }); var iframe=document.getElementById('cv-preview-iframe'); if(iframe){var doc;try{doc=iframe.contentDocument;}catch(e){} if(doc) doc.querySelectorAll('[data-cv="photo"]').forEach(function(el){if(el.tagName==='IMG')el.src=data.url;});} }).catch(function(){alert('Error al subir la foto.');}); }
 
 /* ── Save / Clear ── */
-function saveCvData(e){ var data={}; ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location','cv_linkedin','cv_website'].forEach(function(id){ var el=document.getElementById(id); if(el) data[id]=el.value; }); data.habilidades=_getSkills(); data.experiencia=_serializeEntries('experiencia'); data.formacion=_serializeEntries('formacion'); data.proyectos=_serializeEntries('proyectos'); data.idiomas=_serializeEntries('idiomas'); var btn=document.getElementById('btn-save-cv'); if(btn){btn.disabled=true;btn.style.opacity='.6';} fetch('{{ route("dashboard.cv-data.update") }}',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':_CSRF,'Accept':'application/json'},body:JSON.stringify({cv_data:data})}).then(function(r){return r.json();}).then(function(){ if(btn){btn.disabled=false;btn.style.opacity='';var orig=btn.innerHTML;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Guardado';btn.style.background='#16a34a';setTimeout(function(){btn.innerHTML=orig;btn.style.background='';},2200);} }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='';} alert('Error al guardar. Inténtalo de nuevo.'); }); }
 
-function confirmClearCvData(){ if(!confirm('¿Seguro que quieres borrar todos los datos del CV?\nEsta acción no se puede deshacer.')) return; fetch('{{ route("dashboard.cv-data.clear") }}',{method:'DELETE',headers:{'X-CSRF-TOKEN':_CSRF,'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(){ ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location','cv_linkedin','cv_website'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';}); var cc=document.getElementById('skills-chips'); if(cc) cc.innerHTML=''; ['experiencia','formacion','proyectos'].forEach(function(type){ var c=document.getElementById('entries-'+type); if(!c) return; var entries=c.querySelectorAll('.cv-entry'); for(var i=1;i<entries.length;i++) entries[i].remove(); var first=c.querySelector('.cv-entry'); if(first){first.querySelectorAll('input,textarea').forEach(function(el){el.value='';}); first.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});} }); _currentPhotoUrl=''; var iframe=document.getElementById('cv-preview-iframe'); if(iframe) iframe.src=iframe.src; }).catch(function(){alert('Error al limpiar los datos.');}); }
+/* Guarda cv_data en el servidor. Devuelve una promesa (no toca el botón). */
+function saveCvDataPromise(){
+    var data={};
+    ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location','cv_linkedin','cv_website'].forEach(function(id){ var el=document.getElementById(id); if(el) data[id]=el.value; });
+    data.habilidades=_getSkills();
+    data.experiencia=_serializeEntries('experiencia');
+    data.formacion=_serializeEntries('formacion');
+    data.proyectos=_serializeEntries('proyectos');
+    data.idiomas=_serializeEntries('idiomas');
+    return fetch('{{ route("dashboard.cv-data.update") }}',{
+        method:'POST',
+        headers:{ 'Content-Type':'application/json','X-CSRF-TOKEN':_CSRF,'Accept':'application/json' },
+        body:JSON.stringify({ cv_data:data })
+    }).then(function(r){ if(!r.ok) throw new Error('save-failed'); return r.json(); });
+}
 
-/* ── Open preview tab ── */
-function openPreviewTab(baseUrl){ var data={fields:{},sections:{},photo:_currentPhotoUrl||null,sectionVisibility:{}}; var map={name:'cv_name',job_title:'cv_job_title',bio:'cv_bio',email:'cv_email',phone:'cv_phone',location:'cv_location',linkedin:'cv_linkedin',website:'cv_website'}; Object.keys(map).forEach(function(f){var el=document.getElementById(map[f]);if(el)data.fields[f]=el.value;}); ['experiencia','formacion','proyectos','idiomas'].forEach(function(type){var e=_serializeEntries(type);if(type==='experiencia')data.sections[type]=_buildExperienciaHTML(e);if(type==='formacion')data.sections[type]=_buildFormacionHTML(e);if(type==='proyectos'){var h=_buildProyectosHTML(e);data.sections[type]=h;data.sectionVisibility[type]=h.trim()!=='';}if(type==='idiomas')data.sections[type]=_buildIdiomasHTML(e);}); data.sections['habilidades']=_buildHabilidadesHTML(_getSkills()); localStorage.setItem('cv_preview_live',JSON.stringify(data)); window.open(baseUrl.split('?')[0]+'?live=1','_blank'); }
+/* ── Modal de confirmación propio (sustituye a confirm() nativo) ── */
+function showConfirmModal(opts){
+    var ov=document.getElementById('confirm-modal-overlay');
+    if(!ov){ if(confirm(opts.message||'')&&typeof opts.onConfirm==='function') opts.onConfirm(); return; }
+
+    document.getElementById('confirm-modal-title').textContent=opts.title||'¿Estás seguro?';
+    document.getElementById('confirm-modal-msg').textContent=opts.message||'';
+    var icon=document.getElementById('confirm-modal-icon');
+    icon.className='cvweb-confirm-icon'+(opts.danger===false?' cvweb-confirm-icon--info':'');
+    var okBtn=document.getElementById('confirm-modal-ok');
+    var cancelBtn=document.getElementById('confirm-modal-cancel');
+    okBtn.textContent=opts.confirmLabel||'Confirmar';
+    okBtn.className='cvweb-btn '+(opts.danger===false?'cvweb-btn--primary':'cvweb-btn--danger-solid');
+    cancelBtn.textContent=opts.cancelLabel||'Cancelar';
+
+    function cleanup(){
+        ov.style.display='none';
+        document.body.style.overflow='';
+        okBtn.removeEventListener('click',onOk);
+        cancelBtn.removeEventListener('click',onCancel);
+        ov.removeEventListener('click',onOverlay);
+        document.removeEventListener('keydown',onKey);
+    }
+    function onOk(){ cleanup(); if(typeof opts.onConfirm==='function') opts.onConfirm(); }
+    function onCancel(){ cleanup(); if(typeof opts.onCancel==='function') opts.onCancel(); }
+    function onOverlay(e){ if(e.target===ov) onCancel(); }
+    function onKey(e){ if(e.key==='Escape') onCancel(); }
+
+    okBtn.addEventListener('click',onOk);
+    cancelBtn.addEventListener('click',onCancel);
+    ov.addEventListener('click',onOverlay);
+    document.addEventListener('keydown',onKey);
+
+    ov.style.display='flex';
+    document.body.style.overflow='hidden';
+}
+
+function confirmClearCvData(){
+    showConfirmModal({
+        title:'¿Borrar todos los datos del CV?',
+        message:'Se eliminarán tus textos, experiencia, formación, habilidades y la foto de perfil. Esta acción no se puede deshacer.',
+        confirmLabel:'Sí, borrar todo',
+        cancelLabel:'Cancelar',
+        onConfirm:function(){
+            fetch('{{ route("dashboard.cv-data.clear") }}',{method:'DELETE',headers:{'X-CSRF-TOKEN':_CSRF,'Accept':'application/json'}}).then(function(r){return r.json();}).then(function(){ ['cv_name','cv_job_title','cv_bio','cv_email','cv_phone','cv_location','cv_linkedin','cv_website'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';}); var cc=document.getElementById('skills-chips'); if(cc) cc.innerHTML=''; ['experiencia','formacion','proyectos'].forEach(function(type){ var c=document.getElementById('entries-'+type); if(!c) return; var entries=c.querySelectorAll('.cv-entry'); for(var i=1;i<entries.length;i++) entries[i].remove(); var first=c.querySelector('.cv-entry'); if(first){first.querySelectorAll('input,textarea').forEach(function(el){el.value='';}); first.querySelectorAll('select').forEach(function(el){el.selectedIndex=0;});} }); _currentPhotoUrl=''; var iframe=document.getElementById('cv-preview-iframe'); if(iframe) iframe.src=iframe.src; }).catch(function(){alert('Error al limpiar los datos.');});
+        }
+    });
+}
+
+/* ── Captura del HTML "en vivo" del iframe (plantilla + datos ya aplicados) ──
+   La usan tanto la descarga ZIP como la publicación por subdominio. */
+function captureLivePreviewHtml(){
+    var iframe=document.getElementById('cv-preview-iframe');
+    if(!iframe) return Promise.reject(new Error('No hay vista previa disponible.'));
+    var doc; try{ doc=iframe.contentDocument; }catch(e){ doc=null; }
+    if(!doc||!doc.documentElement) return Promise.reject(new Error('La vista previa aún no ha cargado del todo. Espera unos segundos e inténtalo otra vez.'));
+
+    try{ fillAllPreview(); }catch(e){}
+
+    return new Promise(function(resolve){
+        setTimeout(function(){
+            var clone=doc.documentElement.cloneNode(true);
+            clone.querySelectorAll('[contenteditable]').forEach(function(el){ el.removeAttribute('contenteditable'); });
+            clone.querySelectorAll('script[data-cvweb-editor]').forEach(function(el){ el.remove(); });
+            resolve('<!DOCTYPE html>\n'+clone.outerHTML);
+        },60);
+    });
+}
+
+/* ── Descargar plantilla + cambios como ZIP ── */
+
+/* Genera y descarga el ZIP a partir del iframe de vista previa. Devuelve una promesa. */
+function downloadCvWebZipPromise(){
+    return captureLivePreviewHtml().then(function(html){
+        return fetch('{{ route("cv-web.download-zip") }}',{
+            method:'POST',
+            headers:{ 'Content-Type':'application/json','X-CSRF-TOKEN':_CSRF,'Accept':'application/json' },
+            body:JSON.stringify({ html:html })
+        });
+    }).then(function(r){
+        if(!r.ok) return r.json().catch(function(){return{};}).then(function(j){ throw new Error(j.message||('Error '+r.status)); });
+        var name='cv-web.zip';
+        var cd=r.headers.get('Content-Disposition')||'';
+        var m=cd.match(/filename="?([^"]+)"?/); if(m) name=m[1];
+        return r.blob().then(function(blob){ return { blob:blob, name:name }; });
+    }).then(function(res){
+        var url=URL.createObjectURL(res.blob);
+        var a=document.createElement('a');
+        a.href=url; a.download=res.name;
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },1000);
+    });
+}
+
+/* ── Publicar (o actualizar) la web en el subdominio reservado ── */
+function publishSitePromise(){
+    if(!_hostingUrl) return Promise.reject(new Error('Necesitas un plan activo para publicar tu web.'));
+    return captureLivePreviewHtml().then(function(html){
+        return fetch('{{ route("cv-web.publish") }}',{
+            method:'POST',
+            headers:{ 'Content-Type':'application/json','X-CSRF-TOKEN':_CSRF,'Accept':'application/json' },
+            body:JSON.stringify({ html:html })
+        });
+    }).then(function(r){
+        if(!r.ok) return r.json().catch(function(){return{};}).then(function(j){ throw new Error(j.message||('Error '+r.status)); });
+        return r.json();
+    });
+}
+
+/* Botón único: guarda cv_data y, tanto si el guardado va bien como si falla,
+   genera y descarga el ZIP con el estado actual de la vista previa. */
+function saveAndDownloadCv(e){
+    if(e) e.preventDefault();
+    var btn=document.getElementById('btn-save-cv');
+    var orig=btn?btn.innerHTML:'';
+    if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Guardando…'; }
+
+    saveCvDataPromise().catch(function(){ /* seguimos con la descarga aunque falle el guardado */ }).then(function(){
+        if(btn) btn.textContent='Generando ZIP…';
+        return downloadCvWebZipPromise();
+    }).then(function(){
+        if(btn){
+            btn.disabled=false; btn.style.opacity='';
+            btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Guardado y descargado';
+            btn.style.background='#16a34a';
+            setTimeout(function(){ btn.innerHTML=orig; btn.style.background=''; },2500);
+        }
+    }).catch(function(err){
+        if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=orig; }
+        alert(err.message||'No se pudo completar la acción.');
+    });
+}
 
 /* ══ AI MODAL ══ */
 var _aiSource=null,_aiFile=null,_aiParseId=null,_aiPollTimer=null,_aiStepIdx=0;

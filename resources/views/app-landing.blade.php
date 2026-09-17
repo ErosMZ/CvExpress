@@ -1062,7 +1062,7 @@
                     <div class="ap-plan__name">{{ $plan->name }}</div>
                     <div class="ap-plan__price">
                         <strong>€{{ number_format($plan->price, 2, ',', '.') }}</strong>
-                        <span>/ {{ $plan->billing_cycle === 'annual' ? 'año' : 'mes' }}</span>
+                        <span>{{ $plan->billing_cycle === 'once' ? 'pago único' : '/ año' }}</span>
                     </div>
                     @if($plan->features)
                     <ul class="ap-plan__features">

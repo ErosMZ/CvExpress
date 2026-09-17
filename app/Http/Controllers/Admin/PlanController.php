@@ -24,23 +24,27 @@ class PlanController extends Controller
             'badge_label' => ['nullable', 'string', 'max:100'],
             'features'    => ['nullable', 'string'],
             'sort_order'  => ['nullable', 'integer'],
+            'category'    => ['nullable', 'in:template,web_download,pdf_download'],
         ]);
 
         $features = array_values(array_filter(
             array_map('trim', explode("\n", $request->features ?? ''))
         ));
+        $category = $request->category ?: 'template';
 
         Plan::create([
             'slug'          => Str::slug($request->name),
             'name'          => $request->name,
             'price'         => $request->price,
+            'billing_cycle' => $this->billingCycleFor($category),
             'color'         => $request->color,
             'badge_label'   => $request->badge_label ?: null,
             'features'      => $features,
             'is_active'     => $request->has('is_active'),
             'sort_order'    => $request->sort_order ?? 0,
-            'template_tier' => $request->template_tier ?: null,
-            'category'      => $request->category ?: 'template',
+            // El nivel de plantillas solo tiene sentido para planes con hosting.
+            'template_tier' => $category === 'template' ? ($request->template_tier ?: null) : null,
+            'category'      => $category,
         ]);
 
         return redirect()->route('admin.plans.index')
@@ -56,27 +60,39 @@ class PlanController extends Controller
             'badge_label' => ['nullable', 'string', 'max:100'],
             'features'    => ['nullable', 'string'],
             'sort_order'  => ['nullable', 'integer'],
+            'category'    => ['nullable', 'in:template,web_download,pdf_download'],
         ]);
 
         $features = array_values(array_filter(
             array_map('trim', explode("\n", $request->features ?? ''))
         ));
+        $category = $request->category ?: 'template';
 
         $plan->update([
             'slug'          => Str::slug($request->name),
             'name'          => $request->name,
             'price'         => $request->price,
+            'billing_cycle' => $this->billingCycleFor($category),
             'color'         => $request->color,
             'badge_label'   => $request->badge_label ?: null,
             'features'      => $features,
             'is_active'     => $request->has('is_active'),
             'sort_order'    => $request->sort_order ?? $plan->sort_order,
-            'template_tier' => $request->template_tier ?: null,
-            'category'      => $request->category ?: 'template',
+            'template_tier' => $category === 'template' ? ($request->template_tier ?: null) : null,
+            'category'      => $category,
         ]);
 
         return redirect()->route('admin.plans.index')
             ->with('success', "Plan «{$plan->name}» actualizado correctamente.");
+    }
+
+    /**
+     * Los planes de descarga (web o PDF) son de pago único; los de
+     * plantillas con hosting se facturan anualmente.
+     */
+    private function billingCycleFor(string $category): string
+    {
+        return in_array($category, ['web_download', 'pdf_download'], true) ? 'once' : 'annual';
     }
 
     public function destroy(Plan $plan)

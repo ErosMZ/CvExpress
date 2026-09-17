@@ -40,4 +40,13 @@ return [
         'timeout' => 90,
     ],
 
+    // Dominio base bajo el que se sirven las webs publicadas por subdominio
+    // (ver routes/web.php y PublicSiteController). En local usa "localhost"
+    // (Chrome resuelve *.localhost a 127.0.0.1 sin tocar nada); en producción
+    // debe ser "cvxpress.es" una vez el dominio esté registrado y con DNS
+    // comodín (*.cvxpress.es) apuntando al servidor.
+    'public_sites' => [
+        'domain' => env('PUBLIC_SITES_DOMAIN', 'cvxpress.es'),
+    ],
+
 ];

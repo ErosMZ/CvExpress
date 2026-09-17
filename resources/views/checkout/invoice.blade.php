@@ -254,8 +254,20 @@
                     <tbody>
                         <tr>
                             <td>
-                                <div class="desc-main">Plan {{ $plan->name }} — CvXpress</div>
-                                <div class="desc-sub">Suscripción anual · Licencia 12 meses · Válido hasta {{ $purchase->expires_at?->format('d/m/Y') ?? now()->addYear()->format('d/m/Y') }}</div>
+                                <div class="desc-main">
+                                    @if($plan->category === 'web_download' && $purchase->selectedTemplate)
+                                        Descarga: Plantilla «{{ $purchase->selectedTemplate->name }}» — CvXpress
+                                    @else
+                                        Plan {{ $plan->name }} — CvXpress
+                                    @endif
+                                </div>
+                                <div class="desc-sub">
+                                    @if($plan->billing_cycle === 'once')
+                                        Pago único · Sin renovaciones
+                                    @else
+                                        Suscripción anual · Licencia 12 meses · Válido hasta {{ $purchase->expires_at?->format('d/m/Y') ?? now()->addYear()->format('d/m/Y') }}
+                                    @endif
+                                </div>
                             </td>
                             <td>1</td>
                             <td>{{ number_format($base, 2, ',', '.') }}€</td>

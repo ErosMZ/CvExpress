@@ -164,7 +164,10 @@
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 14px;
-    overflow: hidden;
+    /* Visible (no hidden): el desplegable de "Comprar" necesita salirse
+       de la tarjeta sin recortarse. El redondeado de las esquinas lo pone
+       cada parte por su cuenta (thumb arriba, body/footer abajo). */
+    overflow: visible;
     display: flex;
     flex-direction: column;
     transition: box-shadow .2s, transform .2s;
@@ -180,6 +183,7 @@
     aspect-ratio: 16/10;
     background: #f1f5f9;
     overflow: hidden;
+    border-radius: 14px 14px 0 0;
 }
 .tpl-card__thumb img {
     width: 100%; height: 100%;
@@ -389,6 +393,59 @@
     color: #d97706;
 }
 .tpl-btn--upgrade:hover { background: #fde68a; border-color: #d97706; transform: none; }
+
+/* ─── "COMPRAR" + DESPLEGABLE DE PRECIOS (hover) ─── */
+.tpl-buy { position: relative; }
+.tpl-buy__toggle { cursor: pointer; }
+.tpl-buy__toggle svg.chev { transition: transform .15s; }
+.tpl-buy:hover .tpl-buy__toggle svg.chev,
+.tpl-buy:focus-within .tpl-buy__toggle svg.chev { transform: rotate(180deg); }
+.tpl-buy__menu {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    width: 232px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 14px 36px rgba(15,23,42,.16);
+    padding: .4rem;
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity .15s ease, transform .15s ease, visibility .15s;
+    z-index: 30;
+}
+/* Puente invisible para que el hover no se pierda al bajar el cursor hacia el menú */
+.tpl-buy__menu::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 10px;
+}
+.tpl-buy:hover .tpl-buy__menu,
+.tpl-buy:focus-within .tpl-buy__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.tpl-buy__opt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    padding: .55rem .65rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #0f172a;
+    transition: background .12s;
+}
+.tpl-buy__opt:hover { background: #f1f5f9; }
+.tpl-buy__opt-label { font-size: .78rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.tpl-buy__opt-label svg { flex-shrink: 0; color: #94a3b8; }
+.tpl-buy__opt-price { font-size: .78rem; font-weight: 800; color: #1A56DB; white-space: nowrap; text-align: right; }
+.tpl-buy__opt-price small { display: block; font-size: .64rem; font-weight: 600; color: #94a3b8; }
+.tpl-buy__divider { height: 1px; background: #f1f5f9; margin: .15rem .3rem; }
 
 /* ─── EMPTY STATE ─── */
 .tpl-empty {

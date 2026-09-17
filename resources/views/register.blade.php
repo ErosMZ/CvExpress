@@ -1,4 +1,4 @@
-{{-- resources/views/auth/register.blade.php --}}
+{{-- resources/views/register.blade.php --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,155 +8,88 @@
     <link rel="icon" href="/images/logo2Web.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 </head>
-<body class="auth-page">
+<body class="authsplit-page">
 
-    {{-- Tarjetas flotantes --}}
-    <div class="auth-bg-cards" aria-hidden="true">
-        <div class="auth-float-card fc-1">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--med"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-        </div>
-        <div class="auth-float-card fc-2">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__tags">
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
+    <div class="authsplit-shell">
+
+        {{-- ── PANEL IZQUIERDO (azul) ── --}}
+        <aside class="authsplit-panel">
+            <div class="authsplit-panel__glow" aria-hidden="true"></div>
+
+            <a href="/" class="authsplit-panel__logo">
+                <img src="/images/logo2Web.webp" alt="CvXpress">
+            </a>
+
+            <div class="authsplit-panel__body">
+                <span class="authsplit-panel__eyebrow">Es gratis</span>
+                <h1 class="authsplit-panel__heading">Crea tu cuenta en segundos</h1>
+                <p class="authsplit-panel__text">Sube tu CV, elige una plantilla y ten tu portfolio web publicado en minutos. Sin tarjeta, sin complicaciones.</p>
             </div>
-        </div>
-        <div class="auth-float-card fc-3 auth-float-card--bright">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line auth-float-card__line--med"></div>
-            <div class="auth-float-card__line auth-float-card__line--short"></div>
-        </div>
-        <div class="auth-float-card fc-4 auth-float-card--bright">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__tags">
-                <div class="auth-float-card__tag"></div>
-                <div class="auth-float-card__tag"></div>
-            </div>
-        </div>
-        <div class="auth-float-card fc-5">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-            <div class="auth-float-card__section"></div>
-            <div class="auth-float-card__line"></div>
-        </div>
-        <div class="auth-float-card fc-6">
-            <div class="auth-float-card__avatar"></div>
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-        </div>
-        <div class="auth-float-card fc-7">
-            <div class="auth-float-card__line auth-float-card__line--name"></div>
-            <div class="auth-float-card__line auth-float-card__line--role"></div>
-        </div>
-    </div>
 
-    {{-- Botón volver --}}
-    <a href="/" class="auth-back">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 5l-7 7 7 7"/>
-        </svg>
-        Volver al inicio
-    </a>
+            <p class="authsplit-panel__footer">
+                &copy; {{ date('Y') }} CvXpress · <a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a>
+            </p>
+        </aside>
 
-    <div class="auth-wrapper">
+        {{-- ── LADO DEL FORMULARIO (blanco) ── --}}
+        <div class="authsplit-formside">
+            <div class="authsplit-form">
 
-        <a href="/" class="auth-logo" style="position:relative;z-index:30;display:flex;justify-content:center;">
-            <div style="width:200px;height:75px;overflow:hidden;flex-shrink:0;">
-                <img src="/images/logo2Web.webp" alt="CVX" style="width:340px;height:auto;margin-left:-75px;margin-top:-78px;display:block;max-width:none;">
-            </div>
-        </a>
-
-        <div class="auth-card">
-            <span class="auth-card__eyebrow">
-                <span class="auth-card__eyebrow-dot"></span>
-                Es gratis
-            </span>
-            <h1 class="auth-card__heading">Crea tu cuenta</h1>
-            <p class="auth-card__subheading">Empieza a construir tu portfolio profesional</p>
-
-            @if ($errors->any())
-                <div class="auth-alert" role="alert">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="authsplit-form__top">
+                    <a href="/" class="authsplit-form__wordmark">CvXpress</a>
+                    <a href="/login" class="authsplit-form__toplink">¿Ya tienes cuenta? <strong>Inicia sesión</strong></a>
                 </div>
-            @endif
 
-            <form method="POST" action="/register">
-                @csrf
+                <h1 class="authsplit-form__heading">Crea tu cuenta</h1>
+                <p class="authsplit-form__sub">Empieza a construir tu portfolio profesional.</p>
 
-                {{-- Nombre + Email en fila en pantallas grandes --}}
-                <div class="auth-form-row">
-                    <div class="auth-form-group">
-                        <label for="name" class="auth-label">Nombre completo</label>
-                        <input type="text" id="name" name="name"
-                            class="auth-input" placeholder="María García"
-                            value="{{ old('name') }}"
-                            autocomplete="name" required>
+                @if ($errors->any())
+                    <div class="authsplit-alert" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="auth-form-group">
-                        <label for="email" class="auth-label">Correo electrónico</label>
-                        <input type="email" id="email" name="email"
-                            class="auth-input" placeholder="tu@email.com"
-                            value="{{ old('email') }}"
-                            autocomplete="email" required>
+                @endif
+
+                <form method="POST" action="/register">
+                    @csrf
+
+                    <div class="authsplit-field">
+                        <label for="name">Nombre completo</label>
+                        <input type="text" id="name" name="name" placeholder="María García" value="{{ old('name') }}" autocomplete="name" autofocus required>
                     </div>
-                </div>
 
-                <div class="auth-form-group">
-                    <label for="password" class="auth-label">Contraseña</label>
-                    <input type="password" id="password" name="password"
-                        class="auth-input" placeholder="Mínimo 8 caracteres"
-                        autocomplete="new-password" required>
-                </div>
+                    <div class="authsplit-field">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com" value="{{ old('email') }}" autocomplete="email" required>
+                    </div>
 
-                <div class="auth-form-group">
-                    <label for="password_confirmation" class="auth-label">Confirmar contraseña</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation"
-                        class="auth-input" placeholder="Repite la contraseña"
-                        autocomplete="new-password" required>
-                </div>
+                    <div class="authsplit-row authsplit-row--2">
+                        <div class="authsplit-field">
+                            <label for="password">Contraseña</label>
+                            <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required>
+                        </div>
+                        <div class="authsplit-field">
+                            <label for="password_confirmation">Confirmar</label>
+                            <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Repite la contraseña" autocomplete="new-password" required>
+                        </div>
+                    </div>
 
-                <button type="submit" class="auth-btn">
-                    Crear cuenta gratis
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </form>
+                    <button type="submit" class="authsplit-btn">
+                        Crear cuenta gratis
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
 
-            <div class="auth-card__footer">
-                ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+                <p class="authsplit-switch">¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
             </div>
         </div>
-
-        <p class="auth-page-footer">
-            &copy; {{ date('Y') }} CvXpress &nbsp;·&nbsp;
-            <a href="/privacidad">Privacidad</a> &nbsp;·&nbsp;
-            <a href="/terminos">Términos</a>
-        </p>
 
     </div>
 

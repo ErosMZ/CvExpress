@@ -41,7 +41,9 @@ class TemplatesController extends Controller
             ? Auth::user()->activePurchase?->load(['plan', 'selectedTemplate'])
             : null;
 
-        // Plan mínimo requerido por tier
+        // Plan mínimo requerido por tier, para la opción "con hosting".
+        // La opción "solo descargar" usa el precio propio de cada plantilla
+        // ($template->price), no hace falta ningún plan para eso.
         $plansByTier = $this->plansByTier();
 
         return view('templates.index', compact('templates', 'categories', 'activePurchase', 'plansByTier'));

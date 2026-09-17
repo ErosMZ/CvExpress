@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Checkout — ' . $plan->name . ' · CvXpress')
+{{-- Esta vista sirve tanto para comprar un PLAN (con hosting o PDF) como
+     para comprar la descarga de UNA plantilla concreta. El controlador pasa
+     siempre las mismas variables genéricas: $checkoutTitle, $checkoutBadge,
+     $checkoutSubtitle, $checkoutPrice, $checkoutOnce, $checkoutFeatures,
+     $checkoutColor, $checkoutFormAction, $checkoutBackParam. --}}
+
+@section('title', 'Checkout — ' . $checkoutTitle . ' · CvXpress')
 
 @push('styles')
 <style>
@@ -254,10 +260,10 @@
                     Completa tu compra
                 </div>
 
-                <form method="POST" action="{{ route('checkout.process', $plan->slug) }}" id="checkoutForm">
+                <form method="POST" action="{{ $checkoutFormAction }}" id="checkoutForm">
                     @csrf
-                    @if(request('back'))
-                        <input type="hidden" name="back" value="{{ request('back') }}">
+                    @if($checkoutBackParam)
+                        <input type="hidden" name="back" value="{{ $checkoutBackParam }}">
                     @endif
 
                     {{-- Datos de facturación --}}
@@ -324,16 +330,16 @@
 
                     <button type="submit" class="checkout-btn" id="payBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        @if($plan->category === 'pdf_download')
-                            Pagar · {{ number_format($plan->price, 2, ',', '.') }}€
+                        @if($checkoutOnce)
+                            Pagar · {{ number_format($checkoutPrice, 2, ',', '.') }}€
                         @else
-                            Suscribirse · {{ number_format($plan->price, 2, ',', '.') }}€/año
+                            Suscribirse · {{ number_format($checkoutPrice, 2, ',', '.') }}€/año
                         @endif
                     </button>
 
                     <p class="checkout-disclaimer">
                         Este es un entorno de demostración. No se realizará ningún cargo real.<br>
-                        Facturación anual · Recibirás una factura legal descargable en PDF.
+                        {{ $checkoutOnce ? 'Pago único, sin renovaciones' : 'Facturación anual' }} · Recibirás una factura legal descargable en PDF.
                     </p>
                 </form>
             </div>
@@ -350,20 +356,20 @@
                         '#0891b2' => ['bg'=>'#cffafe','fg'=>'#0891b2'],
                         '#475569' => ['bg'=>'#f1f5f9','fg'=>'#475569'],
                     ];
-                    $tc = $colors[$plan->color] ?? ['bg'=>'#f1f5f9','fg'=>'#475569'];
+                    $tc = $colors[$checkoutColor] ?? ['bg'=>'#f1f5f9','fg'=>'#475569'];
                 @endphp
 
                 <span class="checkout-summary__plan-badge"
                       style="background:{{ $tc['bg'] }};color:{{ $tc['fg'] }};">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                    Plan {{ $plan->name }}
+                    {{ $checkoutBadge }}
                 </span>
 
-                <div class="checkout-summary__name">{{ $plan->name }}</div>
-                <div class="checkout-summary__desc">Suscripción anual · Acceso completo 12 meses</div>
+                <div class="checkout-summary__name">{{ $checkoutTitle }}</div>
+                <div class="checkout-summary__desc">{{ $checkoutSubtitle }}</div>
 
                 <ul class="checkout-summary__features">
-                    @foreach($plan->features ?? [] as $feature)
+                    @foreach($checkoutFeatures as $feature)
                         <li>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                             {{ $feature }}
@@ -384,7 +390,7 @@
                 <hr class="checkout-summary__divider">
                 <div class="checkout-summary__row checkout-summary__row--total">
                     <span>Total</span>
-                    <span>{{ number_format($plan->price, 2, ',', '.') }}€</span>
+                    <span>{{ number_format($checkoutPrice, 2, ',', '.') }}€</span>
                 </div>
 
                 <div class="checkout-summary__secure">

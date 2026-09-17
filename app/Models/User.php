@@ -85,10 +85,23 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(\App\Models\CvParse::class)->latest();
     }
 
+    /**
+     * La compra activa de CV Web: puede ser categoría "template" (plantillas
+     * por nivel + hosting/subdominio) o "web_download" (cualquier plantilla,
+     * pero solo para descargar el ZIP, sin hosting). Se excluye a propósito
+     * la categoría "pdf_download", porque el usuario puede tener a la vez un
+     * plan de CV Web activo Y un plan de descarga de PDF activo (son
+     * productos independientes) — sin este filtro, `latest()` podía devolver
+     * la compra de PDF más reciente en vez de la de CV Web, rompiendo
+     * plantillas/hosting. Usa `$purchase->plan->category === 'template'`
+     * (o `$purchase->canHost()`) donde haga falta distinguir si además
+     * incluye hosting.
+     */
     public function activePurchase()
     {
         return $this->hasOne(\App\Models\UserPurchase::class)
                     ->where('status', 'active')
+                    ->whereHas('plan', fn ($q) => $q->whereIn('category', ['template', 'web_download']))
                     ->with('plan')
                     ->latest();
     }

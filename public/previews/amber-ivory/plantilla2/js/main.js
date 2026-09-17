@@ -1,32 +1,3 @@
-/* ─── LIVE PREVIEW FILL ─────────────────────────────────────────────── */
-(function () {
-  if (location.search.indexOf('live=1') === -1) return;
-  var raw = localStorage.getItem('cv_preview_live');
-  if (!raw) return;
-  try { _fillLive(JSON.parse(raw)); } catch (e) {}
-  function _fillLive(d) {
-    if (d.fields) Object.keys(d.fields).forEach(function (f) {
-      var v = d.fields[f]; if (!v) return;
-      document.querySelectorAll('[data-cv="' + f + '"]').forEach(function (el) {
-        if (el.tagName === 'IMG') el.src = v; else el.textContent = v;
-      });
-    });
-    if (d.photo) document.querySelectorAll('[data-cv="photo"]').forEach(function (el) {
-      if (el.tagName === 'IMG') { el.src = d.photo; el.style.display = 'block'; }
-    });
-    if (d.sections) Object.keys(d.sections).forEach(function (t) {
-      document.querySelectorAll('[data-cv-section="' + t + '"]').forEach(function (el) {
-        el.innerHTML = d.sections[t];
-      });
-    });
-    if (d.sectionVisibility) Object.keys(d.sectionVisibility).forEach(function (t) {
-      document.querySelectorAll('[data-cv-section-wrap="' + t + '"]').forEach(function (el) {
-        el.style.display = d.sectionVisibility[t] ? '' : 'none';
-      });
-    });
-  }
-})();
-
 /* ═══════════════════════════════════════════════
    CvExpress — main.js
    • Header shrink on scroll
@@ -41,10 +12,6 @@
 
   /* ─── HEADER SCROLL ──────────────────────────── */
   const header = document.getElementById('site-header');
-
-  // Declaradas aquí para que updateActiveNav() pueda usarlas desde onScroll()
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
 
   function onScroll() {
     if (window.scrollY > 40) {
@@ -94,6 +61,9 @@
   }
 
   /* ─── ACTIVE NAV LINK ────────────────────────── */
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+
   function updateActiveNav() {
     let current = '';
     const scrollY = window.scrollY + 120;

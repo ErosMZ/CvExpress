@@ -451,34 +451,6 @@ a:hover { color: var(--c-amber-dark); }
 /* ═══════════════════════════════════════════════
    EXPERIENCIA — timeline
    ═══════════════════════════════════════════════ */
-/* ── Habilidades ── */
-.skills-section { background: var(--c-cream); }
-
-.skills-chips-wrap { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; min-height: 1rem; }
-.cv-skill-chip {
-  display: inline-block;
-  background: var(--c-charcoal);
-  color: var(--c-cream);
-  font-family: var(--f-body);
-  font-size: .78rem;
-  font-weight: 600;
-  padding: .35rem 1rem;
-  border-radius: 99px;
-  letter-spacing: .04em;
-}
-
-/* ── Proyectos ── */
-.projects-section { background: var(--c-ivory); }
-.projects-grid { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; min-height: 1rem; }
-.cv-project-item { background: var(--c-cream); border: 1px solid var(--c-sand); border-radius: var(--radius); padding: 1.5rem; transition: border-color .2s, transform .15s; }
-.cv-project-item:hover { border-color: var(--c-amber); transform: translateX(4px); }
-.cv-project-name { font-family: var(--f-display); font-size: 1.05rem; font-weight: 700; color: var(--c-charcoal); margin-bottom: .5rem; }
-.cv-project-link { color: var(--c-amber-dark); text-decoration: none; }
-.cv-project-link:hover { text-decoration: underline; }
-.cv-project-desc { font-size: .88rem; color: var(--c-mid); line-height: 1.65; margin-bottom: .875rem; }
-.cv-project-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
-.cv-project-tag { background: var(--c-charcoal); color: var(--c-cream); font-family: var(--f-body); font-size: .72rem; font-weight: 600; padding: .2rem .7rem; border-radius: 99px; letter-spacing: .03em; }
-
 .experience-section {
   background: var(--c-cream);
   position: relative;

@@ -94,6 +94,13 @@ class CvPdfController extends Controller
             return response()->json(['error' => 'Plan no válido.'], 400);
         }
 
+        // Solo una compra activa de PDF a la vez (no acumular duplicadas por
+        // clics repetidos); no afecta a un plan de CV Web activo.
+        UserPurchase::where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->whereHas('plan', fn ($q) => $q->where('category', 'pdf_download'))
+            ->update(['status' => 'cancelled']);
+
         UserPurchase::create([
             'user_id'           => auth()->id(),
             'plan_id'           => $plan->id,

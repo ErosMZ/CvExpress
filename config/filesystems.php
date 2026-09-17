@@ -60,6 +60,25 @@ return [
             'report' => false,
         ],
 
+        // Webs publicadas por subdominio (ver PublicSiteController).
+        // En local usa disco "local" (storage/app/sites). En producción, como el
+        // disco de Render es efímero, cambia SITES_DISK=s3 y apunta las claves
+        // AWS_* (o Supabase Storage, compatible con S3) para que sobreviva a los
+        // redeploys.
+        'sites' => [
+            'driver' => env('SITES_DISK', 'local'),
+            'root' => storage_path('app/sites'),
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('SITES_S3_BUCKET', env('AWS_BUCKET')),
+            'url' => env('SITES_S3_URL', env('AWS_URL')),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*

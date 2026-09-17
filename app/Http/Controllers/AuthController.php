@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -29,7 +30,18 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        $user->sendEmailVerificationNotification();
+        // El envío no debe tumbar el registro: si el proveedor SMTP falla
+        // (p. ej. SendGrid sin créditos), el usuario podrá reenviarlo luego.
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            Log::error('No se pudo enviar el email de verificación', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+            return redirect('/email/verify')
+                ->with('error', 'No pudimos enviar el email de verificación. Pulsa "Reenviar" en unos minutos.');
+        }
 
         return redirect('/email/verify');
     }

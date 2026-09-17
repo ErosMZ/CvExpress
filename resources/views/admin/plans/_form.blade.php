@@ -21,9 +21,14 @@
     </label>
     <select id="{{ $prefix }}_category" name="category" class="form-input"
             onchange="toggleTierField_{{ $prefix }}(this.value)">
-        <option value="template"     {{ $selectedCategory === 'template'     ? 'selected' : '' }}>Plantillas CV Web</option>
+        <option value="template"     {{ $selectedCategory === 'template'     ? 'selected' : '' }}>CV Web — con hosting</option>
+        <option value="web_download" {{ $selectedCategory === 'web_download' ? 'selected' : '' }}>CV Web — solo descarga</option>
         <option value="pdf_download" {{ $selectedCategory === 'pdf_download' ? 'selected' : '' }}>Descarga PDF</option>
     </select>
+    <p style="font-size:.75rem;color:var(--admin-text-muted);margin-top:.3rem;">
+        <strong>Con hosting</strong>: da acceso a las plantillas de su nivel, permite publicar en subdominio propio y se factura anualmente.
+        <strong>Solo descarga</strong>: da acceso a <u>todas</u> las plantillas para generar el ZIP, sin hosting, pago único.
+    </p>
 </div>
 
 <div class="pm-form-grid">

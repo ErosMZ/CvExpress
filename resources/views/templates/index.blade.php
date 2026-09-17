@@ -149,7 +149,7 @@
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                             Vista previa
                         </a>
-                        @if($activePurchase && in_array($template->plan_tier, $activePurchase->accessibleTiers()) && $activePurchase->selected_template_id !== $template->id)
+                        @if($activePurchase && $activePurchase->canUseTemplate($template) && $activePurchase->selected_template_id !== $template->id)
                             <form method="POST" action="{{ route('dashboard.template.select', [$activePurchase->id, $template->id]) }}">
                                 @csrf
                                 <button type="submit" class="tpl-overlay-btn tpl-overlay-btn--buy">
@@ -187,9 +187,10 @@
                     @endif
 
                     @php
-                        $canUse      = $activePurchase && in_array($template->plan_tier, $activePurchase->accessibleTiers());
+                        $canUse      = $activePurchase && $activePurchase->canUseTemplate($template);
                         $isActive    = $activePurchase && $activePurchase->selected_template_id === $template->id;
                         $tierPlan    = $plansByTier[$template->plan_tier] ?? null;
+                        $canDownload = $template->price > 0;
                     @endphp
 
                     <div class="tpl-card__footer">
@@ -202,11 +203,7 @@
                                 </div>
                             @elseif($tierPlan)
                                 <div style="font-size:.78rem;font-weight:700;color:var(--color-text-primary,#0f172a);">
-                                    Plan {{ $tierPlan->name }}
-                                </div>
-                                <div style="font-size:.72rem;color:#64748b;display:flex;align-items:center;gap:4px;margin-top:1px;">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                    Desde {{ number_format($tierPlan->price, 2, ',', '.') }}€/año
+                                    Con hosting: {{ $tierPlan->name }}
                                 </div>
                             @else
                                 <div style="font-size:.78rem;color:#16a34a;font-weight:700;">Gratuita</div>
@@ -241,12 +238,37 @@
                                     </a>
                                 @endif
                             @else
-                                @if($tierPlan)
-                                    <a href="{{ auth()->check() ? route('checkout.show', $tierPlan->slug) : route('register') }}" class="tpl-btn tpl-btn--primary">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                        Suscribirse
-                                    </a>
-                                @endif
+                                {{-- Sin plan: un único botón "Comprar" con desplegable al pasar el ratón --}}
+                                <div class="tpl-buy" tabindex="0">
+                                    <span class="tpl-btn tpl-btn--primary tpl-buy__toggle">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                        Comprar
+                                        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </span>
+                                    <div class="tpl-buy__menu">
+                                        @if($canDownload)
+                                        <a href="{{ auth()->check() ? route('checkout.download.show', $template->slug) : route('register') }}" class="tpl-buy__opt">
+                                            <span class="tpl-buy__opt-label">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                Solo descargar
+                                            </span>
+                                            <span class="tpl-buy__opt-price">{{ number_format($template->price, 2, ',', '.') }}€<small>pago único</small></span>
+                                        </a>
+                                        @endif
+                                        @if($canDownload && $tierPlan)
+                                        <div class="tpl-buy__divider"></div>
+                                        @endif
+                                        @if($tierPlan)
+                                        <a href="{{ auth()->check() ? route('checkout.show', $tierPlan->slug) : route('register') }}" class="tpl-buy__opt">
+                                            <span class="tpl-buy__opt-label">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                                Con subdominio
+                                            </span>
+                                            <span class="tpl-buy__opt-price">{{ number_format($tierPlan->price, 2, ',', '.') }}€<small>/año</small></span>
+                                        </a>
+                                        @endif
+                                    </div>
+                                </div>
                             @endif
                         </div>
                     </div>
