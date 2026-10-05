@@ -37,7 +37,6 @@
 
             <ul class="nav__menu" id="nav-menu" role="list">
                 <li><a href="{{ route('home') }}" id="nav-inicio" class="nav__link">Inicio</a></li>
-                <li><a href="{{ route('home') }}#caracteristicas" id="nav-ofrecemos" class="nav__link">¿Que ofrecemos?</a></li>
                 <li><a href="{{ route('templates.list') }}" class="nav__link {{ request()->routeIs('templates.list','templates.preview') ? 'nav__link--active' : '' }}">Plantillas</a></li>
                 <li><a href="{{ auth()->check() ? route('cv-web.editor') : route('register') }}" class="nav__link {{ request()->routeIs('cv-web.*') ? 'nav__link--active' : '' }}">CV Web</a></li>
                 <li><a href="{{ route('cv-pdf.editor') }}" class="nav__link {{ request()->routeIs('cv-pdf.*') ? 'nav__link--active' : '' }}">CV PDF</a></li>

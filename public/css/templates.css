@@ -164,10 +164,7 @@
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 14px;
-    /* Visible (no hidden): el desplegable de "Comprar" necesita salirse
-       de la tarjeta sin recortarse. El redondeado de las esquinas lo pone
-       cada parte por su cuenta (thumb arriba, body/footer abajo). */
-    overflow: visible;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     transition: box-shadow .2s, transform .2s;
@@ -394,16 +391,16 @@
 }
 .tpl-btn--upgrade:hover { background: #fde68a; border-color: #d97706; transform: none; }
 
-/* ─── "COMPRAR" + DESPLEGABLE DE PRECIOS (hover) ─── */
-.tpl-buy { position: relative; }
+/* ─── "COMPRAR" + DESPLEGABLE DE PRECIOS (hover) ───
+   El menú usa position:fixed y lo coloca JS (ver el <script> de la vista),
+   porque la tarjeta necesita overflow:hidden para que su miniatura no se
+   salga de tamaño — así el menú puede "salirse" de la tarjeta sin que la
+   tarjeta tenga que dejar de recortar su propio contenido. */
 .tpl-buy__toggle { cursor: pointer; }
 .tpl-buy__toggle svg.chev { transition: transform .15s; }
-.tpl-buy:hover .tpl-buy__toggle svg.chev,
-.tpl-buy:focus-within .tpl-buy__toggle svg.chev { transform: rotate(180deg); }
+.tpl-buy__toggle.is-open svg.chev { transform: rotate(180deg); }
 .tpl-buy__menu {
-    position: absolute;
-    bottom: calc(100% + 8px);
-    right: 0;
+    position: fixed;
     width: 232px;
     background: #fff;
     border: 1px solid #e5e7eb;
@@ -417,14 +414,9 @@
     visibility: hidden;
     transform: translateY(4px);
     transition: opacity .15s ease, transform .15s ease, visibility .15s;
-    z-index: 30;
+    z-index: 500;
 }
-/* Puente invisible para que el hover no se pierda al bajar el cursor hacia el menú */
-.tpl-buy__menu::after {
-    content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 10px;
-}
-.tpl-buy:hover .tpl-buy__menu,
-.tpl-buy:focus-within .tpl-buy__menu {
+.tpl-buy__menu.is-visible {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);

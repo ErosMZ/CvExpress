@@ -1206,13 +1206,31 @@
                             Hosting configurado
                         </div>
                         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-                            <div>
+                            <div style="flex:1;min-width:220px;">
                                 @if($ap->hosting_type === 'subdomain')
-                                    <div style="font-size:.95rem;font-weight:600;color:var(--color-text-primary);">
+                                    <div id="hosting-name-display" style="display:flex;align-items:center;gap:.4rem;font-size:.95rem;font-weight:600;color:var(--color-text-primary);">
                                         <span style="color:#16a34a;">●</span>
                                         {{ $ap->subdomain }}.cvxpress.es
+                                        <button type="button" onclick="toggleHostingRename(true)" title="Cambiar el nombre" style="background:none;border:none;cursor:pointer;color:var(--color-text-muted);padding:.1rem;display:inline-flex;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        </button>
                                     </div>
                                     <div style="font-size:.8rem;color:var(--color-text-muted);margin-top:.2rem;">Subdominio gratuito</div>
+
+                                    <form id="hosting-rename-form" method="POST" action="{{ route('dashboard.purchase.hosting', $ap) }}" style="display:none;margin-top:.65rem;">
+                                        @csrf @method('PATCH')
+                                        <input type="hidden" name="hosting_type" value="subdomain">
+                                        <div style="display:flex;align-items:center;border:1.5px solid #e5e7eb;border-radius:8px;overflow:hidden;background:#f9fafb;max-width:320px;">
+                                            <input type="text" name="subdomain" value="{{ $ap->subdomain }}"
+                                                   style="flex:1;min-width:0;padding:.5rem .75rem;border:none;background:transparent;font-size:.82rem;outline:none;font-family:monospace;">
+                                            <span style="padding:.5rem .75rem;font-size:.78rem;color:var(--color-text-muted);white-space:nowrap;border-left:1px solid #e5e7eb;background:#f3f4f6;">.cvxpress.es</span>
+                                        </div>
+                                        <p style="font-size:.72rem;color:var(--color-text-muted);margin:.35rem 0 0;">Solo puedes tener un subdominio a la vez: al guardar, el anterior deja de publicarse.</p>
+                                        <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+                                            <button type="submit" class="btn btn--primary btn--sm">Guardar nombre</button>
+                                            <button type="button" onclick="toggleHostingRename(false)" class="btn btn--ghost btn--sm">Cancelar</button>
+                                        </div>
+                                    </form>
                                 @else
                                     <div style="font-size:.95rem;font-weight:600;color:var(--color-text-primary);">
                                         <span style="color:#1A56DB;">●</span>
@@ -1221,7 +1239,8 @@
                                     <div style="font-size:.8rem;color:var(--color-text-muted);margin-top:.2rem;">2–3€/mes · Nos pondremos en contacto pronto</div>
                                 @endif
                             </div>
-                            <form method="POST" action="{{ route('dashboard.purchase.hosting', $ap) }}">
+                            <form method="POST" action="{{ route('dashboard.purchase.hosting', $ap) }}"
+                                  onsubmit="return confirm('¿Seguro? Se dejará de publicar tu web actual.')">
                                 @csrf @method('PATCH')
                                 <input type="hidden" name="hosting_type" value="none">
                                 <button type="submit" class="btn btn--ghost btn--sm">Cambiar hosting</button>
@@ -2164,6 +2183,15 @@
             }
         })
         .catch(function() { alert('Error al limpiar los datos.'); });
+    }
+
+    // ── Renombrar subdominio desde "Mi Plan" ──
+    function toggleHostingRename(show) {
+        var display = document.getElementById('hosting-name-display');
+        var form    = document.getElementById('hosting-rename-form');
+        if (!display || !form) return;
+        form.style.display = show ? '' : 'none';
+        if (show) form.querySelector('input[name="subdomain"]').focus();
     }
 
     // ── Profile view/edit toggle ──

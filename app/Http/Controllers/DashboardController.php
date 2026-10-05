@@ -137,14 +137,27 @@ class DashboardController extends Controller
 
         $subdomain = $activePurchase->subdomain;
         $workDir   = $this->buildSiteWorkDir($user, $template, $data['html']);
+        $unchanged = false;
 
         try {
             $disk = Storage::disk('sites');
-            $disk->deleteDirectory($subdomain);
 
-            foreach ($this->iterateWorkDir($workDir) as $local => $file) {
-                if ($file->isDir()) continue;
-                $disk->put($subdomain . '/' . $local, file_get_contents($file->getPathname()));
+            // ¿Hay algo nuevo que publicar? Comparamos el index.html recién
+            // generado con el que ya está publicado — es el único fichero
+            // que cambia entre publicaciones de la misma plantilla (css/js/
+            // img son estáticos). Si es idéntico, no hace falta reescribir
+            // nada ni molestar con un "¡publicado!" cuando no cambió nada.
+            $newIndexPath = $workDir . '/index.html';
+            $newIndex     = is_file($newIndexPath) ? file_get_contents($newIndexPath) : null;
+            $oldIndex     = $disk->exists($subdomain . '/index.html') ? $disk->get($subdomain . '/index.html') : null;
+            $unchanged    = $newIndex !== null && $oldIndex !== null && hash('sha256', $newIndex) === hash('sha256', $oldIndex);
+
+            if (! $unchanged) {
+                $disk->deleteDirectory($subdomain);
+                foreach ($this->iterateWorkDir($workDir) as $local => $file) {
+                    if ($file->isDir()) continue;
+                    $disk->put($subdomain . '/' . $local, file_get_contents($file->getPathname()));
+                }
             }
         } finally {
             File::deleteDirectory($workDir);
@@ -155,7 +168,7 @@ class DashboardController extends Controller
         $port   = in_array($port, [80, 443], true) ? '' : ':' . $port;
         $url    = $request->getScheme() . '://' . $subdomain . '.' . $domain . $port . '/';
 
-        return response()->json(['ok' => true, 'url' => $url]);
+        return response()->json(['ok' => true, 'url' => $url, 'unchanged' => $unchanged]);
     }
 
     /**
@@ -231,6 +244,34 @@ class DashboardController extends Controller
         }
     }
 
+    /**
+     * Borra del disco "sites" los ficheros publicados de un subdominio.
+     * Se llama cuando deja de usarse del todo (se cancela el plan, o se
+     * sustituye por uno nuevo al reactivar), para que nunca queden webs
+     * huérfanas publicadas.
+     */
+    private function unpublishSubdomain(string $subdomain): void
+    {
+        Storage::disk('sites')->deleteDirectory($subdomain);
+    }
+
+    /**
+     * Mueve los ficheros publicados de un subdominio a un nombre nuevo (si
+     * había algo publicado). Así, renombrar el subdominio no obliga a volver
+     * a pulsar "Publicar" — la web sigue viva, solo que en la nueva URL.
+     */
+    private function renameSubdomainFiles(string $old, string $new): void
+    {
+        $disk = Storage::disk('sites');
+        if (! $disk->exists($old)) return;
+
+        foreach ($disk->allFiles($old) as $path) {
+            $relative = substr($path, strlen($old) + 1);
+            $disk->put($new . '/' . $relative, $disk->get($path));
+        }
+        $disk->deleteDirectory($old);
+    }
+
     public function selectTemplate(UserPurchase $purchase, Template $template)
     {
         abort_if($purchase->user_id !== Auth::id(), 403);
@@ -250,10 +291,16 @@ class DashboardController extends Controller
 
         // Cancelar solo el plan activo anterior de la MISMA categoría (p. ej.
         // otro plan de CV Web). No toca un plan de PDF activo en paralelo.
-        $user->purchases()
+        // Si tenía una web publicada, se borran sus ficheros: cada usuario
+        // solo debe tener un subdominio vivo a la vez, nunca huérfanos.
+        $toCancel = $user->purchases()
             ->where('status', 'active')
             ->whereHas('plan', fn ($q) => $q->where('category', $plan->category))
-            ->update(['status' => 'cancelled']);
+            ->get();
+        foreach ($toCancel as $old) {
+            if ($old->subdomain) $this->unpublishSubdomain($old->subdomain);
+        }
+        $user->purchases()->whereIn('id', $toCancel->pluck('id'))->update(['status' => 'cancelled']);
 
         $user->purchases()->create([
             'plan_id'      => $plan->id,
@@ -281,6 +328,18 @@ class DashboardController extends Controller
         $subdomain = null;
         if ($request->hosting_type === 'subdomain') {
             $subdomain = Str::slug($request->subdomain ?: Auth::user()->name) ?: 'mi-portfolio';
+        }
+
+        // Un único subdominio vivo por usuario. Si cambia de nombre y ya
+        // tenía la web publicada, se mueven los ficheros al nombre nuevo
+        // (sigue publicada, sin tener que volver a "Publicar"). Si deja de
+        // usar subdominio del todo, se borran para no dejar huérfanos.
+        if ($purchase->subdomain && $purchase->subdomain !== $subdomain) {
+            if ($subdomain) {
+                $this->renameSubdomainFiles($purchase->subdomain, $subdomain);
+            } else {
+                $this->unpublishSubdomain($purchase->subdomain);
+            }
         }
 
         $purchase->update([
@@ -314,6 +373,10 @@ class DashboardController extends Controller
     public function cancelPlan(UserPurchase $purchase)
     {
         abort_if($purchase->user_id !== Auth::id(), 403);
+
+        if ($purchase->subdomain) {
+            $this->unpublishSubdomain($purchase->subdomain);
+        }
 
         $purchase->update(['status' => 'cancelled']);
 

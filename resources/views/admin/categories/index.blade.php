@@ -81,7 +81,7 @@
             <a href="{{ route('admin.sites.index') }}" class="admin-sidebar__link">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 Webs publicadas
-                <span class="admin-sidebar__link-badge">{{ \App\Models\UserPurchase::where('hosting_type','subdomain')->whereNotNull('subdomain')->count() }}</span>
+                <span class="admin-sidebar__link-badge">{{ \App\Models\UserPurchase::where('status','active')->where('hosting_type','subdomain')->whereNotNull('subdomain')->count() }}</span>
             </a>
             <div class="admin-sidebar__section-label">Crear</div>
             <a href="{{ route('templates.create') }}" class="admin-sidebar__link">

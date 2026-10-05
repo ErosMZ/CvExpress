@@ -19,7 +19,11 @@ class SiteController extends Controller
 {
     public function index(Request $request)
     {
-        $base = UserPurchase::where('hosting_type', 'subdomain')
+        // Solo compras activas: una cancelada ya no tiene web (sus ficheros
+        // se borran al cancelar), así que no debe aparecer aquí como si la
+        // tuviera.
+        $base = UserPurchase::where('status', 'active')
+            ->where('hosting_type', 'subdomain')
             ->whereNotNull('subdomain');
 
         if ($request->filled('search')) {
@@ -56,7 +60,7 @@ class SiteController extends Controller
         });
 
         // Estadísticas sobre el total (sin el filtro de búsqueda actual).
-        $allSubdomains  = UserPurchase::where('hosting_type', 'subdomain')->whereNotNull('subdomain')->pluck('subdomain');
+        $allSubdomains  = UserPurchase::where('status', 'active')->where('hosting_type', 'subdomain')->whereNotNull('subdomain')->pluck('subdomain');
         $publishedDirs  = collect(Storage::disk('sites')->directories())->map(fn ($d) => trim($d, '/'));
         $stats = [
             'total'   => $allSubdomains->count(),

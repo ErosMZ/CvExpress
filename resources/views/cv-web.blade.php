@@ -517,6 +517,18 @@ body.cvweb-fs-active .nav { display:none !important; }
 .cvweb-publish-foot { text-align:center; margin-top:1.25rem; font-size:.78rem; color:#9ca3af; }
 .cvweb-publish-foot a { color:#2563eb; font-weight:600; text-decoration:none; }
 .cvweb-publish-foot a:hover { text-decoration:underline; }
+
+/* Aviso pequeño "sin cambios" que aparece junto al botón "Publicar ahora" */
+.cvweb-nochange-pop {
+    position:fixed; max-width:230px; background:#0f172a; color:#fff;
+    font-size:.78rem; line-height:1.5; padding:.7rem .85rem; border-radius:10px;
+    box-shadow:0 12px 30px rgba(15,23,42,.3); z-index:10050;
+    opacity:0; transform:translateY(4px); pointer-events:none;
+    transition:opacity .15s ease, transform .15s ease;
+}
+.cvweb-nochange-pop.is-visible { opacity:1; transform:translateY(0); pointer-events:auto; }
+.cvweb-nochange-pop a { display:inline-block; margin-top:.4rem; color:#93c5fd; font-weight:700; text-decoration:none; }
+.cvweb-nochange-pop a:hover { text-decoration:underline; }
 </style>
 @endpush
 
@@ -789,8 +801,8 @@ body.cvweb-fs-active .nav { display:none !important; }
                         </div>
                         <div class="cvweb-actions">
                             <button type="button" onclick="openAiModal()" class="cvweb-btn cvweb-btn--ai">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                                Analizar CV con IA
+                                <svg width="13" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                                Analizar CURRICULÚM con IA
                             </button>
                             <button type="button" onclick="showCvView('hub')" class="cvweb-btn cvweb-btn--ghost">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1254,6 +1266,12 @@ body.cvweb-fs-active .nav { display:none !important; }
     </div>
 </div>
 
+{{-- Aviso "sin cambios" al pulsar "Publicar ahora" sin haber tocado nada --}}
+<div id="cvweb-nochange-pop" class="cvweb-nochange-pop" hidden>
+    No has hecho ningún cambio desde la última publicación.
+    <a href="{{ route('dashboard') }}#orders">Ir a Mi Plan →</a>
+</div>
+
 <style>@keyframes ai-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}</style>
 @endsection
 
@@ -1419,12 +1437,43 @@ function republishSite(btn){
 
     publishSitePromise().then(function(data){
         _setPublishLiveRow('<span style="color:#16a34a;">●</span> Publicada · <a href="'+_esc(data.url)+'" target="_blank" rel="noopener" style="color:#2563eb;font-weight:600;text-decoration:none;">Ver mi web ↗</a>');
+        // Ya estaba publicado tal cual (no había ningún cambio) — lo avisamos
+        // con un aviso pequeño junto al botón, sin interrumpir con un modal grande.
+        if(data.unchanged && btn) _showNoChangePopover(btn);
         if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=origBtn; }
     }).catch(function(err){
         _setPublishLiveRow('<span style="color:#dc2626;">No se pudo publicar: '+_esc(err.message||'inténtalo de nuevo')+'</span>');
         if(btn){ btn.disabled=false; btn.style.opacity=''; btn.innerHTML=origBtn; }
     });
 }
+
+var _noChangeTimer=null;
+function _showNoChangePopover(anchorEl){
+    var pop=document.getElementById('cvweb-nochange-pop');
+    if(!pop||!anchorEl) return;
+    var r=anchorEl.getBoundingClientRect();
+    var w=240;
+    pop.style.left=Math.max(8,Math.min(r.left, window.innerWidth-w-8))+'px';
+    pop.style.top='auto';
+    pop.style.bottom=(window.innerHeight-r.top+8)+'px';
+    pop.hidden=false;
+    requestAnimationFrame(function(){ pop.classList.add('is-visible'); });
+    clearTimeout(_noChangeTimer);
+    _noChangeTimer=setTimeout(_hideNoChangePopover,5000);
+}
+function _hideNoChangePopover(){
+    var pop=document.getElementById('cvweb-nochange-pop');
+    if(!pop) return;
+    pop.classList.remove('is-visible');
+    setTimeout(function(){ pop.hidden=true; },200);
+}
+document.addEventListener('click',function(e){
+    var pop=document.getElementById('cvweb-nochange-pop');
+    if(pop && !pop.hidden && e.target!==pop && !pop.contains(e.target) && e.target.id!=='publish-republish-btn'){
+        clearTimeout(_noChangeTimer);
+        _hideNoChangePopover();
+    }
+});
 
 function publishModalDownloadZip(btn){
     var orig=btn?btn.innerHTML:'';

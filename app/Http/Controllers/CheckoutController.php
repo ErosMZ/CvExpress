@@ -6,6 +6,7 @@ use App\Models\Plan;
 use App\Models\Template;
 use App\Models\UserPurchase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -53,11 +54,16 @@ class CheckoutController extends Controller
         // Solo puede haber una compra activa por categoría de plan a la vez
         // (p. ej. no dos planes de CV Web activos a la vez). No toca compras
         // activas de otras categorías (un plan de PDF y uno de CV Web pueden
-        // convivir).
-        UserPurchase::where('user_id', auth()->id())
+        // convivir). Si la que se cancela tenía una web publicada, se borran
+        // sus ficheros para no dejar huérfanos.
+        $toCancel = UserPurchase::where('user_id', auth()->id())
             ->where('status', 'active')
             ->whereHas('plan', fn ($q) => $q->where('category', $plan->category))
-            ->update(['status' => 'cancelled']);
+            ->get();
+        foreach ($toCancel as $old) {
+            if ($old->subdomain) $this->unpublishSubdomain($old->subdomain);
+        }
+        UserPurchase::whereIn('id', $toCancel->pluck('id'))->update(['status' => 'cancelled']);
 
         $purchase = UserPurchase::create(array_merge($buyer, [
             'plan_id'      => $plan->id,
@@ -152,6 +158,15 @@ class CheckoutController extends Controller
                 'sort_order'    => 0,
             ]
         );
+    }
+
+    /**
+     * Borra del disco "sites" los ficheros publicados de un subdominio, para
+     * que al cancelar/sustituir un plan no quede una web huérfana.
+     */
+    private function unpublishSubdomain(string $subdomain): void
+    {
+        Storage::disk('sites')->deleteDirectory($subdomain);
     }
 
     private function validateBuyer(Request $request): array

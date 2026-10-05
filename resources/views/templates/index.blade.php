@@ -238,37 +238,21 @@
                                     </a>
                                 @endif
                             @else
-                                {{-- Sin plan: un único botón "Comprar" con desplegable al pasar el ratón --}}
-                                <div class="tpl-buy" tabindex="0">
-                                    <span class="tpl-btn tpl-btn--primary tpl-buy__toggle">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                                        Comprar
-                                        <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                                    </span>
-                                    <div class="tpl-buy__menu">
-                                        @if($canDownload)
-                                        <a href="{{ auth()->check() ? route('checkout.download.show', $template->slug) : route('register') }}" class="tpl-buy__opt">
-                                            <span class="tpl-buy__opt-label">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                                Solo descargar
-                                            </span>
-                                            <span class="tpl-buy__opt-price">{{ number_format($template->price, 2, ',', '.') }}€<small>pago único</small></span>
-                                        </a>
-                                        @endif
-                                        @if($canDownload && $tierPlan)
-                                        <div class="tpl-buy__divider"></div>
-                                        @endif
-                                        @if($tierPlan)
-                                        <a href="{{ auth()->check() ? route('checkout.show', $tierPlan->slug) : route('register') }}" class="tpl-buy__opt">
-                                            <span class="tpl-buy__opt-label">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                                                Con subdominio
-                                            </span>
-                                            <span class="tpl-buy__opt-price">{{ number_format($tierPlan->price, 2, ',', '.') }}€<small>/año</small></span>
-                                        </a>
-                                        @endif
-                                    </div>
-                                </div>
+                                {{-- Sin plan: un único botón "Comprar". El desplegable con los dos
+                                     precios es un único elemento compartido al final de la página
+                                     (ver #tpl-buy-menu) que JS coloca y rellena al pasar el ratón —
+                                     así evitamos que la tarjeta necesite "overflow:visible" (eso
+                                     rompía el tamaño de la miniatura). --}}
+                                <button type="button" class="tpl-btn tpl-btn--primary tpl-buy__toggle"
+                                    data-download-url="{{ $canDownload ? (auth()->check() ? route('checkout.download.show', $template->slug) : route('register')) : '' }}"
+                                    data-download-price="{{ $canDownload ? number_format($template->price, 2, ',', '.').'€' : '' }}"
+                                    data-hosting-url="{{ $tierPlan ? (auth()->check() ? route('checkout.show', $tierPlan->slug) : route('register')) : '' }}"
+                                    data-hosting-name="{{ $tierPlan?->name }}"
+                                    data-hosting-price="{{ $tierPlan ? number_format($tierPlan->price, 2, ',', '.').'€' : '' }}">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                    Comprar
+                                    <svg class="chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                                </button>
                             @endif
                         </div>
                     </div>
@@ -284,6 +268,26 @@
         </div>
     </div>
 </section>
+
+{{-- Menú flotante compartido de "Comprar" (uno solo para todas las tarjetas,
+     JS lo coloca con position:fixed junto al botón sobre el que pasa el ratón). --}}
+<div class="tpl-buy__menu" id="tpl-buy-menu">
+    <a href="#" class="tpl-buy__opt" id="tpl-buy-opt-download">
+        <span class="tpl-buy__opt-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Solo descargar
+        </span>
+        <span class="tpl-buy__opt-price" id="tpl-buy-price-download"><small>pago único</small></span>
+    </a>
+    <div class="tpl-buy__divider" id="tpl-buy-divider" hidden></div>
+    <a href="#" class="tpl-buy__opt" id="tpl-buy-opt-hosting">
+        <span class="tpl-buy__opt-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="tpl-buy-hosting-name">Con subdominio</span>
+        </span>
+        <span class="tpl-buy__opt-price" id="tpl-buy-price-hosting"><small>/año</small></span>
+    </a>
+</div>
 
 @push('scripts')
 <script>
@@ -327,6 +331,93 @@ if (sortSel) {
 
     btn3.addEventListener('click', function () { setGrid(3); });
     btn4.addEventListener('click', function () { setGrid(4); });
+})();
+
+// Menú flotante "Comprar" — un único elemento compartido, posicionado con
+// getBoundingClientRect() junto al botón, para no depender de que las
+// tarjetas tengan overflow:visible (eso rompía el tamaño de la miniatura).
+(function () {
+    var menu = document.getElementById('tpl-buy-menu');
+    if (!menu) return;
+
+    var optDownload   = document.getElementById('tpl-buy-opt-download');
+    var priceDownload = document.getElementById('tpl-buy-price-download');
+    var divider       = document.getElementById('tpl-buy-divider');
+    var optHosting    = document.getElementById('tpl-buy-opt-hosting');
+    var priceHosting  = document.getElementById('tpl-buy-price-hosting');
+    var hostingName   = document.getElementById('tpl-buy-hosting-name');
+
+    var hideTimer = null;
+    var activeToggle = null;
+
+    function position(toggle) {
+        var r = toggle.getBoundingClientRect();
+        var menuWidth = 232;
+        var left = Math.min(Math.max(8, r.right - menuWidth), window.innerWidth - menuWidth - 8);
+        var top  = r.top - 8; // se ancla por abajo (bottom), ver translateY
+        menu.style.left = left + 'px';
+        // Por defecto el menú se dibuja hacia ARRIBA del botón (translateY controla el fade,
+        // así que fijamos "bottom" real vía top = borde superior del botón).
+        menu.style.top = 'auto';
+        menu.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+    }
+
+    function show(toggle) {
+        clearTimeout(hideTimer);
+        activeToggle = toggle;
+
+        var dlUrl   = toggle.dataset.downloadUrl;
+        var dlPrice = toggle.dataset.downloadPrice;
+        var hUrl    = toggle.dataset.hostingUrl;
+        var hName   = toggle.dataset.hostingName;
+        var hPrice  = toggle.dataset.hostingPrice;
+
+        if (dlUrl) {
+            optDownload.style.display = '';
+            optDownload.href = dlUrl;
+            priceDownload.innerHTML = dlPrice + '<small>pago único</small>';
+        } else {
+            optDownload.style.display = 'none';
+        }
+
+        if (hUrl) {
+            optHosting.style.display = '';
+            optHosting.href = hUrl;
+            hostingName.textContent = hName ? ('Con subdominio: ' + hName) : 'Con subdominio';
+            priceHosting.innerHTML = hPrice + '<small>/año</small>';
+        } else {
+            optHosting.style.display = 'none';
+        }
+
+        divider.hidden = !(dlUrl && hUrl);
+
+        document.querySelectorAll('.tpl-buy__toggle.is-open').forEach(function (t) { t.classList.remove('is-open'); });
+        toggle.classList.add('is-open');
+        position(toggle);
+        menu.classList.add('is-visible');
+    }
+
+    function scheduleHide() {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () {
+            menu.classList.remove('is-visible');
+            if (activeToggle) activeToggle.classList.remove('is-open');
+            activeToggle = null;
+        }, 150);
+    }
+
+    document.querySelectorAll('.tpl-buy__toggle').forEach(function (toggle) {
+        toggle.addEventListener('mouseenter', function () { show(toggle); });
+        toggle.addEventListener('focus', function () { show(toggle); });
+        toggle.addEventListener('mouseleave', scheduleHide);
+        toggle.addEventListener('blur', scheduleHide);
+    });
+    menu.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+    menu.addEventListener('mouseleave', scheduleHide);
+
+    window.addEventListener('scroll', function () {
+        if (activeToggle && menu.classList.contains('is-visible')) position(activeToggle);
+    }, true);
 })();
 </script>
 @endpush
