@@ -175,6 +175,8 @@ Route::post('/email/verification-notification', function (Request $request) {
             'user_id' => $request->user()->id,
             'error'   => $e->getMessage(),
         ]);
+        // Temporal (debug): duplicar en stderr para verlo en los logs de Render
+        \Illuminate\Support\Facades\Log::channel('stderr')->error('MAIL-DEBUG reenvío: '.$e->getMessage());
         return back()->with('error', 'Ahora mismo no podemos enviar el correo. Inténtalo de nuevo más tarde.');
     }
 

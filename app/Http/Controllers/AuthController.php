@@ -39,6 +39,8 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
             ]);
+            // Temporal (debug): duplicar en stderr para verlo en los logs de Render
+            Log::channel('stderr')->error('MAIL-DEBUG registro: '.$e->getMessage());
             return redirect('/email/verify')
                 ->with('error', 'No pudimos enviar el email de verificación. Pulsa "Reenviar" en unos minutos.');
         }
