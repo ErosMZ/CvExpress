@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: cvexpress
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: CvExpress
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      # Rellena en el dashboard de Render tras crear el Blueprint:
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false # ej. https://cvexpress.onrender.com (la pones cuando Render te dé la URL)
+      # --- Supabase (pooler de conexión, IPv4) ---
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false # ej. aws-0-eu-west-1.pooler.supabase.com
+      - key: DB_PORT
+        value: 6543
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        sync: false # formato: postgres.TU_PROJECT_REF
+      - key: DB_PASSWORD
+        sync: false # la contraseña que pusiste al crear el proyecto en Supabase
+      - key: DB_SSLMODE
+        value: require
+      # --- Drivers aptos para el plan gratis (sin Redis) ---
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      # --- Email (logs por defecto; pon Resend si quieres emails reales) ---
+      - key: MAIL_MAILER
+        value: log
+      # --- OpenAI (opcional: funciones IA de la app) ---
+      - key: OPENAI_API_KEY
+        sync: false
