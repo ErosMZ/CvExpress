@@ -22,8 +22,6 @@
     updateActiveNav();
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll(); // estado inicial
 
   /* ─── HAMBURGER / NAV MÓVIL ──────────────────── */
   const hamburger = document.getElementById('hamburger');
@@ -142,4 +140,6 @@
      Solo se mencionan aquí como recordatorio para futuros devs.
   ─────────────────────────────────────────────── */
 
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // estado inicial, ya con todas las variables declaradas
 })();

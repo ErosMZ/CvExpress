@@ -47,106 +47,30 @@
             </div>
         </div>
 
-        {{-- ── CARRUSEL VERTICAL DE PLANTILLAS ── --}}
-        <div class="hero__visual hero-tpl-section">
-            @if($featuredTemplates->isNotEmpty())
-            @php
-                /* concat() añade al final (merge() reemplaza por clave → loop infinito) */
-                $pool = collect();
-                $base = $featuredTemplates->values();
-                while ($pool->count() < 8) { $pool = $pool->concat($base); }
-                $col1 = $pool->filter(fn($t, $i) => $i % 2 === 0)->values();
-                $col2 = $pool->filter(fn($t, $i) => $i % 2 === 1)->values();
-            @endphp
+    </div>
+</section>
 
-            <div class="hero-tpl-carousel">
+<!-- ===================== VÍDEO LIGADO AL SCROLL ===================== -->
+<section class="scrollvid" aria-label="Cómo funciona CvXpress">
+    <div class="scrollvid__sticky">
+        <video class="scrollvid__video" id="scrollVideo"
+               src="{{ route('video.indice') }}?v={{ filemtime(resource_path('videos/videoIndice_smooth.mp4')) }}"
+               muted playsinline preload="auto" aria-hidden="true"></video>
+        <div class="scrollvid__veil" aria-hidden="true"></div>
 
-                {{-- Macro reutilizable: renderiza una tarjeta de plantilla --}}
-                @php
-                    $renderCard = function($tpl) {
-                        return $tpl; // se usa inline abajo
-                    };
-                @endphp
-
-                {{-- Columna 1 --}}
-                <div class="hero-tpl-col">
-                    <div class="hero-tpl-track">
-                        @foreach([...$col1, ...$col1] as $tpl)
-                        <a href="{{ route('templates.preview', $tpl->slug) }}" class="hero-tpl-card">
-                            <div class="hero-tpl-card__thumb">
-                                @if($tpl->preview_html_url)
-                                    <div class="hero-tpl-iframe-wrap">
-                                        <iframe src="{{ $tpl->preview_html_url }}"
-                                                scrolling="no"
-                                                sandbox="allow-same-origin allow-scripts"
-                                                title="{{ $tpl->name }}"></iframe>
-                                    </div>
-                                @elseif($tpl->preview_image)
-                                    <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}">
-                                @else
-                                    <div class="hero-tpl-card__placeholder">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c7d2e7" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                                    </div>
-                                @endif
-                                <div class="hero-tpl-card__overlay">
-                                    <span>Ver plantilla →</span>
-                                </div>
-                                @if($tpl->is_premium ?? false)
-                                    <div class="hero-tpl-card__badge">Premium</div>
-                                @endif
-                            </div>
-                            <div class="hero-tpl-card__info">
-                                @if($tpl->category)
-                                    <span class="hero-tpl-card__cat">{{ $tpl->category->name }}</span>
-                                @endif
-                                <span class="hero-tpl-card__name">{{ $tpl->name }}</span>
-                            </div>
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Columna 2 (offset + velocidad distinta) --}}
-                <div class="hero-tpl-col hero-tpl-col--offset">
-                    <div class="hero-tpl-track hero-tpl-track--slow">
-                        @foreach([...$col2, ...$col2] as $tpl)
-                        <a href="{{ route('templates.preview', $tpl->slug) }}" class="hero-tpl-card">
-                            <div class="hero-tpl-card__thumb">
-                                @if($tpl->preview_html_url)
-                                    <div class="hero-tpl-iframe-wrap">
-                                        <iframe src="{{ $tpl->preview_html_url }}"
-                                                scrolling="no"
-                                                sandbox="allow-same-origin allow-scripts"
-                                                title="{{ $tpl->name }}"></iframe>
-                                    </div>
-                                @elseif($tpl->preview_image)
-                                    <img src="{{ asset('storage/'.$tpl->preview_image) }}" alt="{{ $tpl->name }}">
-                                @else
-                                    <div class="hero-tpl-card__placeholder">
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c7d2e7" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-                                    </div>
-                                @endif
-                                <div class="hero-tpl-card__overlay">
-                                    <span>Ver plantilla →</span>
-                                </div>
-                                @if($tpl->is_premium ?? false)
-                                    <div class="hero-tpl-card__badge">Premium</div>
-                                @endif
-                            </div>
-                            <div class="hero-tpl-card__info">
-                                @if($tpl->category)
-                                    <span class="hero-tpl-card__cat">{{ $tpl->category->name }}</span>
-                                @endif
-                                <span class="hero-tpl-card__name">{{ $tpl->name }}</span>
-                            </div>
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
-
+        <div class="scrollvid__steps" aria-hidden="true">
+            <div class="scrollvid__step" data-from="0" data-to="0.34">
+                <span class="scrollvid__num">01</span> Sube tu CV en PDF
             </div>
-            @endif
+            <div class="scrollvid__step" data-from="0.34" data-to="0.67">
+                <span class="scrollvid__num">02</span> Elige tu plantilla
+            </div>
+            <div class="scrollvid__step" data-from="0.67" data-to="1">
+                <span class="scrollvid__num">03</span> Publica tu web
+            </div>
         </div>
+
+        <div class="scrollvid__progress" aria-hidden="true"><span id="scrollVideoBar"></span></div>
     </div>
 </section>
 
@@ -188,53 +112,67 @@
         </div>
     </div>
 
-    <div class="marquee-outer" aria-hidden="true">
-        <div class="marquee-track">
-            {{-- Dos copias para loop infinito seamless --}}
-            @foreach([1,2] as $copy)
-                @foreach($featuredTemplates as $tpl)
-                <a href="{{ route('templates.preview', $tpl->slug) }}"
-                   target="_blank" rel="noopener"
-                   class="mq-card">
-                    <div class="mq-card__thumb">
-                        @if($tpl->preview_html_url)
-                            <div class="mq-card__iframe-wrap">
-                                <iframe
-                                    src="{{ $tpl->preview_html_url }}"
-                                    scrolling="no"
-                                    sandbox="allow-same-origin allow-scripts"
-                                    loading="lazy"
-                                    title="{{ $tpl->name }}">
-                                </iframe>
-                            </div>
-                        @elseif($tpl->preview_image)
-                            <img src="{{ asset('storage/' . $tpl->preview_image) }}"
-                                 alt="{{ $tpl->name }}"
-                                 loading="lazy">
-                        @else
-                            <div class="mq-card__placeholder">
-                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            </div>
-                        @endif
-
-                        @if($tpl->is_premium)
-                        <div class="mq-card__badge mq-card__badge--premium">Premium</div>
-                        @endif
+    {{-- Tarjetas en parejas que suben o bajan en cascada (orden desordenado).
+         Cada pareja tiene su retardo y su sentido; la animación es solo CSS. --}}
+    {{-- Siempre 8 huecos: con 8 o más plantillas salen todas distintas; con menos,
+         se repiten en orden para que el carrusel nunca se vea vacío. --}}
+    @php
+        $pool  = $featuredTemplates->shuffle()->values();
+        $slots = collect(range(0, 7))->map(fn ($n) => $pool[$n % $pool->count()]);
+    @endphp
+    {{-- 4 columnas: 1.ª y 3.ª suben, 2.ª y 4.ª bajan. Cada columna lleva sus 2 tarjetas
+         duplicadas para que el bucle sea continuo sin saltos. --}}
+    <div class="casc" aria-hidden="true">
+        @foreach([0, 1, 2, 3] as $col)
+        <div class="casc__col casc__col--{{ $col % 2 ? 'down' : 'up' }}"
+             style="--dur: {{ [22, 26, 24, 28][$col] }}s; --offset: {{ [-6, -13, -3, -18][$col] }}s">
+        <div class="casc__track">
+        @for($copy = 0; $copy < 4; $copy++)
+        @foreach($slots->slice($col * 2, 2) as $tpl)
+        <a href="{{ route('templates.preview', $tpl->slug) }}"
+           target="_blank" rel="noopener"
+           class="mq-card casc__card">
+            <div class="mq-card__thumb">
+                @if($tpl->preview_html_url)
+                    <div class="mq-card__iframe-wrap">
+                        <iframe
+                            src="{{ $tpl->preview_html_url }}"
+                            scrolling="no"
+                            sandbox="allow-same-origin allow-scripts"
+                            loading="lazy"
+                            title="{{ $tpl->name }}">
+                        </iframe>
                     </div>
-
-                    <div class="mq-card__body">
-                        @if($tpl->category)
-                            <span class="mq-card__cat">{{ $tpl->category->name }}</span>
-                        @endif
-                        <div class="mq-card__name">{{ $tpl->name }}</div>
-                        @if($tpl->price > 0)
-                            <div class="mq-card__price">€{{ number_format($tpl->price, 2) }}</div>
-                        @endif
+                @elseif($tpl->preview_image)
+                    <img src="{{ asset('storage/' . $tpl->preview_image) }}"
+                         alt="{{ $tpl->name }}"
+                         loading="lazy">
+                @else
+                    <div class="mq-card__placeholder">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity=".3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </div>
-                </a>
-                @endforeach
-            @endforeach
+                @endif
+
+                @if($tpl->is_premium)
+                <div class="mq-card__badge mq-card__badge--premium">Premium</div>
+                @endif
+            </div>
+
+            <div class="mq-card__body">
+                @if($tpl->category)
+                    <span class="mq-card__cat">{{ $tpl->category->name }}</span>
+                @endif
+                <div class="mq-card__name">{{ $tpl->name }}</div>
+                @if($tpl->price > 0)
+                    <div class="mq-card__price">€{{ number_format($tpl->price, 2) }}</div>
+                @endif
+            </div>
+        </a>
+        @endforeach
+        @endfor
         </div>
+        </div>
+        @endforeach
     </div>
 </section>
 @endif
@@ -972,6 +910,112 @@
     text-overflow: ellipsis;
 }
 
+/* ══════════ REDISEÑO: hero oscuro + vídeo ligado al scroll + filas en sentidos opuestos ══════════ */
+:root { --cvx-ink: #050a1c; --cvx-ink-2: #0b1430; --cvx-blue: #3b82f6; --cvx-blue-soft: #93c5fd; }
+
+.hero {
+    background: radial-gradient(120% 80% at 80% 0%, #0f2a66 0%, var(--cvx-ink) 55%, #03060f 100%);
+    color: #fff;
+}
+.hero__title { color: #fff; }
+.hero__title em { color: var(--cvx-blue-soft); font-style: normal; }
+.hero__subtitle { color: rgba(255,255,255,.72); }
+.hero__social-proof { color: rgba(255,255,255,.7); }
+.hero__social-proof strong { color: #fff; }
+.hero__container { grid-template-columns: 1fr; }
+.hero__text { max-width: 720px; }
+.hero .badge--feature {
+    background: rgba(59,130,246,.14); border: 1px solid rgba(147,197,253,.35); color: var(--cvx-blue-soft);
+}
+.hero .btn--ghost { color: #fff; border-color: rgba(255,255,255,.28); }
+.hero .btn--ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); }
+.hero .avatar { border-color: var(--cvx-ink); }
+
+/* Cabecera adaptada cuando va sobre las secciones oscuras (hero y vídeo) */
+.nav.nav--dark { background: rgba(5,10,28,.55) !important; box-shadow: none !important; border-bottom-color: transparent !important; }
+.nav.nav--dark .nav__link { color: rgba(255,255,255,.88) !important; }
+.nav.nav--dark .nav__link--active { color: var(--cvx-blue-soft) !important; }
+.nav.nav--dark .nav__logo img { filter: brightness(0) invert(1); }
+.nav.nav--dark .nav__toggle span { background: #fff; }
+
+/* Vídeo ligado al scroll: la sección es alta, y dentro hay un bloque pegado a la pantalla */
+.scrollvid { position: relative; height: 320vh; background: var(--cvx-ink); }
+.scrollvid__sticky {
+    position: sticky; top: 0; height: 100vh; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+}
+.scrollvid__video {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; background: var(--cvx-ink);
+}
+.scrollvid__veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(5,10,28,.55) 0%, rgba(5,10,28,.1) 40%, rgba(5,10,28,.85) 100%);
+    pointer-events: none;
+}
+.scrollvid__steps {
+    position: absolute; left: 0; right: 0; bottom: 12vh; text-align: center; z-index: 2;
+}
+.scrollvid__step {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    font-size: clamp(1.6rem, 4vw, 3rem); font-weight: 800; letter-spacing: -.03em; color: #fff;
+    opacity: 0; transform: translateY(16px); transition: opacity .4s ease, transform .4s ease;
+}
+.scrollvid__step.is-active { opacity: 1; transform: translateY(0); }
+.scrollvid__num {
+    display: block; font-size: .9rem; letter-spacing: .25em; color: var(--cvx-blue-soft); margin-bottom: .4rem;
+}
+.scrollvid__progress {
+    position: absolute; left: 50%; bottom: 4vh; transform: translateX(-50%); z-index: 2;
+    width: min(360px, 70vw); height: 3px; background: rgba(255,255,255,.18); border-radius: 99px; overflow: hidden;
+}
+.scrollvid__progress span {
+    display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #93c5fd);
+}
+
+/* Plantillas destacadas: fondo oscuro a juego con el final del vídeo */
+.marquee-section {
+    padding: var(--space-20) 0 var(--space-16);
+    background: radial-gradient(90% 60% at 50% 0%, #0f2a66 0%, var(--cvx-ink) 70%);
+    color: #fff;
+}
+.marquee-section .label { color: var(--cvx-blue-soft); }
+.marquee-section .section__title { color: #fff; }
+.marquee-section .section__title em { color: var(--cvx-blue-soft); font-style: normal; }
+.marquee-section .btn--ghost { color: #fff; border-color: rgba(255,255,255,.28); }
+.marquee-section .btn--ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); }
+
+/* Cascada: parejas de tarjetas que suben o bajan y desaparecen en cascada */
+/* Cuatro columnas en movimiento continuo: impares suben, pares bajan */
+.casc {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;
+    height: 720px; overflow: hidden;
+    max-width: 1180px; margin: 0 auto; padding: 0 1.25rem;
+    mask-image: linear-gradient(transparent 0%, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+.casc__col { overflow: hidden; height: 100%; }
+.casc__track {
+    display: flex; flex-direction: column;
+    animation: casc-up var(--dur, 24s) linear infinite;
+    animation-delay: var(--offset, 0s);
+}
+.casc__col--down .casc__track { animation-name: casc-down; }
+.casc__col .casc__card { width: 100%; margin-bottom: 1.5rem; flex-shrink: 0; }
+.casc .mq-card { transition: box-shadow .3s ease; }
+.casc .mq-card:hover { transform: none; box-shadow: 0 0 0 1px rgba(147,197,253,.6), 0 16px 40px rgba(59,130,246,.35); }
+@keyframes casc-up   { from { transform: translateY(0); }     to { transform: translateY(-50%); } }
+@keyframes casc-down { from { transform: translateY(-50%); }  to { transform: translateY(0); } }
+/* Al pasar el cursor por encima, todo se queda parado */
+.casc:hover .casc__track { animation-play-state: paused; }
+@media (max-width: 1023px) {
+    .casc { grid-template-columns: repeat(2, 1fr); }
+    .casc__col:nth-child(n+3) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .casc__track { animation: none; }
+}
+
 /* Responsive: en móvil el carrusel se oculta (ya hay marquee abajo) */
 @media (max-width: 1023px) {
     .hero-tpl-section { display: none; }
@@ -1041,13 +1085,94 @@
 
     scaleMarqueeIframes();
     window.addEventListener('resize', scaleMarqueeIframes);
+})();
 
-    // Pausa al hover
-    var track = document.querySelector('.marquee-track');
-    if (track) {
-        track.addEventListener('mouseenter', function () { track.style.animationPlayState = 'paused'; });
-        track.addEventListener('mouseleave', function () { track.style.animationPlayState = 'running'; });
+/* ── Vídeo ligado al scroll ──
+   El scroll fija una posición objetivo; el vídeo la persigue con una
+   interpolación suave en cada frame. No se encadenan búsquedas mientras el
+   navegador todavía busca (eso es lo que daba el efecto a saltos). */
+(function () {
+    var sec   = document.querySelector('.scrollvid');
+    var video = document.getElementById('scrollVideo');
+    if (!sec || !video) return;
+
+    var bar   = document.getElementById('scrollVideoBar');
+    var steps = Array.prototype.slice.call(document.querySelectorAll('.scrollvid__step'));
+    var ready   = false;
+    var target  = 0;   // segundo al que queremos llegar (según el scroll)
+    var current = 0;   // segundo que mostramos (se acerca a target suavemente)
+    var looping = false;
+
+    video.pause();
+    function markReady() { ready = true; kick(); }
+    // Si el vídeo ya está en la caché del navegador (p. ej. al volver de otra
+    // página), el evento "loadedmetadata" puede dispararse antes de que este
+    // script llegue a escucharlo. readyState >= 1 cubre ese caso.
+    if (video.readyState >= 1) {
+        markReady();
+    } else {
+        video.addEventListener('loadedmetadata', markReady);
     }
+
+    function loop() {
+        looping = false;
+        if (!ready) return;
+
+        current += (target - current) * 0.18;
+        if (!video.seeking && Math.abs(video.currentTime - current) > 0.04) {
+            video.currentTime = current;
+        }
+        if (Math.abs(target - current) > 0.01) kick();
+    }
+
+    function kick() {
+        if (looping) return;
+        looping = true;
+        requestAnimationFrame(loop);
+    }
+
+    function update() {
+        var rect  = sec.getBoundingClientRect();
+        var range = sec.offsetHeight - window.innerHeight;
+        var p     = Math.min(1, Math.max(0, -rect.top / range));
+
+        if (ready && isFinite(video.duration)) {
+            target = p * video.duration;
+            kick();
+        }
+        if (bar) bar.style.width = (p * 100) + '%';
+
+        steps.forEach(function (s, i) {
+            var from = parseFloat(s.dataset.from);
+            var to   = parseFloat(s.dataset.to);
+            var last = i === steps.length - 1;
+            s.classList.toggle('is-active', p >= from && (p < to || (last && p <= 1)));
+        });
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+})();
+
+/* ── Cabecera oscura mientras se superpone al hero o al vídeo ── */
+(function () {
+    var nav   = document.getElementById('main-nav');
+    var dark  = Array.prototype.slice.call(document.querySelectorAll('.hero, .scrollvid'));
+    if (!nav || !dark.length) return;
+
+    function update() {
+        var y = nav.offsetHeight / 2;
+        var onDark = dark.some(function (sec) {
+            var r = sec.getBoundingClientRect();
+            return r.top <= y && r.bottom >= y;
+        });
+        nav.classList.toggle('nav--dark', onDark);
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
 })();
 </script>
 @endif

@@ -363,3 +363,14 @@ Route::view('/privacy', 'privacy')
 
 Route::view('/terms', 'terms')
     ->name('terms');
+/*
+|--------------------------------------------------------------------------
+| VÍDEO DE LA PORTADA
+|--------------------------------------------------------------------------
+| Se sirve desde Laravel (no desde public/) para que responda a las
+| peticiones Range: sin ellas el navegador no puede buscar dentro del vídeo
+| y el vídeo ligado al scroll no avanza.
+*/
+Route::get('/video/indice', fn () => response()->file(resource_path('videos/videoIndice_smooth.mp4'), [
+    'Content-Type' => 'video/mp4',
+]))->name('video.indice');
