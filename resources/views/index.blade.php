@@ -994,7 +994,8 @@
     mask-image: linear-gradient(transparent 0%, #000 8%, #000 92%, transparent 100%);
     -webkit-mask-image: linear-gradient(transparent 0%, #000 8%, #000 92%, transparent 100%);
 }
-.casc__col { overflow: hidden; height: 100%; }
+/* El padding deja sitio para que la tarjeta resaltada se eleve sin quedar recortada */
+.casc__col { overflow: hidden; height: 100%; padding: 12px 0; }
 .casc__track {
     display: flex; flex-direction: column;
     animation: casc-up var(--dur, 24s) linear infinite;
@@ -1002,12 +1003,12 @@
 }
 .casc__col--down .casc__track { animation-name: casc-down; }
 .casc__col .casc__card { width: 100%; margin-bottom: 1.5rem; flex-shrink: 0; }
-.casc .mq-card { transition: box-shadow .3s ease; }
-.casc .mq-card:hover { transform: none; box-shadow: 0 0 0 1px rgba(147,197,253,.6), 0 16px 40px rgba(59,130,246,.35); }
+.casc .mq-card { transition: transform .25s ease, box-shadow .3s ease; cursor: pointer; }
+.casc .mq-card:hover { transform: translateY(-10px); box-shadow: 0 0 0 1px rgba(147,197,253,.6), 0 18px 40px rgba(59,130,246,.35); }
 @keyframes casc-up   { from { transform: translateY(0); }     to { transform: translateY(-50%); } }
 @keyframes casc-down { from { transform: translateY(-50%); }  to { transform: translateY(0); } }
-/* Al pasar el cursor por encima, todo se queda parado */
-.casc:hover .casc__track { animation-play-state: paused; }
+/* Al pasar el cursor por una columna, solo esa columna se detiene */
+.casc__col:hover .casc__track { animation-play-state: paused; }
 @media (max-width: 1023px) {
     .casc { grid-template-columns: repeat(2, 1fr); }
     .casc__col:nth-child(n+3) { display: none; }
